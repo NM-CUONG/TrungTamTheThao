@@ -40,9 +40,9 @@
     <div class="container body-content">
         <div class="sidebar" id="sidebar">
             <ul class="nav flex-column">
-                <li><a class="nav-link" href="@Url.Action("Index","Home") ">Home</a></li>
-                <li><a class="nav-link" href="@Url.Action("About","Home") ">About</a></li>
-                <li><a class="nav-link" href="@Url.Action("Contact","Home") ">Contact</a></li>
+                <li><a class="nav-link"  href="@Url.Action("Index","Home") ">Home</a></li>
+                <li><a class="nav-link"  href="@Url.Action("About","Home") ">About</a></li>
+                <li><a class="nav-link"  href="@Url.Action("Contact","Home") ">Contact</a></li>
             </ul>
         </div>
 
@@ -63,6 +63,18 @@
 
     <script>
 
+        $(document).ready(function () {
+            var kt = localStorage.getItem("keepToggle");
+            if (kt == "open") {
+                var sidebar = $("#sidebar");
+                var content = $("#content");
+                sidebar.css("left", "0px");
+                sidebar.css("transition", "left 0.5s");
+                content.css("margin-left", "200px");
+                content.css("transition", "margin-left 0.5s");
+                localStorage.setItem("keepToggle", "open");
+            }
+        });
         function toggleSidebar() {
             var sidebar = $("#sidebar");
             var content = $("#content");
@@ -71,23 +83,18 @@
                 sidebar.css("transition", "left 0.5s");
                 content.css("margin-left", "200px");
                 content.css("transition", "margin-left 0.5s");
-
+                localStorage.setItem("keepToggle", "open");
                 
             }
             else {
                 sidebar.css("left", "-200px");
                 content.css("margin-left", "0px");
+                localStorage.setItem("keepToggle", "close");
+                console.log(localStorage.getItem("keepToggle"));
             }
             
         }
-        function toggleSidebar2() {
-            var sidebar = document.getElementById('sidebar');
-            var content = document.querySelector('.content');
 
-            sidebar.style.left = "0px";
-            content.style.marginLeft = "200px";
-
-        }
     </script>
 
 
