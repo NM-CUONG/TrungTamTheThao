@@ -1,4 +1,4 @@
-namespace WebApp.Models
+﻿namespace WebApp.Models
 {
     using System;
     using System.Collections.Generic;
@@ -19,29 +19,43 @@ namespace WebApp.Models
 
         [Key]
         [StringLength(10)]
+        [Display(Name = "Mã người dùng")]
+        [Required(ErrorMessage = "Vui lòng nhập trường thông tin này!")]
         public string UserID { get; set; }
 
-        [Required]
         [StringLength(100)]
+        [Display(Name = "Tên đăng nhập")]
+        [Required(ErrorMessage = "Vui lòng nhập trường thông tin này!")]
         public string UserName { get; set; }
 
-        [Required]
+        [Display(Name = "Mật khẩu")]
+        [Required(ErrorMessage = "Vui lòng nhập trường thông tin này!")]
         [StringLength(100)]
         public string Password { get; set; }
 
         [StringLength(255)]
-        public string FullName { get; set; }
 
+        [Display(Name = "Họ và tên")]
+
+        public string FullName { get; set; }
+        [Required(ErrorMessage = "Vui lòng nhập trường thông tin này!")]
         [StringLength(255)]
+        [Display(Name = "Email")]
+        
         public string Email { get; set; }
 
         [StringLength(20)]
+        [Display(Name = "Số điện thoại")]
         public string Phone { get; set; }
 
         [StringLength(255)]
+        [Display(Name = "Địa chỉ")]
+
         public string Address { get; set; }
 
         [StringLength(10)]
+        [Display(Name = "Vai trò")]
+
         public string RoleID { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

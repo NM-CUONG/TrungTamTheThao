@@ -8,16 +8,13 @@
     @Scripts.Render("~/bundles/modernizr")
     <style>
         /* CSS để tùy chỉnh giao diện */
-        body {
-            padding-top: 50px;
-        }
 
         .sidebar {
             position: fixed;
             top: 0;
             bottom: 0;
             left: -200px; /* Ẩn sidebar ban đầu */
-            width: 150px;
+            width: 200px;
             padding: 20px;
             background-color: #f8f9fa;
             transition: left 0.5s;
@@ -25,19 +22,20 @@
         }
 
         .content {
-            margin-left: 0;
+            margin-left:0;
             transition: margin-left 0.5s;
         }
 
         .menu-toggle {
             cursor: pointer;
         }
+        
     </style>
 
 </head>
 <body>
 
-    <div class="container body-content">
+    <div class="container-fluid" style="padding: 0px">
         <div class="sidebar" id="sidebar">
             <ul class="nav flex-column">
                 <li><a class="nav-link"  href="@Url.Action("Index","Home") ">Home</a></li>
@@ -52,7 +50,7 @@
         </div>
 
         <!-- Menu toggle -->
-        <div class="menu-toggle" style="position: fixed; top: 20px; left: 20px; font-size: 24px;">
+        <div class="menu-toggle" style="position: fixed; top: 20px; left: 20px; font-size: 30px;">
             <span onclick="toggleSidebar()">&#9776;</span>
         </div>
     </div>
@@ -62,7 +60,10 @@
     @RenderSection("scripts", required: false)
 
     <script>
-
+        if (!localStorage.getItem("keepToggle")) {
+            localStorage.setItem("keepToggle", "close");
+        }
+      
         $(document).ready(function () {
             var kt = localStorage.getItem("keepToggle");
             if (kt == "open") {
@@ -90,13 +91,10 @@
                 sidebar.css("left", "-200px");
                 content.css("margin-left", "0px");
                 localStorage.setItem("keepToggle", "close");
-                console.log(localStorage.getItem("keepToggle"));
             }
             
         }
-
     </script>
-
 
 </body>
 </html>
