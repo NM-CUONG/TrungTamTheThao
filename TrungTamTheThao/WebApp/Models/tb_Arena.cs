@@ -14,20 +14,27 @@ namespace WebApp.Models
             tb_Booking = new HashSet<tb_Booking>();
         }
 
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+
+        [Key]
+        [StringLength(10)]
+        public string ArenaID { get; set; }
 
         [Required]
         [StringLength(255)]
-        public string Name { get; set; }
+        public string ArenaName { get; set; }
 
         public int Status { get; set; }
 
         [StringLength(255)]
         public string Image { get; set; }
 
-        public int? CateID { get; set; }
+        [StringLength(10)]
+        public string CateID { get; set; }
 
-        public int? SizeID { get; set; }
+        [StringLength(10)]
+        public string SizeID { get; set; }
 
         public string Description { get; set; }
 

@@ -8,21 +8,26 @@ namespace WebApp.Models
 
     public partial class tb_Booking
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+
+        [Key]
+        [StringLength(10)]
+        public string BookingID { get; set; }
 
         public DateTime StartTime { get; set; }
 
         public DateTime EndTime { get; set; }
 
-        [Required]
-        [StringLength(100)]
-        public string Status { get; set; }
+        public int Status { get; set; }
 
         public string Note { get; set; }
 
-        public int? UserID { get; set; }
+        [StringLength(10)]
+        public string UserID { get; set; }
 
-        public int? ArenaID { get; set; }
+        [StringLength(10)]
+        public string ArenaID { get; set; }
 
         public virtual tb_Arena tb_Arena { get; set; }
 

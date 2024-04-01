@@ -14,7 +14,12 @@ namespace WebApp.Models
             tb_Booking = new HashSet<tb_Booking>();
         }
 
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+
+        [Key]
+        [StringLength(10)]
+        public string UserID { get; set; }
 
         [Required]
         [StringLength(100)]
@@ -27,7 +32,6 @@ namespace WebApp.Models
         [StringLength(255)]
         public string FullName { get; set; }
 
-        [Required]
         [StringLength(255)]
         public string Email { get; set; }
 
@@ -37,7 +41,8 @@ namespace WebApp.Models
         [StringLength(255)]
         public string Address { get; set; }
 
-        public int? RoleID { get; set; }
+        [StringLength(10)]
+        public string RoleID { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<tb_Booking> tb_Booking { get; set; }

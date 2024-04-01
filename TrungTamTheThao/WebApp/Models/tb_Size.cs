@@ -14,11 +14,16 @@ namespace WebApp.Models
             tb_Arena = new HashSet<tb_Arena>();
         }
 
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+
+        [Key]
+        [StringLength(10)]
+        public string SizeID { get; set; }
 
         [Required]
         [StringLength(255)]
-        public string Name { get; set; }
+        public string SizeName { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<tb_Arena> tb_Arena { get; set; }

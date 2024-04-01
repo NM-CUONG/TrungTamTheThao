@@ -6,34 +6,90 @@
     <title>@ViewBag.Title - My ASP.NET Application</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    <style>
+        /* CSS để tùy chỉnh giao diện */
+        body {
+            padding-top: 50px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: -200px; /* Ẩn sidebar ban đầu */
+            width: 150px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            transition: left 0.5s;
+            padding-top: 80px;
+        }
+
+        .content {
+            margin-left: 0;
+            transition: margin-left 0.5s;
+        }
+
+        .menu-toggle {
+            cursor: pointer;
+        }
+    </style>
+
 </head>
 <body>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
-        <div class="container">
-            @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+
     <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-        </footer>
+        <div class="sidebar" id="sidebar">
+            <ul class="nav flex-column">
+                <li><a class="nav-link" href="@Url.Action("Index","Home") ">Home</a></li>
+                <li><a class="nav-link" href="@Url.Action("About","Home") ">About</a></li>
+                <li><a class="nav-link" href="@Url.Action("Contact","Home") ">Contact</a></li>
+            </ul>
+        </div>
+
+        <!-- Main content -->
+        <div id="content">
+            @RenderBody()
+        </div>
+
+        <!-- Menu toggle -->
+        <div class="menu-toggle" style="position: fixed; top: 20px; left: 20px; font-size: 24px;">
+            <span onclick="toggleSidebar()">&#9776;</span>
+        </div>
     </div>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+
+    <script>
+
+        function toggleSidebar() {
+            var sidebar = $("#sidebar");
+            var content = $("#content");
+            if (sidebar.css("left") === "-200px") {
+                sidebar.css("left", "0px");
+                sidebar.css("transition", "left 0.5s");
+                content.css("margin-left", "200px");
+                content.css("transition", "margin-left 0.5s");
+
+                
+            }
+            else {
+                sidebar.css("left", "-200px");
+                content.css("margin-left", "0px");
+            }
+            
+        }
+        function toggleSidebar2() {
+            var sidebar = document.getElementById('sidebar');
+            var content = document.querySelector('.content');
+
+            sidebar.style.left = "0px";
+            content.style.marginLeft = "200px";
+
+        }
+    </script>
+
+
 </body>
 </html>

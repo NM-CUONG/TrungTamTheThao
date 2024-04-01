@@ -14,11 +14,16 @@ namespace WebApp.Models
             tb_User = new HashSet<tb_User>();
         }
 
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+
+        [Key]
+        [StringLength(10)]
+        public string RoleID { get; set; }
 
         [Required]
         [StringLength(255)]
-        public string Name { get; set; }
+        public string RoleName { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<tb_User> tb_User { get; set; }
