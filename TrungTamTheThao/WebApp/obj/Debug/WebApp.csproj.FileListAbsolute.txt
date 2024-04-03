@@ -51,6 +51,8 @@ D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\roslyn\vbc.rsp
 D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\roslyn\VBCSCompiler.exe
 D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\roslyn\VBCSCompiler.exe.config
 D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\Antlr3.Runtime.dll
+D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\EntityFramework.dll
+D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\EntityFramework.SqlServer.dll
 D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
 D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\Microsoft.Web.Infrastructure.dll
 D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\Newtonsoft.Json.dll
@@ -62,6 +64,8 @@ D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\System.Web.WebPages.Deployment.dl
 D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\System.Web.WebPages.dll
 D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\System.Web.WebPages.Razor.dll
 D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\WebGrease.dll
+D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\EntityFramework.xml
+D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\EntityFramework.SqlServer.xml
 D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\System.Web.Helpers.xml
 D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\System.Web.Mvc.xml
 D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\System.Web.Optimization.xml
@@ -77,7 +81,3 @@ D:\DATN\Source Code\TrungTamTheThao\WebApp\obj\Debug\WebApp.csproj.CoreCompileIn
 D:\DATN\Source Code\TrungTamTheThao\WebApp\obj\Debug\WebApp.csproj.CopyComplete
 D:\DATN\Source Code\TrungTamTheThao\WebApp\obj\Debug\WebApp.dll
 D:\DATN\Source Code\TrungTamTheThao\WebApp\obj\Debug\WebApp.pdb
-D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\EntityFramework.dll
-D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\EntityFramework.SqlServer.dll
-D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\EntityFramework.xml
-D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\EntityFramework.SqlServer.xml

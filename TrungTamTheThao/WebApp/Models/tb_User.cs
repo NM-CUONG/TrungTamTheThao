@@ -58,6 +58,8 @@
 
         public string RoleID { get; set; }
 
+        public int Status { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<tb_Booking> tb_Booking { get; set; }
 
