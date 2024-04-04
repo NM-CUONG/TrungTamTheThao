@@ -81,3 +81,13 @@ D:\DATN\Source Code\TrungTamTheThao\WebApp\obj\Debug\WebApp.csproj.CoreCompileIn
 D:\DATN\Source Code\TrungTamTheThao\WebApp\obj\Debug\WebApp.csproj.CopyComplete
 D:\DATN\Source Code\TrungTamTheThao\WebApp\obj\Debug\WebApp.dll
 D:\DATN\Source Code\TrungTamTheThao\WebApp\obj\Debug\WebApp.pdb
+D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\BCrypt.Net-Next.dll
+D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\System.Buffers.dll
+D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\System.Memory.dll
+D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\System.Numerics.Vectors.dll
+D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\System.Runtime.CompilerServices.Unsafe.dll
+D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\BCrypt.Net-Next.xml
+D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\System.Buffers.xml
+D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\System.Memory.xml
+D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\System.Numerics.Vectors.xml
+D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\System.Runtime.CompilerServices.Unsafe.xml

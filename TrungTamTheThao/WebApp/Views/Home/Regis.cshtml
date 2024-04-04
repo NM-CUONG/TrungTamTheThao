@@ -1,0 +1,83 @@
+﻿@model WebApp.Models.tb_User
+
+@{
+    ViewBag.Title = "Đăng ký";
+}
+
+<style>
+    .container-login {
+        width: 100%;
+        height: 100vh;
+        background-image: url('/Uploads/regis_loginImage.jpg');
+        background-size: cover;
+    }
+    .form-control {
+        background-color: rgba(255,255,255,0.2);
+    }
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 1);
+            color: black;
+        }
+    .card {
+        font-size: 18px;
+    }
+    .label {
+        color: black;
+    }
+    .textbox {
+        
+    }
+    .card-header {
+        color: black;
+        text-shadow: 0 0 10px revert-layer;
+    }
+</style>
+
+<div class="container-login">
+    <div class="d-flex justify-content-center align-items-center" style="height: 100%; transform: translateY(-10%) ">
+        <div class="col-md-4" >
+            <div class="card" style="background-color: rgba(255, 255, 255, 1);">
+                <div class="card-header text-center fs-3 fw-bold text-uppercase">Đăng ký</div>
+                <div class="card-body">
+                    @using (Html.BeginForm("SendMail", "Home", FormMethod.Post, new { @class = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-group row px-4 py-2">
+                            @Html.LabelFor(m => m.UserName, new {@class = "row label"})
+                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control textbox", required = "required" })
+                            @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group row px-4 py-2">
+                            @Html.LabelFor(m => m.Password, new { @class = "row label" })
+                            @Html.TextBoxFor(m => m.Password, new { @class = "form-control textbox", required = "required", type = "password" })
+                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group row px-4 py-2">
+                            @Html.LabelFor(m => m.Email, new { @class = "row label" })
+                            @Html.PasswordFor(m => m.Email, new { @class = "form-control textbox", required = "required", type = "email" })
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group row px-4 py-4">
+                            <button type="submit" class="btn btn-outline-secondary btn-block" >Đăng ký</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    @if (ViewBag.Msg !=null)
+            {
+                <h1 class="text-danger"> @ViewBag.Msg</h1>
+            }
+
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<script>
+   
+</script>
