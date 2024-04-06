@@ -4,6 +4,10 @@
     ViewBag.Title = "Đăng ký";
 }
 
+<head>
+    <link href="~/Content/toastr.css" rel="stylesheet" />
+</head>
+
 <style>
     .container-login {
         width: 100%;
@@ -39,30 +43,41 @@
             <div class="card" style="background-color: rgba(255, 255, 255, 1);">
                 <div class="card-header text-center fs-3 fw-bold text-uppercase">Đăng ký</div>
                 <div class="card-body">
-                    @using (Html.BeginForm("SendMail", "Home", FormMethod.Post, new { @class = "form" }))
+                    @using (Ajax.BeginForm("Regis", "Home", new AjaxOptions()
+                    {
+                        HttpMethod = "POST",
+                        OnSuccess = "handleSuccess()",
+                        OnFailure = "handleFailure",
+                    }))
                     {
                         @Html.AntiForgeryToken()
 
                         <div class="form-group row px-4 py-2">
-                            @Html.LabelFor(m => m.UserName, new {@class = "row label"})
+                            @Html.LabelFor(m => m.UserName, new { @class = "row label" })
                             @Html.TextBoxFor(m => m.UserName, new { @class = "form-control textbox", required = "required" })
-                            @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+                            <span id="userNameError" class="text-danger"></span>
                         </div>
 
                         <div class="form-group row px-4 py-2">
                             @Html.LabelFor(m => m.Password, new { @class = "row label" })
-                            @Html.TextBoxFor(m => m.Password, new { @class = "form-control textbox", required = "required", type = "password" })
-                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                            @Html.TextBoxFor(m => m.Password, new { @class = "form-control textbox", type = "password", required = "required" })
+                            <span id="passwordError" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group row px-4 py-2">
+                            <label for="ReEnterPassword" class="row label">Nhập lại mật khẩu</label>
+                            <input type="password" name="ReEnterPassword" id="ReEnterPassword" value="" class="form-control" required />
+                            <span id="reEnterPasswordError" class="text-danger"></span>
                         </div>
 
                         <div class="form-group row px-4 py-2">
                             @Html.LabelFor(m => m.Email, new { @class = "row label" })
-                            @Html.PasswordFor(m => m.Email, new { @class = "form-control textbox", required = "required", type = "email" })
-                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control textbox", required = "required" })
+                            <span id="emailError" class="text-danger"></span>
                         </div>
 
                         <div class="form-group row px-4 py-4">
-                            <button type="submit" class="btn btn-outline-secondary btn-block" >Đăng ký</button>
+                            <button type="submit" class="btn btn-outline-secondary btn-block">Đăng ký</button>
                         </div>
                     }
                 </div>
@@ -71,13 +86,109 @@
     </div>
 </div>
 
-
-    @if (ViewBag.Msg !=null)
-            {
-                <h1 class="text-danger"> @ViewBag.Msg</h1>
-            }
-
 <script src="~/Scripts/jquery-3.4.1.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+<script src="~/Scripts/toastr.js"></script>
 <script>
-   
+    function handleSuccess(data) {
+        if (data.success) {
+            alert("dsds");
+            //toastr.options = {
+            //    "closeButton": true,
+            //    "debug": false,
+            //    "newestOnTop": true,
+            //    "progressBar": false,
+            //    "positionClass": "toast-top-right",
+            //    "preventDuplicates": false,
+            //    "onclick": null,
+            //    "showDuration": "300",
+            //    "hideDuration": "1000",
+            //    "timeOut": "3000",
+            //    "extendedTimeOut": "1000",
+            //    "showEasing": "swing",
+            //    "hideEasing": "linear",
+            //    "showMethod": "fadeIn",
+            //    "hideMethod": "fadeOut"
+            //}
+            //toastr["success"](data.message, "Thông báo");
+
+        }
+    }
+    $(document).ready(function () {
+        isValid = true;
+        // Validation for UserName
+        $('#UserName').on('blur', function () {
+            var userName = $(this).val().trim();
+            var $userNameError = $('#userNameError');
+            if (userName === "") {
+                $userNameError.text("Vui lòng nhập tên người dùng.");
+                isValid = false;
+            } else {
+                $userNameError.text("");
+                isValid = true;
+            }
+        });
+
+        // Validation for Password
+        $('#Password').on('blur', function () {
+            var password = $(this).val();
+            var $passwordError = $('#passwordError');
+            if (password.length < 8 || !/\d/.test(password) || !/[a-zA-Z]/.test(password)) {
+                $passwordError.text("Mật khẩu phải có ít nhất 8 kí tự, bao gồm ít nhất một chữ cái và một số.");
+                isValid = false;
+
+            } else {
+                isValid = true;
+                $passwordError.text("");
+            }
+        });
+
+        // Validation for ReEnterPassword
+        $('#ReEnterPassword').on('blur', function () {
+            var password = $('#Password').val();
+            var reEnterPassword = $(this).val().trim();
+            var $reEnterPasswordError = $('#reEnterPasswordError');
+           
+            if (reEnterPassword !== password || reEnterPassword === "") {
+                $reEnterPasswordError.text("Mật khẩu không khớp.");
+                isValid = false;
+
+            } else {
+                $reEnterPasswordError.text("");
+                isValid = true;
+            }
+        });
+
+     // Validation và hiển thị lỗi khi blur ra khỏi trường nhập liệu
+        $('#Email').on('blur', function() {
+            var email = $(this).val().trim();
+            var $emailError = $('#emailError');
+
+             // Biểu thức chính quy để kiểm tra email
+             @{
+                string emailRegexPattern = @"/^[^\s@]+@[^\s@]+\.[^\s@]+$/";
+             }
+            var emailRegex = @emailRegexPattern;
+
+            if (email === "" || !emailRegex.test(email)) {
+                $emailError.text("Địa chỉ email không hợp lệ.");
+                isValid = false;
+            }
+            else {
+                $emailError.text("");
+                isValid = true;
+            }
+        });
+
+        // Prevent form submission if there are validation errors
+        $('button[type="submit"]').click(function (event) {
+            if (!isValid) {
+                event.preventDefault();
+                //hiển thị thông báo lỗi
+            }
+        });
+
+        
+
+    });
 </script>
