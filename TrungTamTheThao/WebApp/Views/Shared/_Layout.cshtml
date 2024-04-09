@@ -21,7 +21,7 @@
             padding-top: 80px;
         }
 
-        .content {
+        #content {
             margin-left:0;
             transition: margin-left 0.5s;
         }
@@ -41,6 +41,7 @@
                 <li><a class="nav-link"  href="@Url.Action("Index","Home") ">Home</a></li>
                 <li><a class="nav-link"  href="@Url.Action("Regis","Home") ">Regis</a></li>
                 <li><a class="nav-link"  href="@Url.Action("Login","Home") ">Login</a></li>
+                <li><a class="nav-link"  href="@Url.Action("BookingBadminton","Home") ">Booking</a></li>
             </ul>
         </div>
 
@@ -60,25 +61,31 @@
     @RenderSection("scripts", required: false)
 
     <script>
+
+        //
         if (!localStorage.getItem("keepToggle")) {
             localStorage.setItem("keepToggle", "close");
         }
-      
+
+        //mở menu
         $(document).ready(function () {
             var kt = localStorage.getItem("keepToggle");
             if (kt == "open") {
                 var sidebar = $("#sidebar");
                 var content = $("#content");
                 sidebar.css("left", "0px");
-                sidebar.css("transition", "left 0.5s");
+                //sidebar.css("transition", "left 0.5s");
                 content.css("margin-left", "200px");
-                content.css("transition", "margin-left 0.5s");
+                //content.css("transition", "margin-left 0.5s");
                 localStorage.setItem("keepToggle", "open");
             }
         });
+        // đóng mở menu
         function toggleSidebar() {
             var sidebar = $("#sidebar");
             var content = $("#content");
+
+            //mở menu
             if (sidebar.css("left") === "-200px") {
                 sidebar.css("left", "0px");
                 sidebar.css("transition", "left 0.5s");
@@ -87,12 +94,39 @@
                 localStorage.setItem("keepToggle", "open");
                 
             }
+
+            //đóng menu
             else {
                 sidebar.css("left", "-200px");
                 content.css("margin-left", "0px");
                 localStorage.setItem("keepToggle", "close");
             }
             
+        }
+        function handleSuccesss(data) {
+            if (data.success) {
+                window.location.href = '/Home/BookingBadminton';
+            } else {
+                // thông báo khi có lỗi đăng ký
+                toastr.options = {
+                    "closeButton": true,
+                    "debug": false,
+                    "newestOnTop": true,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+                toastr["error"](data.message, "Thông báo")
+            }
         }
     </script>
 

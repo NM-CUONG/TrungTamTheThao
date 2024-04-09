@@ -38,6 +38,10 @@ namespace WebApp.Models
 
         public string Description { get; set; }
 
+        public decimal Price { get; set; }
+
+        public int MaxPersons { get; set; }
+
         public virtual tb_Category tb_Category { get; set; }
 
         public virtual tb_Size tb_Size { get; set; }

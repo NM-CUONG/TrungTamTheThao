@@ -4,7 +4,9 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 using WebApp.Models;
 
 
@@ -65,7 +67,14 @@ namespace WebApp.Controllers
             }
             //Sinh userid tự động
             var lastItem = db.tb_User.OrderByDescending(x => x.ID).FirstOrDefault();
-            model.UserID = "U" + lastItem.ID;
+            if (lastItem != null )
+            {
+                model.UserID = "U" + lastItem.ID;
+            }
+            else
+            {
+                model.UserID = "U00";
+            }
             // Mã hóa mật khẩu trước khi lưu
             model.Password = PasswordManager.HashPassword(model.Password);
             //Lưu
@@ -135,20 +144,55 @@ namespace WebApp.Controllers
 
         // Xử lý đăng nhập
         [HttpPost]
-        public ActionResult Login(tb_User model)
+        public JsonResult Login(tb_User model)
         {
             var account = db.tb_User.Where(x => x.UserName == model.UserName).FirstOrDefault();
             if (account != null)
             {
-                //Giải mã mật khẩu
-                if (PasswordManager.VerifyPassword(model.Password, account.Password))
+                try
                 {
-                    return Redirect("/Home/Index");
+                    if (PasswordManager.VerifyPassword(model.Password, account.Password))
+                    {
+                        return Json(new { success = true, });
+                    }
                 }
+                catch (Exception)
+                {
+                    throw;
+                }
+                //Giải mã mật khẩu
+                
+                
             }
-            return View();
+            else
+            {
+                return Json(new { success = false, message= "Tên tài khoản không tồn tại"});
+            }
+            return Json(new { success = false, message = "Tài khoản hoặc mật khẩu không chính xác!" });
         }
 
-    }
+        public ActionResult BookingBadminton()
+        {
+            List<tb_Arena> Badmintons = db.tb_Arena.Where(x => x.CateID == "badminton").ToList();
+            ViewBag.Badmintons = Badmintons;
 
+            DateTime newdate =  Convert.ToDateTime("2024-09-04");
+            List<tb_Booking> Badmintons_Booked =
+                db.tb_Booking.Where(x => x.ArenaID == "a04" && x.BookDate == newdate).ToList();
+
+            List<BookTimeEmpty> BookTimeEmpties = new List<BookTimeEmpty>();
+
+            int prevTime = 0;
+            foreach (var item in Badmintons_Booked)
+            {
+                if (item.StartTime > prevTime)
+                {
+                    BookTimeEmpties.Add(new BookTimeEmpty(prevTime, item.StartTime));
+                } 
+                prevTime = item.EndTime;
+            }
+
+            return View();
+        }
+    }
 }

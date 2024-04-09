@@ -5,6 +5,9 @@
     ViewBag.Title = "Đăng nhập";
 }
 
+<head>
+    <link href="~/Content/toastr.css" rel="stylesheet" />
+</head>
 <style>
     .container-login {
         width: 100%;
@@ -39,41 +42,114 @@
     }
 </style>
 
-<div class="container-login">
-    <div class="d-flex justify-content-center align-items-center" style="height: 100%; transform: translateY(-10%) ">
-        <div class="col-md-4">
-            <div class="card" style="background-color: rgba(255, 255, 255, 1);">
-                <div class="card-header text-center fs-3 fw-bold text-uppercase">Đăng nhập</div>
-                <div class="card-body">
-                    @using (Html.BeginForm("Login", "Home", FormMethod.Post, new { @class = "form" }))
-                    {
-                        @Html.AntiForgeryToken()
 
-                        <div class="form-group row px-4 py-2">
-                            @Html.LabelFor(m => m.UserName, new { @class = "row label" })
-                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control textbox", required = "required" })
-                            @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
-                        </div>
+    <div class="container-login">
+        <div class="d-flex justify-content-center align-items-center" style="height: 100%; transform: translateY(-10%) ">
+            <div class="col-md-4">
+                <div class="card" style="background-color: rgba(255, 255, 255, 1);">
+                    <div class="card-header text-center fs-3 fw-bold text-uppercase">Đăng nhập</div>
+                    <div class="card-body">
+                        @using (Ajax.BeginForm("Login", "Home", new AjaxOptions()
+                        {
+                            HttpMethod = "POST",
+                            OnSuccess = "handleSuccesss",
+                            OnFailure = "handleFailure",
+                        }))
+                        {
+                            @Html.AntiForgeryToken()
 
-                        <div class="form-group row px-4 py-2">
-                            @Html.LabelFor(m => m.Password, new { @class = "row label" })
-                            @Html.TextBoxFor(m => m.Password, new { @class = "form-control textbox", required = "required", type = "password" })
-                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                        </div>
+                            <div class="form-group row px-4 py-2">
+                                @Html.LabelFor(m => m.UserName, new { @class = "row label" })
+                                @Html.TextBoxFor(m => m.UserName, new { @class = "form-control textbox", required = "required" })
+                                <span id="userNameError" class="text-danger"></span>
+                            </div>
 
-                        <div class="form-group row px-4 py-4">
-                            <button type="submit" class="btn btn-outline-secondary btn-block">Đăng nhập</button>
-                        </div>
-                    }
+                            <div class="form-group row px-4 py-2">
+                                @Html.LabelFor(m => m.Password, new { @class = "row label" })
+                                @Html.TextBoxFor(m => m.Password, new { @class = "form-control textbox", required = "required", type = "password" })
+                                <span id="passwordError" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group row px-4 py-4">
+                                <button type="submit" class="btn btn-outline-secondary btn-block">Đăng nhập</button>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+    <script src="~/Scripts/toastr.js"></script>
+    <script>
+       
+        function handleFailure() {
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr["error"]("Đã có lỗi xảy ra trong quá trình đăng ký!", "Thông báo")
+
+        }
+
+        $(document).ready(function () {
+           
+            // hàm được gọi khi ajax trả về thành công
+
+            isValid = true;
+            // Validation for UserName
+            $('#UserName').on('blur', function () {
+                var userName = $(this).val().trim();
+                var $userNameError = $('#userNameError');
+                if (userName === "") {
+                    $userNameError.text("Vui lòng nhập tên đăng nhập.");
+                    isValid = false;
+                } else {
+                    $userNameError.text("");
+                    isValid = true;
+                }
+            });
+            // Validation for Password
+            $('#Password').on('blur', function () {
+                var password = $(this).val().trim();
+                var passwordError = $('#passwordError');
+                if (password === "") {
+                    passwordError.text("Vui lòng nhập tên đăng nhập.");
+                    isValid = false;
+                } else {
+                    passwordError.text("");
+                    isValid = true;
+                }
+            });
+            // Prevent form submission if there are validation errors
+            $('button[type="submit"]').click(function (event) {
+                if (!isValid) {
+                    //chặn hành động submit khi chưa valid xong
+                    event.preventDefault();
+                    //hiển thị thông báo lỗi
+
+                }
+            });
+
+    </script>
 
 
-<script src="~/Scripts/jquery-3.4.1.js"></script>
-<script>
 
-</script>
+
+
 

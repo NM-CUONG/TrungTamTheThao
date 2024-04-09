@@ -15,22 +15,27 @@
         background-image: url('/Uploads/regis_loginImage.jpg');
         background-size: cover;
     }
+
     .form-control {
         background-color: rgba(255,255,255,0.2);
     }
+
         .form-control:focus {
             background-color: rgba(255, 255, 255, 1);
             color: black;
         }
+
     .card {
         font-size: 18px;
     }
+
     .label {
         color: black;
     }
+
     .textbox {
-        
     }
+
     .card-header {
         color: black;
         text-shadow: 0 0 10px revert-layer;
@@ -39,14 +44,14 @@
 
 <div class="container-login">
     <div class="d-flex justify-content-center align-items-center" style="height: 100%; transform: translateY(-10%) ">
-        <div class="col-md-4" >
+        <div class="col-md-4">
             <div class="card" style="background-color: rgba(255, 255, 255, 1);">
                 <div class="card-header text-center fs-3 fw-bold text-uppercase">Đăng ký</div>
                 <div class="card-body">
                     @using (Ajax.BeginForm("Regis", "Home", new AjaxOptions()
                     {
                         HttpMethod = "POST",
-                        OnSuccess = "handleSuccess()",
+                        OnSuccess = "handleSuccess",
                         OnFailure = "handleFailure",
                     }))
                     {
@@ -77,7 +82,7 @@
                         </div>
 
                         <div class="form-group row px-4 py-4">
-                            <button type="submit" class="btn btn-outline-secondary btn-block">Đăng ký</button>
+                            <button type="submit" class="btn btn-outline-secondary btn-block" >Đăng ký</button>
                         </div>
                     }
                 </div>
@@ -87,32 +92,78 @@
 </div>
 
 <script src="~/Scripts/jquery-3.4.1.js"></script>
-<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+<script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
 <script src="~/Scripts/toastr.js"></script>
 <script>
     function handleSuccess(data) {
         if (data.success) {
-            alert("dsds");
-            //toastr.options = {
-            //    "closeButton": true,
-            //    "debug": false,
-            //    "newestOnTop": true,
-            //    "progressBar": false,
-            //    "positionClass": "toast-top-right",
-            //    "preventDuplicates": false,
-            //    "onclick": null,
-            //    "showDuration": "300",
-            //    "hideDuration": "1000",
-            //    "timeOut": "3000",
-            //    "extendedTimeOut": "1000",
-            //    "showEasing": "swing",
-            //    "hideEasing": "linear",
-            //    "showMethod": "fadeIn",
-            //    "hideMethod": "fadeOut"
-            //}
-            //toastr["success"](data.message, "Thông báo");
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr["success"](data.message, "Thông báo")
 
+            setTimeout(function () {
+                window.location.href = '/Home/Login';
+            }, 5000); // Chuyển hướng sau 5 giây
+            
+        } else {
+            // thông báo khi có lỗi đăng ký
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr["error"](data.message, "Thông báo")
+            
         }
+
+    }
+    function handleFailure() {
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+        toastr["error"]("Đã có lỗi xảy ra trong quá trình đăng ký!", "Thông báo")
+
     }
     $(document).ready(function () {
         isValid = true;
@@ -121,7 +172,7 @@
             var userName = $(this).val().trim();
             var $userNameError = $('#userNameError');
             if (userName === "") {
-                $userNameError.text("Vui lòng nhập tên người dùng.");
+                $userNameError.text("Vui lòng nhập tên đăng nhập.");
                 isValid = false;
             } else {
                 $userNameError.text("");
@@ -148,7 +199,7 @@
             var password = $('#Password').val();
             var reEnterPassword = $(this).val().trim();
             var $reEnterPasswordError = $('#reEnterPasswordError');
-           
+
             if (reEnterPassword !== password || reEnterPassword === "") {
                 $reEnterPasswordError.text("Mật khẩu không khớp.");
                 isValid = false;
@@ -183,12 +234,12 @@
         // Prevent form submission if there are validation errors
         $('button[type="submit"]').click(function (event) {
             if (!isValid) {
+                //chặn hành động submit khi chưa valid xong
                 event.preventDefault();
                 //hiển thị thông báo lỗi
-            }
-        });
 
-        
+            } 
+        });
 
     });
 </script>

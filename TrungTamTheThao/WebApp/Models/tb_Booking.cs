@@ -14,10 +14,11 @@ namespace WebApp.Models
         [Key]
         [StringLength(10)]
         public string BookingID { get; set; }
+        public DateTime BookDate{ get; set; }
 
-        public DateTime StartTime { get; set; }
+        public int StartTime { get; set; }
 
-        public DateTime EndTime { get; set; }
+        public int EndTime { get; set; }
 
         public int Status { get; set; }
 
