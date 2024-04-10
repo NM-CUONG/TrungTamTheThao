@@ -171,26 +171,46 @@ namespace WebApp.Controllers
             return Json(new { success = false, message = "Tài khoản hoặc mật khẩu không chính xác!" });
         }
 
-        public ActionResult BookingBadminton()
+        // Lọc thời gian trống của từng sân
+        public List<BookTimeEmpty> getListBookEmpty (string ArenaID, DateTime BookDate)
         {
-            List<tb_Arena> Badmintons = db.tb_Arena.Where(x => x.CateID == "badminton").ToList();
-            ViewBag.Badmintons = Badmintons;
-
-            DateTime newdate =  Convert.ToDateTime("2024-09-04");
+            if (BookDate == null)
+            {
+                BookDate = DateTime.Now;
+            }
             List<tb_Booking> Badmintons_Booked =
-                db.tb_Booking.Where(x => x.ArenaID == "a04" && x.BookDate == newdate).ToList();
+              db.tb_Booking.Where(x => x.ArenaID == ArenaID && x.BookDate == BookDate).ToList();
 
             List<BookTimeEmpty> BookTimeEmpties = new List<BookTimeEmpty>();
-
             int prevTime = 0;
             foreach (var item in Badmintons_Booked)
             {
                 if (item.StartTime > prevTime)
                 {
                     BookTimeEmpties.Add(new BookTimeEmpty(prevTime, item.StartTime));
-                } 
+                }
                 prevTime = item.EndTime;
             }
+            if (prevTime < 24)
+            {
+                BookTimeEmpties.Add(new BookTimeEmpty(prevTime, 24));
+            }
+
+            return BookTimeEmpties;
+
+        }
+        public ActionResult BookingBadminton()
+        {
+            List<tb_Arena> Badmintons = db.tb_Arena.Where(x => x.CateID == "badminton").ToList();
+
+            DateTime newdate = Convert.ToDateTime("2024-09-04");
+
+            foreach (var item in Badmintons)
+            {
+                item.ListTimeEmpty = getListBookEmpty(item.ArenaID, newdate);
+            }
+
+            ViewBag.Badmintons = Badmintons;
 
             return View();
         }

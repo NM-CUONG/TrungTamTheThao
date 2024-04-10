@@ -42,6 +42,9 @@ namespace WebApp.Models
 
         public int MaxPersons { get; set; }
 
+        [NotMapped]
+        public List<BookTimeEmpty> ListTimeEmpty { get; set; }
+
         public virtual tb_Category tb_Category { get; set; }
 
         public virtual tb_Size tb_Size { get; set; }

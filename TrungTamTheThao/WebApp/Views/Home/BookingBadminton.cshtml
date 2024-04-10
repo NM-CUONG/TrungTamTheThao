@@ -6,18 +6,24 @@
 @model WebApp.Models.tb_Arena
 @{ 
     List<WebApp.Models.tb_Arena> Badmintons = ViewBag.Badmintons;
+    List<WebApp.Models.BookTimeEmpty> Badmintons_Booked = ViewBag.Badmintons_Booked;
 }
 
 <style>
     #content {
         padding: 30px;
     }
+    .box-time {
+        padding: 10px 0px;
+        margin-left: 18px;
+        margin-top: 10px;
+    }
 </style>
 <div class="container-fluid">
     <div class="row">
         @foreach (var item in Badmintons)
         {
-            <div class="col-lg-4 col-md-6 col-sm-12 my-2">
+            <div class="col-lg-3 col-md-6 col-sm-12 my-2">
                 <div class="card">
                     <div class="card-title">
                         <div class="card-img"><img src="~/Uploads/background-dung-cu-the-thao.jpg" alt="Ảnh sân cầu lông" width="100%" /></div>
@@ -25,10 +31,16 @@
                     <div class="card-body">
                         <p class="fs-5 fw-bolder">@item.ArenaName</p>
                         <p>Loại sân: @item.tb_Size.SizeName</p>
-                        <p class="text-danger">Giá: @item.Price đ</p>
+                        <p class="text-danger fs-4">Giá: @item.Price đ</p>
                     </div>
                     <div class="card-footer">
-                        <p>Các khung giờ còn trống</p>
+                        <p class="fw-bold text-primary">Các khung giờ còn trống</p>
+                        <div class="row">
+                            @foreach (var timebox in item.ListTimeEmpty)
+                            {
+                                <div class="border border-primary text-center col-sm-3 box-time">@timebox.startTime<span>h</span> - @timebox.endTime<span>h</span></div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
