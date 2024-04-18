@@ -6,6 +6,7 @@ using System.Net.Mail;
 using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
+using System.Web.Routing;
 using System.Web.Services.Description;
 using WebApp.Models;
 
@@ -172,47 +173,52 @@ namespace WebApp.Controllers
         }
 
         // Lọc thời gian trống của từng sân
-        public List<BookTimeEmpty> getListBookEmpty (string ArenaID, DateTime BookDate)
-        {
-            if (BookDate == null)
-            {
-                BookDate = DateTime.Now;
-            }
-            List<tb_Booking> Badmintons_Booked =
-              db.tb_Booking.Where(x => x.ArenaID == ArenaID && x.BookDate == BookDate).ToList();
+        //public List<BookTimeEmpty> getListBookEmpty (string ArenaID, DateTime BookDate)
+        //{
+        //    if (BookDate == null)
+        //    {
+        //        BookDate = DateTime.Now;
+        //    }
+        //    List<tb_Booking> Badmintons_Booked =
+        //      db.tb_Booking.Where(x => x.ArenaID == ArenaID && x.BookDate == BookDate).ToList();
 
-            List<BookTimeEmpty> BookTimeEmpties = new List<BookTimeEmpty>();
-            int prevTime = 0;
-            foreach (var item in Badmintons_Booked)
-            {
-                if (item.StartTime > prevTime)
-                {
-                    BookTimeEmpties.Add(new BookTimeEmpty(prevTime, item.StartTime));
-                }
-                prevTime = item.EndTime;
-            }
-            if (prevTime < 24)
-            {
-                BookTimeEmpties.Add(new BookTimeEmpty(prevTime, 24));
-            }
+        //    List<BookTimeEmpty> BookTimeEmpties = new List<BookTimeEmpty>();
+        //    int prevTime = 0;
+        //    foreach (var item in Badmintons_Booked)
+        //    {
+        //        if (item.StartTime > prevTime)
+        //        {
+        //            BookTimeEmpties.Add(new BookTimeEmpty(prevTime, item.StartTime));
+        //        }
+        //        prevTime = item.EndTime;
+        //    }
+        //    if (prevTime < 24)
+        //    {
+        //        BookTimeEmpties.Add(new BookTimeEmpty(prevTime, 24));
+        //    }
 
-            return BookTimeEmpties;
+        //    return BookTimeEmpties;
 
-        }
+        //}
         public ActionResult BookingBadminton()
         {
+
             List<tb_Arena> Badmintons = db.tb_Arena.Where(x => x.CateID == "badminton").ToList();
+            ViewBag.Badmintons = Badmintons;
+            return View();
+        }
 
-            DateTime newdate = Convert.ToDateTime("2024-09-04");
+        public ActionResult GetFormBookingBadminton(string arenaID)
+        {
+            tb_Arena Badminton = db.tb_Arena.Where(x => x.ArenaID == arenaID).FirstOrDefault();
+            List<tb_Shift> Shifts = db.tb_Shift.Where(x => x.CateID == Badminton.CateID).ToList();
 
-            foreach (var item in Badmintons)
+            if (Shifts != null && Shifts.Count > 0)
             {
-                item.ListTimeEmpty = getListBookEmpty(item.ArenaID, newdate);
+                ViewBag.Shifts = Shifts;   
             }
 
-            ViewBag.Badmintons = Badmintons;
-
-            return View();
+            return PartialView("_BookingBadmintonPartial", Badminton);
         }
     }
 }

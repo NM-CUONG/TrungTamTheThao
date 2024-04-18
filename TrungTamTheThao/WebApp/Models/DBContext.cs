@@ -8,7 +8,7 @@ namespace WebApp.Models
     public partial class DBContext : DbContext
     {
         public DBContext()
-            : base("name=DBContext")
+            : base("name=DBContext1")
         {
         }
 
@@ -16,6 +16,7 @@ namespace WebApp.Models
         public virtual DbSet<tb_Booking> tb_Booking { get; set; }
         public virtual DbSet<tb_Category> tb_Category { get; set; }
         public virtual DbSet<tb_Role> tb_Role { get; set; }
+        public virtual DbSet<tb_Shift> tb_Shift { get; set; }
         public virtual DbSet<tb_Size> tb_Size { get; set; }
         public virtual DbSet<tb_User> tb_User { get; set; }
 
@@ -33,6 +34,10 @@ namespace WebApp.Models
                 .Property(e => e.SizeID)
                 .IsUnicode(false);
 
+            modelBuilder.Entity<tb_Arena>()
+                .Property(e => e.Price)
+                .HasPrecision(18, 0);
+
             modelBuilder.Entity<tb_Booking>()
                 .Property(e => e.BookingID)
                 .IsUnicode(false);
@@ -45,12 +50,28 @@ namespace WebApp.Models
                 .Property(e => e.ArenaID)
                 .IsUnicode(false);
 
+            modelBuilder.Entity<tb_Booking>()
+                .Property(e => e.ShiftID)
+                .IsUnicode(false);
+
             modelBuilder.Entity<tb_Category>()
                 .Property(e => e.CateID)
                 .IsUnicode(false);
 
             modelBuilder.Entity<tb_Role>()
                 .Property(e => e.RoleID)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<tb_Shift>()
+                .Property(e => e.ShiftID)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<tb_Shift>()
+                .Property(e => e.Price)
+                .HasPrecision(18, 0);
+
+            modelBuilder.Entity<tb_Shift>()
+                .Property(e => e.CateID)
                 .IsUnicode(false);
 
             modelBuilder.Entity<tb_Size>()

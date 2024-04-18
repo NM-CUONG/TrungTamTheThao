@@ -1,7 +1,8 @@
-namespace WebApp.Models
+﻿namespace WebApp.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
@@ -14,15 +15,6 @@ namespace WebApp.Models
         [Key]
         [StringLength(10)]
         public string BookingID { get; set; }
-        public DateTime BookDate{ get; set; }
-
-        public int StartTime { get; set; }
-
-        public int EndTime { get; set; }
-
-        public int Status { get; set; }
-
-        public string Note { get; set; }
 
         [StringLength(10)]
         public string UserID { get; set; }
@@ -30,7 +22,23 @@ namespace WebApp.Models
         [StringLength(10)]
         public string ArenaID { get; set; }
 
+        public DateTime StartTime { get; set; }
+
+        public DateTime EndTime { get; set; }
+
+        [StringLength(10)]
+        public string ShiftID { get; set; }
+
+        public string Note { get; set; }
+
+        public int? Status { get; set; }
+
+        public string ContactName { get; set; }
+        public string PhoneNumber { get; set; }
+
         public virtual tb_Arena tb_Arena { get; set; }
+
+        public virtual tb_Shift tb_Shift { get; set; }
 
         public virtual tb_User tb_User { get; set; }
     }

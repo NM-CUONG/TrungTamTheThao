@@ -1,0 +1,46 @@
+﻿@model WebApp.Models.tb_Arena 
+
+@{ 
+    var Shifts = ViewBag.Shifts;
+}
+<div class="">
+    <div class="row">
+        <div class="card mb-3 p-0">
+            <div class="row g-0">
+                <div class="col-md-4" style="overflow: hidden; ">
+                    <img src="~/Uploads/background-dung-cu-the-thao.jpg" class="img-fluid rounded-start" alt="Ảnh sân cầu lông">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">@Model.ArenaName</h5>
+                        <p class="card-text">Loại sân: @Model.tb_Size.SizeName</p>
+                        <p class="card-text"><small class="text-body-secondary">Mô tả: @Model.Description</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="border: 1px dashed rgba(0, 0, 0, 0.3); padding: 10px;">
+        <div class="form-group col col-lg-6 col-md-12 col-sm-12">
+            <label class="form-label col-12">Tên người đặt</label>
+            <input type="text" name="contactName" value="" class="form-control " />
+            <span id="contactNameError" class="text-danger"></span>
+        </div>
+        <div class="form-group col col-lg-6 col-md-12 col-sm-12">
+            <label class="form-label col-12">Số điện thoại</label>
+            <input type="text" name="phoneNumber" class="form-control" value="" />
+            <span id="phoneNumberError" class="text-danger"></span>
+        </div>
+        <div class=" col-12">
+            <div class="" style="font-size: 16px; font-weight: bold; margin-top: 10px; margin-bottom: 10px;">Các khung giờ trống</div>
+            <div>
+                @foreach (var shift in Shifts)
+                {
+                    <div class="btn btn-success">@shift.ShiftName</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<h1>@ViewBag.id</h1>
+<p>dsdjsdsd</p>

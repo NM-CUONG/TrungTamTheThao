@@ -156,6 +156,7 @@
     <Compile Include="Models\tb_Booking.cs" />
     <Compile Include="Models\tb_Category.cs" />
     <Compile Include="Models\tb_Role.cs" />
+    <Compile Include="Models\tb_Shift.cs" />
     <Compile Include="Models\tb_Size.cs" />
     <Compile Include="Models\tb_User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -228,6 +229,7 @@
     <Content Include="Views\Home\ConfirmEmailRegis.cshtml" />
     <Content Include="Views\Home\Login.cshtml" />
     <Content Include="Views\Home\BookingBadminton.cshtml" />
+    <Content Include="Views\Home\_BookingBadmintonPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
