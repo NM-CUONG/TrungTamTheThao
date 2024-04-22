@@ -34,10 +34,6 @@ namespace WebApp.Models
                 .Property(e => e.SizeID)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<tb_Arena>()
-                .Property(e => e.Price)
-                .HasPrecision(18, 0);
-
             modelBuilder.Entity<tb_Booking>()
                 .Property(e => e.BookingID)
                 .IsUnicode(false);

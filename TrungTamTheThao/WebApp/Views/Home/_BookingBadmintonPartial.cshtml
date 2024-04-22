@@ -3,7 +3,59 @@
 @{ 
     var Shifts = ViewBag.Shifts;
 }
-<div class="">
+<style>
+    .button-container {
+        display: flex;
+    }
+
+    .button {
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        margin-bottom: 10px;
+    }
+
+    .active {
+        background-color: dodgerblue;
+        color: white;
+    }
+    .btn-1 {
+        border-radius: 20px 0px 0px 20px;
+    }
+    .btn-2 {
+        border-radius: 0px 20px 20px 0px;
+    }
+    .datetimepicker {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 50px;
+        font-size: 16px;
+        cursor: pointer;
+        padding: 10px 15px;
+    }
+    .select-SoThang {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 50px;
+        font-size: 16px;
+        cursor: pointer;
+        padding: 10px 15px;
+        width: 80%;
+    }
+    .codinh {
+        display: none;
+    }
+    .items-khung-gio {
+        margin: 2px;
+    }
+    .selected-item {
+        background-color: dodgerblue;
+        color: white;
+    }
+
+
+</style>
+<div class="container-fluid">
     <div class="row">
         <div class="card mb-3 p-0">
             <div class="row g-0">
@@ -12,6 +64,7 @@
                 </div>
                 <div class="col-md-8">
                     <div class="card-body">
+                        <p id="arenaId" style="display: none">@Model.ArenaID</p>
                         <h5 class="card-title">@Model.ArenaName</h5>
                         <p class="card-text">Loại sân: @Model.tb_Size.SizeName</p>
                         <p class="card-text"><small class="text-body-secondary">Mô tả: @Model.Description</small></p>
@@ -20,27 +73,255 @@
             </div>
         </div>
     </div>
-    <div class="row" style="border: 1px dashed rgba(0, 0, 0, 0.3); padding: 10px;">
+    <div class="row pb-3">
         <div class="form-group col col-lg-6 col-md-12 col-sm-12">
             <label class="form-label col-12">Tên người đặt</label>
-            <input type="text" name="contactName" value="" class="form-control " />
+            <input type="text" name="contactName" value="" class="form-control " required/>
             <span id="contactNameError" class="text-danger"></span>
         </div>
         <div class="form-group col col-lg-6 col-md-12 col-sm-12">
             <label class="form-label col-12">Số điện thoại</label>
-            <input type="text" name="phoneNumber" class="form-control" value="" />
+            <input type="text" name="phoneNumber" class="form-control" value="" required/>
             <span id="phoneNumberError" class="text-danger"></span>
         </div>
+    </div>
+    <div class="row pb-3">
+        <div class="form-group col col-lg-6 col-md-12 col-sm-12">
+            <label class="form-label col-12">Bạn muốn đặt sân</label>
+            <div class="button-container">
+                <button class="button active btn-1" onclick="toggleButton(this)">Vãng lai</button>
+                <button class="button btn-2" onclick="toggleButton(this)">Cố định</button>
+            </div>
+        </div>
+        <div class="form-group col col-lg-6 col-md-12 col-sm-12 vanglai">
+            <label class="form-label col-12">Chọn ngày sử dụng sân</label>
+            <input type="date" class="datetimepicker datetimepicker-ngaysudung" value="">
+            <span id="ngaysudungError" class="text-danger col-12"></span>
+        </div>
+        <div class="row">
+
+            <div class="form-group col col-lg-4 col-md-12 col-sm-12 codinh">
+                <label class="form-label col-12" style="padding-left: 4px;">Chọn ngày bắt đầu</label>
+                <input type="date" class="datetimepicker datetimepicker-ngaybatdau" value="">
+                <span id="ngaybatdauError" class="text-danger col-12"></span>
+
+            </div>
+            <div class="form-group col col-lg-4 col-md-12 col-sm-12 codinh">
+                <label class="form-label col-12" style="padding-left: 4px;">Chọn số tháng</label>
+                <select class="select-SoThang">
+
+                    @for (var i = 1; i <= 36; i++)
+                    {
+                        <option value="@i">@i tháng</option>
+                    }
+                </select>
+
+            </div>
+            <div class="form-group col col-lg-4 col-md-12 col-sm-12 codinh">
+                <label class="form-label col-12" style="padding-left: 4px;">Ngày kết thúc</label>
+                <input type="date" class="datetimepicker datetimepicker-ngayketthuc" value="" readonly>
+                <span id="ngayketthucError" class="text-danger col-12"></span>
+
+            </div>
+        </div>
+
+    </div>
+   
+    <div class="row" style="border: 1px dashed rgba(0, 0, 0, 0.3); padding: 10px;">
+
         <div class=" col-12">
             <div class="" style="font-size: 16px; font-weight: bold; margin-top: 10px; margin-bottom: 10px;">Các khung giờ trống</div>
             <div>
                 @foreach (var shift in Shifts)
                 {
-                    <div class="btn btn-success">@shift.ShiftName</div>
+                    <div class="btn btn-success items-khung-gio">@shift.ShiftName</div>
                 }
             </div>
         </div>
     </div>
 </div>
-<h1>@ViewBag.id</h1>
-<p>dsdjsdsd</p>
+<script>
+
+    // Hàm bật tắt sân vãng lai/cố định
+    function toggleButton(button) {
+        var buttons = document.getElementsByClassName("button");
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove("active");
+        }
+        button.classList.add("active");
+
+        var vanglaiFields = document.querySelectorAll('.vanglai');
+        var codinhFields = document.querySelectorAll('.codinh');
+
+        if (button.classList.contains('btn-1')) { // Vãng lai được chọn
+            for (var i = 0; i < vanglaiFields.length; i++) {
+                vanglaiFields[i].style.display = 'block';
+            }
+            for (var j = 0; j < codinhFields.length; j++) {
+                codinhFields[j].style.display = 'none';
+            }
+        } else if (button.classList.contains('btn-2')) { // Cố định được chọn
+            for (var k = 0; k < vanglaiFields.length; k++) {
+                vanglaiFields[k].style.display = 'none';
+            }
+            for (var l = 0; l < codinhFields.length; l++) {
+                codinhFields[l].style.display = 'block';
+            }
+        }
+    }
+
+    // Hàm đổ ngày hiện tại vào datetimepicker
+    function GetNowDaySetDateTimePiker(ClassNameDateTimePicker) {
+        var datetimepicker = document.getElementsByClassName(ClassNameDateTimePicker);
+        console.log(datetimepicker);
+        // Lấy ngày hiện tại
+        var currentDate = new Date();
+        var year = currentDate.getFullYear();
+        var month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+        var day = currentDate.getDate().toString().padStart(2, "0");
+        var today = year + "-" + month + "-" + day;
+
+        // Đặt giá trị ngày hiện tại cho datetimepicker
+        datetimepicker[0].value = today;
+       
+    }
+
+    // Hàm check ngày sử dụng sân
+    function validateNgaySuDung() {
+        var ngaySuDungInput = $('.datetimepicker-ngaysudung');
+        var ngaySuDung = new Date(ngaySuDungInput.val());
+        var currentDate = new Date();
+        var diffTime = ngaySuDung.getTime() - currentDate.getTime();
+        var diffDays = diffTime / (1000 * 3600 * 24);
+        if (ngaySuDung < currentDate || diffDays > 5) {
+            $('#ngaysudungError').text('Ngày sử dụng sân phải là ngày hiện tại hoặc trong vòng 5 ngày kể từ ngày hiện tại.');
+            return false;
+        } else {
+            $('#ngaysudungError').text('');
+            return true;
+        }
+    }
+
+    //Hàm check ngày bắt đầu
+    function validateNgayBatDau() {
+        var ngaySuDungInput = $('.datetimepicker-ngaybatdau');
+        var ngaySuDung = new Date(ngaySuDungInput.val());
+        var currentDate = new Date();
+        var diffTime = ngaySuDung.getTime() - currentDate.getTime();
+        var diffDays = diffTime / (1000 * 3600 * 24);
+        if (ngaySuDung < currentDate || diffDays > 5) {
+            $('#ngaybatdauError').text('Ngày sử dụng sân phải là ngày hiện tại hoặc trong vòng 5 ngày kể từ ngày hiện tại.');
+            return false;
+        } else {
+            $('#ngaybatdauError').text('');
+            return true;
+        }
+    }
+
+    //Hàm tính ngày kết thúc
+    function calculateEndDate() {
+        var ngayBatDauInput = $('.datetimepicker-ngaybatdau');
+        var soThang = parseInt($('.select-SoThang').val());
+
+        if (isNaN(soThang)) {
+            $('.datetimepicker-ngayketthuc').val('');
+            return;
+        }
+
+        var ngayBatDau = new Date(ngayBatDauInput.val());
+        var ngayKetThuc = new Date(ngayBatDau.getFullYear(), ngayBatDau.getMonth() + soThang, ngayBatDau.getDate());
+
+        var year = ngayKetThuc.getFullYear();
+        var month = (ngayKetThuc.getMonth() + 1).toString().padStart(2, '0');
+        var day = ngayKetThuc.getDate().toString().padStart(2, '0');
+
+        var formattedEndDate = year + '-' + month + '-' + day;
+
+        $('.datetimepicker-ngayketthuc').val(formattedEndDate);
+    }
+
+    // Hàm xử lý khi chọn một khung giờ
+    function selectItem(item) {
+        $('.items-khung-gio').removeClass('selected-item');
+        $(item).addClass('selected-item');
+    }
+
+    //Hàm lấy ra khung giờ trống
+    function getEmptyShift(arenaId, ngayBatDau, ngayKetThuc) {
+        $.ajax({
+            url: '/ControllerName/getEmptyShift',
+            type: 'GET',
+            data: {
+                arenaId: arenaId,
+                ngayBatDau: ngayBatDau,
+                ngayKetThuc: ngayKetThuc
+            },
+            success: function (response) {
+                // Xử lý dữ liệu trả về từ server ở đây
+            },
+            error: function (xhr, status, error) {
+                // Xử lý lỗi nếu có
+            }
+        });
+    }
+
+
+    $(document).ready(function () {
+
+        // Đổ ngày hiện tại vào datetimepicker
+        GetNowDaySetDateTimePiker("datetimepicker-ngaysudung");
+        GetNowDaySetDateTimePiker("datetimepicker-ngaybatdau");
+
+        //Check ngày sử dụng
+        $('.datetimepicker-ngaysudung').change(function () {
+            validateNgaySuDung();
+        });
+        $('.datetimepicker-ngaybatdau').change(function () {
+            validateNgayBatDau();
+        });
+
+        //Gọi hàm tính ngày kết thúc
+        calculateEndDate();
+
+        $('.select-SoThang').change(function () {
+            calculateEndDate();
+        });
+
+        $('.datetimepicker-ngaybatdau').change(function () {
+            calculateEndDate();
+        });
+
+        // Gọi hàm xử lý khi chọn 1 khung giờ
+        $(document).ready(function () {
+            $('.items-khung-gio').click(function () {
+                selectItem(this);
+            });
+        });
+
+        //Gọi hàm lấy ra khung giờ trống
+        const arenaId = $("#arenaId").text();
+        var startTime = $('.datetimepicker-ngaybatdau').val();
+        var endTime = $('.datetimepicker-ngayketthuc').val();
+        getEmptyShift(arenaId, startTime, endTime)
+
+        // Gọi hàm lấy ra khung giờ trống khi ngày bắt đầu thay đổi
+        $('.datetimepicker-ngaybatdau').change(function () {
+            var arenaId = $('#arenaId').text();
+            var startTime = $(this).val();
+            var endTime = $('.datetimepicker-ngayketthuc').val();
+            getEmptyShift(arenaId, startTime, endTime);
+        });
+
+        // Gọi hàm lấy ra khung giờ trống khi số tháng thay đổi
+        $('.select-SoThang').change(function () {
+            var arenaId = $('#arenaId').text();
+            var startTime = $('.datetimepicker-ngaybatdau').val();
+            var endTime = $('.datetimepicker-ngayketthuc').val();
+            getEmptyShift(arenaId, startTime, endTime);
+        });
+
+    })
+   
+   
+
+</script>
