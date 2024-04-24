@@ -8,7 +8,7 @@ namespace WebApp.Models
     public partial class DBContext : DbContext
     {
         public DBContext()
-            : base("name=DBContext1")
+            : base("name=DBContext2")
         {
         }
 
@@ -48,6 +48,10 @@ namespace WebApp.Models
 
             modelBuilder.Entity<tb_Booking>()
                 .Property(e => e.ShiftID)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<tb_Booking>()
+                .Property(e => e.PhoneNumber)
                 .IsUnicode(false);
 
             modelBuilder.Entity<tb_Category>()

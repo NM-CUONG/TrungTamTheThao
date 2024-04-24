@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Services.Description;
 using WebApp.Models;
+using Newtonsoft.Json;
 
 
 namespace WebApp.Controllers
@@ -172,34 +173,35 @@ namespace WebApp.Controllers
             return Json(new { success = false, message = "Tài khoản hoặc mật khẩu không chính xác!" });
         }
 
-        // Lọc thời gian trống của từng sân
-        //public List<BookTimeEmpty> getListBookEmpty (string ArenaID, DateTime BookDate)
-        //{
-        //    if (BookDate == null)
-        //    {
-        //        BookDate = DateTime.Now;
-        //    }
-        //    List<tb_Booking> Badmintons_Booked =
-        //      db.tb_Booking.Where(x => x.ArenaID == ArenaID && x.BookDate == BookDate).ToList();
+        [HttpGet]
+        public JsonResult getEmptyShift(string arenaId, string cateId, DateTime ngayBatDau, DateTime ngayKetThuc)
+        {
+            // Lấy ra tất cả sân cầu lông chưa được xác nhận đặt
+            var listBooked = db.tb_Booking.Where(x => x.ArenaID == arenaId && x.Status == 0).ToList();
+            //Lấy ra tất cả khung giờ của sân cầu lông
+            var listShift = db.tb_Shift.Where(x => x.CateID == cateId).ToList();
+            //Tạo list sân rỗng chưa đặt
+            List<tb_Shift> listEmptyShift = new List<tb_Shift>();
+            //Tạo list sân rỗng đã đặt
+            List<tb_Shift> listBookedShift = new List<tb_Shift>();
 
-        //    List<BookTimeEmpty> BookTimeEmpties = new List<BookTimeEmpty>();
-        //    int prevTime = 0;
-        //    foreach (var item in Badmintons_Booked)
-        //    {
-        //        if (item.StartTime > prevTime)
-        //        {
-        //            BookTimeEmpties.Add(new BookTimeEmpty(prevTime, item.StartTime));
-        //        }
-        //        prevTime = item.EndTime;
-        //    }
-        //    if (prevTime < 24)
-        //    {
-        //        BookTimeEmpties.Add(new BookTimeEmpty(prevTime, 24));
-        //    }
 
-        //    return BookTimeEmpties;
+            //Chọn ra những sân đã có người sử dụng trong khung giờ đó
+            foreach (var item in listBooked)
+            {
+                if (!(ngayKetThuc < item.StartTime || ngayBatDau > item.EndTime))
+                {
+                    listBookedShift.Add(listShift.Find(x => x.ShiftID == item.ShiftID));
+                }
+            }
 
-        //}
+            listEmptyShift = listShift
+            .Where(shift => !listBookedShift.Any(bookedShift => bookedShift.ShiftID == shift.ShiftID))
+            .Select(x => new tb_Shift{ ShiftID = x.ShiftID, ShiftName = x.ShiftName, Price = x.Price})
+            .ToList();
+
+            return Json(new { listEmptyShift }, JsonRequestBehavior.AllowGet);
+        }
         public ActionResult BookingBadminton()
         {
 
@@ -211,13 +213,6 @@ namespace WebApp.Controllers
         public ActionResult GetFormBookingBadminton(string arenaID)
         {
             tb_Arena Badminton = db.tb_Arena.Where(x => x.ArenaID == arenaID).FirstOrDefault();
-            List<tb_Shift> Shifts = db.tb_Shift.Where(x => x.CateID == Badminton.CateID).ToList();
-
-            if (Shifts != null && Shifts.Count > 0)
-            {
-                ViewBag.Shifts = Shifts;   
-            }
-
             return PartialView("_BookingBadmintonPartial", Badminton);
         }
     }

@@ -1,8 +1,6 @@
 ﻿@model WebApp.Models.tb_Arena 
 
-@{ 
-    var Shifts = ViewBag.Shifts;
-}
+
 <style>
     .button-container {
         display: flex;
@@ -47,6 +45,7 @@
     }
     .items-khung-gio {
         margin: 2px;
+        border: none;
     }
     .selected-item {
         background-color: dodgerblue;
@@ -65,6 +64,7 @@
                 <div class="col-md-8">
                     <div class="card-body">
                         <p id="arenaId" style="display: none">@Model.ArenaID</p>
+                        <p id="cateId" style="display: none">@Model.CateID</p>
                         <h5 class="card-title">@Model.ArenaName</h5>
                         <p class="card-text">Loại sân: @Model.tb_Size.SizeName</p>
                         <p class="card-text"><small class="text-body-secondary">Mô tả: @Model.Description</small></p>
@@ -121,22 +121,21 @@
                 <label class="form-label col-12" style="padding-left: 4px;">Ngày kết thúc</label>
                 <input type="date" class="datetimepicker datetimepicker-ngayketthuc" value="" readonly>
                 <span id="ngayketthucError" class="text-danger col-12"></span>
-
             </div>
         </div>
 
     </div>
    
     <div class="row" style="border: 1px dashed rgba(0, 0, 0, 0.3); padding: 10px;">
-
         <div class=" col-12">
             <div class="" style="font-size: 16px; font-weight: bold; margin-top: 10px; margin-bottom: 10px;">Các khung giờ trống</div>
-            <div>
-                @foreach (var shift in Shifts)
-                {
-                    <div class="btn btn-success items-khung-gio">@shift.ShiftName</div>
-                }
+            <div class="khungGioTrong">
+              
             </div>
+        </div>
+        <div class="row" style="padding-top: 20px;">
+            <div class="col-4">Giá: <input type="text" name="price" value="" class="form-control price" /></div>
+            <div class="col-4">Tiền: <input type="text" name="money" value="" class="form-control money" /></div>
         </div>
     </div>
 </div>
@@ -160,6 +159,13 @@
             for (var j = 0; j < codinhFields.length; j++) {
                 codinhFields[j].style.display = 'none';
             }
+            //Gọi hàm lấy ra khung giờ trống khi nút cố định được trọn
+            const arenaId = $("#arenaId").text();
+            var startTime = $('.datetimepicker-ngaysudung').val();
+            var endTime = $('.datetimepicker-ngaysudung').val();
+            var cateId = $("#cateId").text();
+            getEmptyShift(arenaId, cateId, startTime, endTime)
+
         } else if (button.classList.contains('btn-2')) { // Cố định được chọn
             for (var k = 0; k < vanglaiFields.length; k++) {
                 vanglaiFields[k].style.display = 'none';
@@ -167,13 +173,19 @@
             for (var l = 0; l < codinhFields.length; l++) {
                 codinhFields[l].style.display = 'block';
             }
+
+            // Gọi hàm load lại khung giờ trống khi nút cố định được bấm
+            const arenaId = $("#arenaId").text();
+            var startTime = $('.datetimepicker-ngaybatdau').val();
+            var endTime = $('.datetimepicker-ngayketthuc').val();
+            var cateId = $("#cateId").text();
+            getEmptyShift(arenaId, cateId, startTime, endTime)
         }
     }
 
     // Hàm đổ ngày hiện tại vào datetimepicker
     function GetNowDaySetDateTimePiker(ClassNameDateTimePicker) {
         var datetimepicker = document.getElementsByClassName(ClassNameDateTimePicker);
-        console.log(datetimepicker);
         // Lấy ngày hiện tại
         var currentDate = new Date();
         var year = currentDate.getFullYear();
@@ -244,27 +256,36 @@
     function selectItem(item) {
         $('.items-khung-gio').removeClass('selected-item');
         $(item).addClass('selected-item');
+        $(".price").val($(item).data("price"));
     }
 
     //Hàm lấy ra khung giờ trống
-    function getEmptyShift(arenaId, ngayBatDau, ngayKetThuc) {
+    function getEmptyShift(arenaId, cateId, ngayBatDau, ngayKetThuc) {
         $.ajax({
-            url: '/ControllerName/getEmptyShift',
+            url: '/Home/getEmptyShift',
             type: 'GET',
+            dataType: 'json',
             data: {
                 arenaId: arenaId,
+                cateId: cateId,
                 ngayBatDau: ngayBatDau,
                 ngayKetThuc: ngayKetThuc
             },
             success: function (response) {
-                // Xử lý dữ liệu trả về từ server ở đây
+                $(".khungGioTrong").empty();
+                if (response.listEmptyShift && response.listEmptyShift.length > 0) {
+                    response.listEmptyShift.forEach(item => {
+                        $(".khungGioTrong").append('<div onclick="selectItem(this)" data-price="' + item.Price +'" data-shiftid="' + item.ShiftID +'" class="btn btn-success items-khung-gio">' + item.ShiftName + '</div>');
+                    });
+
+                }
+
             },
             error: function (xhr, status, error) {
-                // Xử lý lỗi nếu có
+                
             }
         });
     }
-
 
     $(document).ready(function () {
 
@@ -291,33 +312,42 @@
             calculateEndDate();
         });
 
-        // Gọi hàm xử lý khi chọn 1 khung giờ
-        $(document).ready(function () {
-            $('.items-khung-gio').click(function () {
-                selectItem(this);
-            });
-        });
 
-        //Gọi hàm lấy ra khung giờ trống
+        //Gọi hàm lấy ra khung giờ trống khi mới load
         const arenaId = $("#arenaId").text();
-        var startTime = $('.datetimepicker-ngaybatdau').val();
-        var endTime = $('.datetimepicker-ngayketthuc').val();
-        getEmptyShift(arenaId, startTime, endTime)
+        var startTime = $('.datetimepicker-ngaysudung').val();
+        var endTime = $('.datetimepicker-ngaysudung').val();
+        var cateId = $("#cateId").text();
+        getEmptyShift(arenaId, cateId, startTime, endTime)
+
+        // Gọi hàm lấy ra khung giờ trống khi ngày sử dụng thay đổi
+        $('.datetimepicker-ngaysudung').change(function () {
+            const arenaId = $("#arenaId").text();
+            var startTime = $('.datetimepicker-ngaysudung').val();
+            var endTime = $('.datetimepicker-ngaysudung').val();
+            var cateId = $("#cateId").text();
+            getEmptyShift(arenaId, cateId, startTime, endTime)
+
+        });
 
         // Gọi hàm lấy ra khung giờ trống khi ngày bắt đầu thay đổi
         $('.datetimepicker-ngaybatdau').change(function () {
-            var arenaId = $('#arenaId').text();
-            var startTime = $(this).val();
+            const arenaId = $("#arenaId").text();
+            var startTime = $('.datetimepicker-ngaybatdau').val();
             var endTime = $('.datetimepicker-ngayketthuc').val();
-            getEmptyShift(arenaId, startTime, endTime);
+            var cateId = $("#cateId").text();
+            getEmptyShift(arenaId, cateId, startTime, endTime)
+
         });
 
         // Gọi hàm lấy ra khung giờ trống khi số tháng thay đổi
         $('.select-SoThang').change(function () {
-            var arenaId = $('#arenaId').text();
+            const arenaId = $("#arenaId").text();
             var startTime = $('.datetimepicker-ngaybatdau').val();
             var endTime = $('.datetimepicker-ngayketthuc').val();
-            getEmptyShift(arenaId, startTime, endTime);
+            var cateId = $("#cateId").text();
+            getEmptyShift(arenaId, cateId, startTime, endTime)
+
         });
 
     })

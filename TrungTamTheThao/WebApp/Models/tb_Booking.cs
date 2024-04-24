@@ -1,8 +1,7 @@
-﻿namespace WebApp.Models
+namespace WebApp.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
@@ -33,8 +32,11 @@
 
         public int? Status { get; set; }
 
-        public string ContactName { get; set; }
+        [StringLength(20)]
         public string PhoneNumber { get; set; }
+
+        [StringLength(100)]
+        public string ContactName { get; set; }
 
         public virtual tb_Arena tb_Arena { get; set; }
 
