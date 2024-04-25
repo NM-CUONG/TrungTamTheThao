@@ -51,7 +51,11 @@
         background-color: dodgerblue;
         color: white;
     }
-
+    .price,.money{
+        color: red;
+        font-size: 16px;
+        font-weight: bold;
+    }
 
 </style>
 <div class="container-fluid">
@@ -134,8 +138,8 @@
             </div>
         </div>
         <div class="row" style="padding-top: 20px;">
-            <div class="col-4">Giá: <input type="text" name="price" value="" class="form-control price" /></div>
-            <div class="col-4">Tiền: <input type="text" name="money" value="" class="form-control money" /></div>
+            <div class="col-4 ">Giá: <input type="text" name="price" value="" class="form-control price" disabled/></div>
+            <div class="col-4 ">Tiền: <input type="text" name="money" value="" class="form-control money" disabled/></div>
         </div>
     </div>
 </div>
@@ -148,6 +152,8 @@
             buttons[i].classList.remove("active");
         }
         button.classList.add("active");
+
+        removeTien();
 
         var vanglaiFields = document.querySelectorAll('.vanglai');
         var codinhFields = document.querySelectorAll('.codinh');
@@ -205,7 +211,7 @@
         var currentDate = new Date();
         var diffTime = ngaySuDung.getTime() - currentDate.getTime();
         var diffDays = diffTime / (1000 * 3600 * 24);
-        if (ngaySuDung < currentDate || diffDays > 5) {
+        if (ngaySuDung.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0) || diffDays > 5) {
             $('#ngaysudungError').text('Ngày sử dụng sân phải là ngày hiện tại hoặc trong vòng 5 ngày kể từ ngày hiện tại.');
             return false;
         } else {
@@ -221,7 +227,7 @@
         var currentDate = new Date();
         var diffTime = ngaySuDung.getTime() - currentDate.getTime();
         var diffDays = diffTime / (1000 * 3600 * 24);
-        if (ngaySuDung < currentDate || diffDays > 5) {
+        if (ngaySuDung.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0) || diffDays > 5) {
             $('#ngaybatdauError').text('Ngày sử dụng sân phải là ngày hiện tại hoặc trong vòng 5 ngày kể từ ngày hiện tại.');
             return false;
         } else {
@@ -256,7 +262,18 @@
     function selectItem(item) {
         $('.items-khung-gio').removeClass('selected-item');
         $(item).addClass('selected-item');
-        $(".price").val($(item).data("price"));
+        const price = $(item).data("price");
+        $(".price").val(price);
+
+        if ($('.button.btn-1').hasClass('active')) {
+            $(".money").val(price);
+        } else {
+            var soThang = parseInt($('.select-SoThang').val());
+            if (!isNaN(soThang)) {
+                var totalPrice = soThang >= 3 ? price * soThang * 80 / 100 : price * soThang;
+                $(".money").val(totalPrice);
+            }
+        }
     }
 
     //Hàm lấy ra khung giờ trống
@@ -282,10 +299,17 @@
 
             },
             error: function (xhr, status, error) {
-                
+
             }
         });
     }
+
+    //Hàm xóa ô giá và tiền
+    function removeTien() {
+        $(".price").val(null);
+        $(".money").val(null);
+    }
+
 
     $(document).ready(function () {
 
@@ -297,6 +321,7 @@
         $('.datetimepicker-ngaysudung').change(function () {
             validateNgaySuDung();
         });
+        //Check ngày bắt đầu 
         $('.datetimepicker-ngaybatdau').change(function () {
             validateNgayBatDau();
         });
@@ -347,6 +372,7 @@
             var endTime = $('.datetimepicker-ngayketthuc').val();
             var cateId = $("#cateId").text();
             getEmptyShift(arenaId, cateId, startTime, endTime)
+            removeTien();
 
         });
 

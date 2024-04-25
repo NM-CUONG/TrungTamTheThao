@@ -155,6 +155,7 @@ namespace WebApp.Controllers
                 {
                     if (PasswordManager.VerifyPassword(model.Password, account.Password))
                     {
+                        Session["UserInfor"] = account; 
                         return Json(new { success = true, });
                     }
                 }
@@ -162,8 +163,6 @@ namespace WebApp.Controllers
                 {
                     throw;
                 }
-                //Giải mã mật khẩu
-                
                 
             }
             else
