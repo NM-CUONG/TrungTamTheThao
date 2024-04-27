@@ -21,15 +21,15 @@
         margin-top: 10px;
         font-size: 14px;
     }
+
     .modal-title {
         width: 100%;
-        
     }
+
     .modal-header {
         background-color: #2a86bb;
         color: white;
     }
-   
 </style>
 
 
@@ -37,16 +37,25 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5 text-center text-uppercase" id="staticBackdropLabel" >Đặt sân cầu lông</h1>
+                <h1 class="modal-title fs-5 text-center text-uppercase" id="staticBackdropLabel">Đặt sân cầu lông</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <!-- Partial view sẽ được hiển thị ở đây -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Đặt sân</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-            </div>
+            @using (Ajax.BeginForm("HandleBookingBadminton", "Home", new AjaxOptions()
+            {
+                HttpMethod = "POST",
+                OnSuccess = "handleSuccess",
+                OnFailure = "handleFailure",
+            }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <!-- Partial view sẽ được hiển thị ở đây -->
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Đặt sân</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            }
         </div>
     </div>
 </div>
@@ -72,9 +81,40 @@
 </div>
 @Scripts.Render("~/bundles/jquery")
 @Scripts.Render("~/bundles/bootstrap")
+<script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+<script src="~/Scripts/toastr.js"></script>
 
 <script>
 
+    // Hàm được gọi đến khi ajax thành công
+    function handleSuccess() {
+        window.location.href = '/Home/Payment';
+    }
+
+    // Hàm được gọi đến khi ajax không thành công
+    function handleFailure() {
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+        toastr["error"]("Đã có lỗi xảy ra trong quá đặt sân!", "Thông báo")
+
+    }
+
+    // Hàm mở form đặt sân
     function GetFormBooking(arenaID) {
         $.ajax({
             url: '/Home/GetFormBookingBadminton/',
@@ -90,4 +130,21 @@
             }
         })
     }
+
+    // Kiểm tra hợp lệ dữ liệu nhập trước khi submit
+    $(document).ready(function () {
+        $('button[type="submit"]').click(function (event) {
+            debugger
+
+            if (!validateContactName() ||
+                !validatePhoneNumber() ||
+                !validateKhungGio() ||
+                !validateNgayBatDau() ||
+                !validateNgaySuDung()) {
+                event.preventDefault();
+            }
+        });
+    })
+    
+
 </script>

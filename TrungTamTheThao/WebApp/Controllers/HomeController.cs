@@ -214,5 +214,39 @@ namespace WebApp.Controllers
             tb_Arena Badminton = db.tb_Arena.Where(x => x.ArenaID == arenaID).FirstOrDefault();
             return PartialView("_BookingBadmintonPartial", Badminton);
         }
+
+        [HttpPost]
+        public JsonResult HandleBookingBadminton(tb_Booking model)
+        {
+            tb_Booking lastBooking = db.tb_Booking.OrderByDescending(b => b.ID).FirstOrDefault();
+
+            if (lastBooking != null)
+            {
+                model.BookingID = "B" + (lastBooking.ID + 1) ;
+            } else
+            {
+                model.BookingID = "B0";
+            }
+
+            if (model.isCoDinh == 0)
+            {
+                model.StartTime = model.ngaySuDung;
+                model.EndTime = model.ngaySuDung;
+            }
+
+            tb_User userInfor = Session["UserInfor"] as tb_User;
+            if (userInfor != null)
+            {
+                model.UserID = userInfor.UserID;
+            }
+
+            model.Status = 0;
+            return Json(new { model }, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult Payment()
+        {
+            return View();
+        }
     }
 }

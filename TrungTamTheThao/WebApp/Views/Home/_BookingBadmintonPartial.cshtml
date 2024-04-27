@@ -2,6 +2,10 @@
 
 
 <style>
+    .col {
+        margin-bottom: 15px !important;
+    }
+
     .button-container {
         display: flex;
     }
@@ -11,6 +15,7 @@
         border: none;
         cursor: pointer;
         margin-bottom: 10px;
+        background-color: #e9ecef;
     }
 
     .active {
@@ -30,6 +35,9 @@
         font-size: 16px;
         cursor: pointer;
         padding: 10px 15px;
+    }
+    .datetimepicker-ngayketthuc {
+        background-color: #e9ecef;
     }
     .select-SoThang {
         padding: 10px;
@@ -58,6 +66,7 @@
     }
 
 </style>
+
 <div class="container-fluid">
     <div class="row">
         <div class="card mb-3 p-0">
@@ -68,10 +77,13 @@
                 <div class="col-md-8">
                     <div class="card-body">
                         <p id="arenaId" style="display: none">@Model.ArenaID</p>
+                        <input type="text" name="ArenaID" value="@Model.ArenaID" style="display: none;" />
                         <p id="cateId" style="display: none">@Model.CateID</p>
                         <h5 class="card-title">@Model.ArenaName</h5>
                         <p class="card-text">Loại sân: @Model.tb_Size.SizeName</p>
                         <p class="card-text"><small class="text-body-secondary">Mô tả: @Model.Description</small></p>
+                        <input type="text" class="ShiftID" name="ShiftID" value="" style="display: none;" />
+                        <input type="text" class="isCoDinh" name="isCoDinh" value="0" style="display: none;" />
                     </div>
                 </div>
             </div>
@@ -79,34 +91,39 @@
     </div>
     <div class="row pb-3">
         <div class="form-group col col-lg-6 col-md-12 col-sm-12">
-            <label class="form-label col-12">Tên người đặt</label>
-            <input type="text" name="contactName" value="" class="form-control " required/>
+            <label class="form-label col-12">Tên người đặt <span class="text-danger">*</span></label>
+            <input type="text" name="ContactName" value="" class="form-control " required />
             <span id="contactNameError" class="text-danger"></span>
         </div>
         <div class="form-group col col-lg-6 col-md-12 col-sm-12">
-            <label class="form-label col-12">Số điện thoại</label>
-            <input type="text" name="phoneNumber" class="form-control" value="" required/>
+            <label class="form-label col-12">Số điện thoại <span class="text-danger">*</span></label>
+            <input type="text" name="PhoneNumber" class="form-control" value="" required />
             <span id="phoneNumberError" class="text-danger"></span>
+        </div>
+        <div class="form-group col-lg-6 col-md-6 col-sm-12 ">
+            <label class="form-label col-12">Ghi chú</label>
+            <textarea type="text" name="Note" value="" class="form-control" rows="2" />
+        </div>
+        <div class="form-group col-lg-6 col-md-12 col-sm-12">
+            <label class="form-label col-12">Bạn muốn đặt sân</label>
+            <div class="button-container">
+                <div class="button active btn-1" onclick="toggleButton(this)">Vãng lai</div>
+                <div class="button btn-2" onclick="toggleButton(this)">Cố định</div>
+            </div>
         </div>
     </div>
     <div class="row pb-3">
-        <div class="form-group col col-lg-6 col-md-12 col-sm-12">
-            <label class="form-label col-12">Bạn muốn đặt sân</label>
-            <div class="button-container">
-                <button class="button active btn-1" onclick="toggleButton(this)">Vãng lai</button>
-                <button class="button btn-2" onclick="toggleButton(this)">Cố định</button>
-            </div>
-        </div>
+        
         <div class="form-group col col-lg-6 col-md-12 col-sm-12 vanglai">
             <label class="form-label col-12">Chọn ngày sử dụng sân</label>
-            <input type="date" class="datetimepicker datetimepicker-ngaysudung" value="">
+            <input type="date" class="datetimepicker datetimepicker-ngaysudung" name="ngaySuDung" value="">
             <span id="ngaysudungError" class="text-danger col-12"></span>
         </div>
         <div class="row">
 
             <div class="form-group col col-lg-4 col-md-12 col-sm-12 codinh">
                 <label class="form-label col-12" style="padding-left: 4px;">Chọn ngày bắt đầu</label>
-                <input type="date" class="datetimepicker datetimepicker-ngaybatdau" value="">
+                <input type="date" class="datetimepicker datetimepicker-ngaybatdau" name="StartTime" value="">
                 <span id="ngaybatdauError" class="text-danger col-12"></span>
 
             </div>
@@ -123,7 +140,7 @@
             </div>
             <div class="form-group col col-lg-4 col-md-12 col-sm-12 codinh">
                 <label class="form-label col-12" style="padding-left: 4px;">Ngày kết thúc</label>
-                <input type="date" class="datetimepicker datetimepicker-ngayketthuc" value="" readonly>
+                <input type="date" class="datetimepicker datetimepicker-ngayketthuc" name="EndTime" value="" readonly>
                 <span id="ngayketthucError" class="text-danger col-12"></span>
             </div>
         </div>
@@ -136,14 +153,57 @@
             <div class="khungGioTrong">
               
             </div>
+            <span id="khungGioTrongError" class="text-danger col-12"></span>
         </div>
         <div class="row" style="padding-top: 20px;">
-            <div class="col-4 ">Giá: <input type="text" name="price" value="" class="form-control price" disabled/></div>
-            <div class="col-4 ">Tiền: <input type="text" name="money" value="" class="form-control money" disabled/></div>
+            <div class="col-md-4  col-sm-12">Giá:( ngàn VNĐ) <input type="text" name="price" value="" class="form-control price" disabled/></div>
+            <div class="col-md-4 col-sm-12 ">Tiền( ngàn VNĐ): <input type="text" name="money" value="" class="form-control money" disabled/></div>
         </div>
     </div>
 </div>
 <script>
+
+    // Hàm kiểm tra tên người đặt
+    function validateContactName() {
+        var contactName = document.getElementsByName("ContactName")[0].value.trim();
+
+        if (contactName === "") {
+            document.getElementById("contactNameError").innerText = "Vui lòng nhập tên người đặt";
+            return false;
+        } else {
+            document.getElementById("contactNameError").innerText = "";
+            return true;
+        }
+    }
+
+    // Hàm kiểm tra số điện thoại
+    function validatePhoneNumber() {
+        var phoneNumber = document.getElementsByName("PhoneNumber")[0].value.trim();
+
+        // Kiểm tra xem số điện thoại có hợp lệ không (bắt đầu bằng số 0 và có 10 chữ số)
+        var phoneRegex = /^0[0-9]{9}$/;
+
+        if (!phoneRegex.test(phoneNumber)) {
+            document.getElementById("phoneNumberError").innerText = "Số điện thoại không hợp lệ";
+            return false;
+        } else {
+            document.getElementById("phoneNumberError").innerText = "";
+            return true;
+        }
+    }
+
+    //Hàm kiểm tra khung giờ
+    function validateKhungGio() {
+        var selectedShiftID = $('.ShiftID').val();
+
+        if (!selectedShiftID) {
+            $('#khungGioTrongError').text('Vui lòng chọn một khung giờ.');
+            return false;
+        } else {
+            $('#khungGioTrongError').text('');
+            return true;
+        }
+    }
 
     // Hàm bật tắt sân vãng lai/cố định
     function toggleButton(button) {
@@ -172,6 +232,9 @@
             var cateId = $("#cateId").text();
             getEmptyShift(arenaId, cateId, startTime, endTime)
 
+            //
+            $('.isCoDinh').val(0);
+
         } else if (button.classList.contains('btn-2')) { // Cố định được chọn
             for (var k = 0; k < vanglaiFields.length; k++) {
                 vanglaiFields[k].style.display = 'none';
@@ -186,6 +249,13 @@
             var endTime = $('.datetimepicker-ngayketthuc').val();
             var cateId = $("#cateId").text();
             getEmptyShift(arenaId, cateId, startTime, endTime)
+
+            console.log(endTime);
+
+
+            // 
+            $('.isCoDinh').val(1);
+
         }
     }
 
@@ -260,6 +330,10 @@
 
     // Hàm xử lý khi chọn một khung giờ
     function selectItem(item) {
+
+        const shiftID = $(item).data("shiftid");
+        $('.ShiftID').val(shiftID);
+        
         $('.items-khung-gio').removeClass('selected-item');
         $(item).addClass('selected-item');
         const price = $(item).data("price");
@@ -313,6 +387,7 @@
 
     $(document).ready(function () {
 
+
         // Đổ ngày hiện tại vào datetimepicker
         GetNowDaySetDateTimePiker("datetimepicker-ngaysudung");
         GetNowDaySetDateTimePiker("datetimepicker-ngaybatdau");
@@ -326,6 +401,7 @@
             validateNgayBatDau();
         });
 
+       
         //Gọi hàm tính ngày kết thúc
         calculateEndDate();
 

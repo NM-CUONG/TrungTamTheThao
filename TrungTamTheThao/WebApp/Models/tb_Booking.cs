@@ -38,6 +38,12 @@ namespace WebApp.Models
         [StringLength(100)]
         public string ContactName { get; set; }
 
+        [NotMapped]
+        public DateTime ngaySuDung { get; set; }
+
+        [NotMapped]
+        public int isCoDinh { get; set; }
+
         public virtual tb_Arena tb_Arena { get; set; }
 
         public virtual tb_Shift tb_Shift { get; set; }

@@ -230,6 +230,7 @@
     <Content Include="Views\Home\Login.cshtml" />
     <Content Include="Views\Home\BookingBadminton.cshtml" />
     <Content Include="Views\Home\_BookingBadmintonPartial.cshtml" />
+    <Content Include="Views\Home\Payment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
