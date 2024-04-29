@@ -2290,6 +2290,7 @@
     <Content Include="Views\Home\Payment.cshtml" />
     <Content Include="Views\Home\HistoriesBooking.cshtml" />
     <Content Include="Views\Home\Account.cshtml" />
+    <Content Include="Views\Home\ChangePassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

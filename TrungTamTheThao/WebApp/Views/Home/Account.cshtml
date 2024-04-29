@@ -5,9 +5,6 @@
 }
 @model WebApp.Models.tb_User
 
-@Styles.Render("~/Content/css")
-@Scripts.Render("~/bundles/modernizr")
-
 <style>
     .container-account {
         width: 100%;
@@ -80,10 +77,10 @@ else
                                 <span id="addressError" class="text-danger"></span>
                             </div>
                             <div class="form-group row px-4 py-2">
-                                <button class="btn btn-outline-info">Thông tin email</button>
+                                <button type="button" class="btn btn-outline-info">Thông tin email</button>
                             </div>
                             <div class="form-group row px-4 py-2">
-                                <button class="btn btn-outline-primary">Thay đổi mật khẩu</button>
+                                <button type="button" onclick="redirectToChangePassword()" class="btn btn-outline-primary">Thay đổi mật khẩu</button>
                             </div>
 
                             <div class="form-group row px-4 py-4">
@@ -183,6 +180,11 @@ else
             "hideMethod": "fadeOut"
         }
         toastr["error"]("Đã có lỗi xảy ra trong quá trình sửa đổi thông tin!", "Thông báo")
+    }
+
+    function redirectToChangePassword() {
+        var userId = document.getElementById('@Html.IdFor(m => m.ID)').value;
+        window.location.href = "/Home/ChangePassword?Id=" + userId;
     }
 
 

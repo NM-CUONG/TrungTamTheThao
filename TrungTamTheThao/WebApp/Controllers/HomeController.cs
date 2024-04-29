@@ -351,6 +351,7 @@ namespace WebApp.Controllers
                 user.Phone = model.Phone;
                 user.Address = model.Address;
                 db.SaveChanges();
+                Session["UserInfor"] = user;
             }
             catch (Exception ex)
             {
@@ -359,6 +360,57 @@ namespace WebApp.Controllers
             }
 
             return Json( new {success = true, message = "Cập nhật thông tin thành công!" }, JsonRequestBehavior.AllowGet);
+        }
+
+        [Route("/Home/ChangePassword/")]
+        public ActionResult ChangePassword(long Id)
+        {
+            long? ID = Id as long?;
+            if (ID == null)
+            {
+                ViewBag.Error = "Có lỗi trong quá trình đổi mật khẩu!";
+                return View();
+            }
+            tb_User currentAccount = db.tb_User.Where(x => x.ID == ID).FirstOrDefault();
+            if (currentAccount == null)
+            {
+                ViewBag.Error = "Có lỗi trong quá trình dổi mật khẩu!";
+                return View();
+            }
+            return View(currentAccount);
+        }
+        [HttpPost]
+        public ActionResult ChangePassword(tb_User model)
+        {
+            if (model == null)
+            {
+                return Json(new { success = false, message = "Đổi mật khẩu không thành công, đã có lỗi xảy ra khi gửi dữ liệu đi!" });
+            }
+            tb_User Account = Session["UserInfor"] as tb_User;
+
+            if (Account == null)
+            {
+                return Json(new {success = false, message = "Đổi mật khẩu không thành công, đã có lỗi xảy ra!"});
+            }
+
+            try
+            {
+                tb_User currentAccount = db.tb_User.Where(x => x.ID == Account.ID).FirstOrDefault();
+                currentAccount.Password = PasswordManager.HashPassword(model.Password);
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return Json(new {success = false, message = "Không tìm thấy tài khoản!" + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { success = true, message = "Thay đổi mật khẩu thành công!"}, JsonRequestBehavior.AllowGet);
+
+        }
+
+        public ActionResult ChangeEmail()
+        {
+            return View();
         }
     }
 }
