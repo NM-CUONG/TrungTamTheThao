@@ -6,6 +6,13 @@
     <title>@ViewBag.Title - My ASP.NET Application</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+    <link href="~/Content/toastr.css" rel="stylesheet" />
+    <script src="~/Scripts/toastr.js"></script>
     <style>
         /* CSS để tùy chỉnh giao diện */
 
@@ -15,33 +22,42 @@
             bottom: 0;
             left: -200px; /* Ẩn sidebar ban đầu */
             width: 200px;
-            padding: 20px;
+            padding: 0px 20px;
             background-color: #f8f9fa;
             transition: left 0.5s;
-            padding-top: 80px;
+            padding-top: 50px;
         }
 
         #content {
-            margin-left:0;
+            margin-left: 0;
             transition: margin-left 0.5s;
+            margin-top: 60px;
         }
 
         .menu-toggle {
             cursor: pointer;
+            padding: 0px 6px;
+            border-radius: 50%;
         }
-        
+
+            .menu-toggle:hover {
+                background: #CCCCCC;
+            }
     </style>
+
 
 </head>
 <body>
 
-    <div class="container-fluid" style="padding: 0px">
+    <div class="container-fluid">
         <div class="sidebar" id="sidebar">
             <ul class="nav flex-column">
-                <li><a class="nav-link"  href="@Url.Action("Index","Home") ">Home</a></li>
-                <li><a class="nav-link"  href="@Url.Action("Regis","Home") ">Regis</a></li>
-                <li><a class="nav-link"  href="@Url.Action("Login","Home") ">Login</a></li>
-                <li><a class="nav-link"  href="@Url.Action("BookingBadminton","Home") ">Booking</a></li>
+                <li><a class="nav-link" href="@Url.Action("Index","Home") ">Trang chủ</a></li>
+                <li><a class="nav-link" href="@Url.Action("Regis","Home") ">Đăng ký</a></li>
+                <li><a class="nav-link" href="@Url.Action("Login","Home") ">Đăng nhập</a></li>
+                <li><a class="nav-link" href="@Url.Action("Account","Home") ">Tài khoản</a></li>
+                <li><a class="nav-link" href="@Url.Action("BookingBadminton","Home") ">Đặt phòng</a></li>
+                <li><a class="nav-link" href="@Url.Action("HistoriesBooking","Home") ">Lịch sử đặt phòng</a></li>
             </ul>
         </div>
 
@@ -51,8 +67,8 @@
         </div>
 
         <!-- Menu toggle -->
-        <div class="menu-toggle" style="position: fixed; top: 20px; left: 20px; font-size: 30px;">
-            <span onclick="toggleSidebar()">&#9776;</span>
+        <div class="menu-toggle" style="position: fixed; top: 5px; left: 20px; font-size: 25px;">
+            <div><i onclick="toggleSidebar()" class="bi bi-list"></i></div>
         </div>
     </div>
 
@@ -92,7 +108,7 @@
                 content.css("margin-left", "200px");
                 content.css("transition", "margin-left 0.5s");
                 localStorage.setItem("keepToggle", "open");
-                
+
             }
 
             //đóng menu
@@ -101,33 +117,9 @@
                 content.css("margin-left", "0px");
                 localStorage.setItem("keepToggle", "close");
             }
-            
+
         }
-        function handleSuccesss(data) {
-            if (data.success) {
-                window.location.href = '/Home/BookingBadminton';
-            } else {
-                // thông báo khi có lỗi đăng ký
-                toastr.options = {
-                    "closeButton": true,
-                    "debug": false,
-                    "newestOnTop": true,
-                    "progressBar": true,
-                    "positionClass": "toast-top-right",
-                    "preventDuplicates": false,
-                    "onclick": null,
-                    "showDuration": "300",
-                    "hideDuration": "1000",
-                    "timeOut": "5000",
-                    "extendedTimeOut": "1000",
-                    "showEasing": "swing",
-                    "hideEasing": "linear",
-                    "showMethod": "fadeIn",
-                    "hideMethod": "fadeOut"
-                }
-                toastr["error"](data.message, "Thông báo")
-            }
-        }
+        
     </script>
 
 </body>

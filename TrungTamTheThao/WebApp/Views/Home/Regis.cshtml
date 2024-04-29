@@ -4,10 +4,6 @@
     ViewBag.Title = "Đăng ký";
 }
 
-<head>
-    <link href="~/Content/toastr.css" rel="stylesheet" />
-</head>
-
 <style>
     .container-login {
         width: 100%;
@@ -91,10 +87,8 @@
     </div>
 </div>
 
-<script src="~/Scripts/jquery-3.4.1.js"></script>
-<script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
-<script src="~/Scripts/toastr.js"></script>
 <script>
+
     function handleSuccess(data) {
         if (data.success) {
             toastr.options = {
@@ -118,10 +112,9 @@
 
             setTimeout(function () {
                 window.location.href = '/Home/Login';
-            }, 5000); // Chuyển hướng sau 5 giây
+            }, 5000); 
             
         } else {
-            // thông báo khi có lỗi đăng ký
             toastr.options = {
                 "closeButton": true,
                 "debug": false,

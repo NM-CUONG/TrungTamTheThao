@@ -10,7 +10,8 @@ using System.Web.Routing;
 using System.Web.Services.Description;
 using WebApp.Models;
 using Newtonsoft.Json;
-
+using Microsoft.SqlServer.Server;
+using System.Data.Entity.Migrations;
 
 namespace WebApp.Controllers
 {
@@ -38,9 +39,9 @@ namespace WebApp.Controllers
 
         //Cấu hình email
         private static string EmailHost = "smtp.gmail.com";
-        private static string EmailPort= "587";
-        private static string EmailFrom= "nguyenmanhcuong2k2.hsbg@gmail.com";
-        private static string EmailFromPassword= "amyr nbnb akdc djgc";
+        private static string EmailPort = "587";
+        private static string EmailFrom = "nguyenmanhcuong2k2.hsbg@gmail.com";
+        private static string EmailFromPassword = "amyr nbnb akdc djgc";
 
         public ActionResult Index()
         {
@@ -50,12 +51,12 @@ namespace WebApp.Controllers
         //Check trùng UserName
         public bool CheckExistsUserName(string UserName)
         {
-            return db.tb_User.Any( x => x.UserName == UserName);
+            return db.tb_User.Any(x => x.UserName == UserName);
         }
         //Đăng ký
-        public ActionResult Regis() 
+        public ActionResult Regis()
         {
-            return View ();
+            return View();
         }
 
         [HttpPost]
@@ -65,11 +66,11 @@ namespace WebApp.Controllers
             //Check trùng username
             if (CheckExistsUserName(model.UserName))
             {
-                return Json(new { success = false, message = "Tên đăng nhập đã tồn tại"});
+                return Json(new { success = false, message = "Tên đăng nhập đã tồn tại" });
             }
             //Sinh userid tự động
             var lastItem = db.tb_User.OrderByDescending(x => x.ID).FirstOrDefault();
-            if (lastItem != null )
+            if (lastItem != null)
             {
                 model.UserID = "U" + lastItem.ID;
             }
@@ -83,7 +84,7 @@ namespace WebApp.Controllers
             db.tb_User.Add(model);
             db.SaveChanges();
 
-            if(!SendMail(model.Email, model.UserID))
+            if (!SendMail(model.Email, model.UserID))
             {
                 return Json(new { success = false, message = "Không thể gửi email xác nhận đăng ký" });
             }
@@ -155,7 +156,7 @@ namespace WebApp.Controllers
                 {
                     if (PasswordManager.VerifyPassword(model.Password, account.Password))
                     {
-                        Session["UserInfor"] = account; 
+                        Session["UserInfor"] = account;
                         return Json(new { success = true, });
                     }
                 }
@@ -163,11 +164,11 @@ namespace WebApp.Controllers
                 {
                     throw;
                 }
-                
+
             }
             else
             {
-                return Json(new { success = false, message= "Tên tài khoản không tồn tại"});
+                return Json(new { success = false, message = "Tên tài khoản không tồn tại" });
             }
             return Json(new { success = false, message = "Tài khoản hoặc mật khẩu không chính xác!" });
         }
@@ -196,7 +197,7 @@ namespace WebApp.Controllers
 
             listEmptyShift = listShift
             .Where(shift => !listBookedShift.Any(bookedShift => bookedShift.ShiftID == shift.ShiftID))
-            .Select(x => new tb_Shift{ ShiftID = x.ShiftID, ShiftName = x.ShiftName, Price = x.Price})
+            .Select(x => new tb_Shift { ShiftID = x.ShiftID, ShiftName = x.ShiftName, Price = x.Price })
             .ToList();
 
             return Json(new { listEmptyShift }, JsonRequestBehavior.AllowGet);
@@ -222,8 +223,9 @@ namespace WebApp.Controllers
 
             if (lastBooking != null)
             {
-                model.BookingID = "B" + (lastBooking.ID + 1) ;
-            } else
+                model.BookingID = "B" + (lastBooking.ID + 1);
+            }
+            else
             {
                 model.BookingID = "B0";
             }
@@ -241,12 +243,122 @@ namespace WebApp.Controllers
             }
 
             model.Status = 0;
-            return Json(new { model }, JsonRequestBehavior.AllowGet);
+
+            // lưu vào csdl
+
+            try
+            {
+                db.tb_Booking.Add(model);
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Đặt sân không thành công!, Có lỗi: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }
+
 
         public ActionResult Payment()
         {
+
             return View();
+        }
+
+        // Hàm xem lịch sử booking
+        public ActionResult HistoriesBooking()
+        {
+            tb_User Account = Session["UserInfor"] as tb_User;
+
+            if (Account == null)
+            {
+                ViewBag.Error = "Xảy ra lỗi trong quá trình truy vấn!";
+                return View();
+            }
+
+            try
+            {
+                List<tb_Booking> historiesBooking = db.tb_Booking.Where(x => x.UserID == Account.UserID).ToList();
+                ViewBag.historiesBooking = historiesBooking;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Xảy ra lỗi trong quá trình truy vấn!" + ex.Message;
+                return View();
+            }
+
+            return View();
+        }
+
+        public ActionResult CanCelBooking(string BookingID)
+        {
+
+            if (BookingID == null)
+            {
+                ViewBag.Error = "Đã có lỗi xảy ra trong quá trình truy vấn";
+                return View("HistoriesBooking");
+            }
+
+            db.tb_Booking.Where(x => x.ID.ToString() == BookingID).FirstOrDefault().Status = 2;
+            db.SaveChanges();
+
+            tb_User Account = Session["UserInfor"] as tb_User;
+
+            if (Account == null)
+            {
+                ViewBag.Error = "Xảy ra lỗi trong quá trình truy vấn!";
+                return View();
+            }
+
+            try
+            {
+                List<tb_Booking> historiesBooking = db.tb_Booking.Where(x => x.UserID == Account.UserID).ToList();
+                ViewBag.historiesBooking = historiesBooking;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Xảy ra lỗi trong quá trình truy vấn!" + ex.Message;
+                return View();
+            }
+
+            return View("HistoriesBooking");
+        }
+
+        public ActionResult Account()
+        {
+            tb_User Account = Session["UserInfor"] as tb_User;
+            if (Account == null)
+            {
+                ViewBag.Error = "Không thể truy vấn thông tin tài khoản!";
+                return View();
+            }
+
+            return View(Account);
+
+        }
+        [HttpPost]
+        public JsonResult Account(tb_User model)
+        {
+            try
+            {
+                var user = db.tb_User.Where(x => x.ID == model.ID).FirstOrDefault();
+                if (user == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy tài khoản trong CSDL!" });
+                }
+                user.FullName = model.FullName;
+                user.Phone = model.Phone;
+                user.Address = model.Address;
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Có lỗi: " + ex.Message });
+
+            }
+
+            return Json( new {success = true, message = "Cập nhật thông tin thành công!" }, JsonRequestBehavior.AllowGet);
         }
     }
 }

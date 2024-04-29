@@ -1,7 +1,8 @@
-namespace WebApp.Models
+﻿namespace WebApp.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
@@ -23,22 +24,34 @@ namespace WebApp.Models
 
         [Required]
         [StringLength(100)]
+        [DisplayName("Tên tài khoản")]
+
         public string UserName { get; set; }
 
         [Required]
         [StringLength(100)]
+        [DisplayName("Mật khẩu")]
+
         public string Password { get; set; }
 
         [StringLength(255)]
+        [DisplayName("Họ và tên")]
+
         public string FullName { get; set; }
 
         [StringLength(255)]
+        [DisplayName("Email")]
+
         public string Email { get; set; }
 
         [StringLength(20)]
+        [DisplayName("Số điện thoại")]
+
         public string Phone { get; set; }
 
         [StringLength(255)]
+        [DisplayName("Địa chỉ")]
+
         public string Address { get; set; }
 
         public int? Status { get; set; }

@@ -87,8 +87,29 @@
 <script>
 
     // Hàm được gọi đến khi ajax thành công
-    function handleSuccess() {
-        window.location.href = '/Home/Payment';
+    function handleSuccess(data) {
+        if (!data.success) {
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr["error"](data.message, "Thông báo");
+        } else {
+            window.location.href = '/Home/Payment';
+        }
     }
 
     // Hàm được gọi đến khi ajax không thành công
@@ -123,7 +144,6 @@
             success: function (data) {
                 $('#myModal .modal-body').html(data);
                 $('#myModal').modal('show');
-
             },
             error: function () {
 
@@ -134,8 +154,6 @@
     // Kiểm tra hợp lệ dữ liệu nhập trước khi submit
     $(document).ready(function () {
         $('button[type="submit"]').click(function (event) {
-            debugger
-
             if (!validateContactName() ||
                 !validatePhoneNumber() ||
                 !validateKhungGio() ||

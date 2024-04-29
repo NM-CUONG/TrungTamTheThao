@@ -1,0 +1,186 @@
+﻿@using WebApp.Models;
+
+@{
+    ViewBag.Title = "HistoriesBooking";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<tb_Booking> historiesBooking = ViewBag.historiesBooking as List<tb_Booking>;
+}
+
+
+<style>
+    .confirmation-dialog {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+    }
+
+    .confirmation-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+    }
+
+    .buttons {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .confirm-btn,
+    .cancel-btn {
+        min-width: 80px;
+        margin: 0 10px;
+        cursor: pointer;
+    }
+</style>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+else
+{
+    <div class="">
+        <table class="table">
+            <thead>
+                <tr class="table-info">
+                    <th>STT</th>
+                    <th>Tên phòng</th>
+                    <th>Ngày bắt đầu</th>
+                    <th>Ngày kết thúc</th>
+                    <th>Ca sử dụng</th>
+                    <th>Thanh toán</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int STT = 1;
+                    foreach (var item in historiesBooking)
+                    {
+                        var trangThai = "";
+                        Decimal? tien = new decimal();
+                        var soThang = ((item.EndTime.Year - item.StartTime.Year) * 12) + item.EndTime.Month - item.StartTime.Month;
+                        if (soThang == 0)
+                        {
+                            tien = item.tb_Shift.Price;
+                        }
+                        else if (soThang >= 3)
+                        {
+                            tien = item.tb_Shift.Price * soThang * 80 / 100;
+                        }
+
+                        if (item.Status == 0)
+                        {
+                            trangThai = "Chờ xác nhận";
+                        }
+                        else if (item.Status == 1)
+                        {
+                            trangThai = "Đã xác nhận";
+                        }
+                        else if (item.Status == 2)
+                        {
+                            trangThai = "Đã hủy";
+                        }
+
+                        if (item.Status == 0)
+                        {
+                            <tr class="table-warning">
+                                <td>@STT</td>
+                                <td>@item.tb_Arena.ArenaName</td>
+                                <td>@item.StartTime</td>
+                                <td>@item.EndTime</td>
+                                <td>@item.tb_Shift.ShiftName</td>
+                                <td>@tien</td>
+                                <td>@trangThai</td>
+                                <td><div class="btn btn-outline-danger" data-id="@item.ID" onclick="openConfirmationDialog(this)"><i class="bi bi-x-square-fill"> </i>Hủy</div></td>
+                            </tr>
+                        }
+                        else if (item.Status == 1)
+                        {
+                            <tr class="table-success">
+                                <td>@STT</td>
+                                <td>@item.tb_Arena.ArenaName</td>
+                                <td>@item.StartTime</td>
+                                <td>@item.EndTime</td>
+                                <td>@item.tb_Shift.ShiftName</td>
+                                <td>@tien</td>
+                                <td>@trangThai</td>
+                                <td></td>
+                            </tr>
+                        }
+                        else if (item.Status == 2)
+                        {
+                            <tr class="table-danger">
+                                <td>@STT</td>
+                                <td>@item.tb_Arena.ArenaName</td>
+                                <td>@item.StartTime</td>
+                                <td>@item.EndTime</td>
+                                <td>@item.tb_Shift.ShiftName</td>
+                                <td>@tien</td>
+                                <td>@trangThai</td>
+                                <td></td>
+                            </tr>
+                        }
+
+                        STT++;
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="confirmationDialog" class="confirmation-dialog">
+        <div class="confirmation-content">
+            <h5 class="">Bạn có chắc chắn muốn hủy?</h5>
+            @using (Html.BeginForm("CanCelBooking", "Home"))
+            {
+                <div style="display: none;"><input type="text" id="BookingID" name="BookingID" value="" /></div>
+                <div class="buttons">
+                    <button id="confirmBtn" type="submit" class="confirm-btn btn btn-primary"><i class="bi bi-check-circle-fill"></i> Có</button>
+                    <button id="cancelBtn" type="reset" class="cancel-btn btn btn-danger"><i class="bi bi-x-circle-fill"></i> Không</button>
+                </div>
+            }
+
+        </div>
+    </div>
+
+}
+
+
+<script>
+
+    function openConfirmationDialog(button) {
+        document.getElementById('confirmationDialog').style.display = 'block';
+        var dataId = button.getAttribute('data-id');
+        $('#BookingID').val(dataId);
+    }
+
+    function closeConfirmationDialog() {
+        document.getElementById('confirmationDialog').style.display = 'none';
+    }
+
+    function handleCancel() {
+        closeConfirmationDialog();
+    }
+
+    function handleConfirm() {
+        closeConfirmationDialog();
+    }
+
+    document.getElementById('cancelBtn').addEventListener('click', handleCancel);
+    document.getElementById('confirmBtn').addEventListener('click', handleConfirm);
+
+</script>
+
+
