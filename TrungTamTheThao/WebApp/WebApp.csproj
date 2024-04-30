@@ -2291,6 +2291,8 @@
     <Content Include="Views\Home\HistoriesBooking.cshtml" />
     <Content Include="Views\Home\Account.cshtml" />
     <Content Include="Views\Home\ChangePassword.cshtml" />
+    <Content Include="Views\Home\ChangeEmail.cshtml" />
+    <Content Include="Views\Home\ConfirmEmailChange.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

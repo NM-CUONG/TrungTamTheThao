@@ -359,7 +359,7 @@ namespace WebApp.Controllers
 
             }
 
-            return Json( new {success = true, message = "Cập nhật thông tin thành công!" }, JsonRequestBehavior.AllowGet);
+            return Json(new { success = true, message = "Cập nhật thông tin thành công!" }, JsonRequestBehavior.AllowGet);
         }
 
         [Route("/Home/ChangePassword/")]
@@ -390,7 +390,7 @@ namespace WebApp.Controllers
 
             if (Account == null)
             {
-                return Json(new {success = false, message = "Đổi mật khẩu không thành công, đã có lỗi xảy ra!"});
+                return Json(new { success = false, message = "Đổi mật khẩu không thành công, đã có lỗi xảy ra!" });
             }
 
             try
@@ -401,15 +401,85 @@ namespace WebApp.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new {success = false, message = "Không tìm thấy tài khoản!" + ex.Message }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = "Không tìm thấy tài khoản!" + ex.Message }, JsonRequestBehavior.AllowGet);
             }
 
-            return Json(new { success = true, message = "Thay đổi mật khẩu thành công!"}, JsonRequestBehavior.AllowGet);
+            return Json(new { success = true, message = "Thay đổi mật khẩu thành công!" }, JsonRequestBehavior.AllowGet);
 
         }
 
+        [HttpGet]
         public ActionResult ChangeEmail()
         {
+            tb_User Account = Session["UserInfor"] as tb_User;
+
+            if (Account == null)
+            {
+                ViewBag.Error = "Không tìm thấy thông tin tài khoản!";
+                return View();
+            }
+            return View(Account);
+        }
+
+        [HttpPost]
+        public ActionResult ChangeEmail(FormCollection form)
+        {
+
+            string newEmail = form["newEmail"];
+
+            if (string.IsNullOrEmpty(newEmail))
+            {
+                return Json(new { success = false, message = "Có lỗi xảy ra trong quá trình thay đổi mail!" }, JsonRequestBehavior.AllowGet);
+            }
+            tb_User Account = Session["UserInfor"] as tb_User;
+
+            if (Account == null)
+            {
+                return Json(new { success = false, message = "Có lỗi xảy ra trong quá trình thay đổi mail!" }, JsonRequestBehavior.AllowGet);
+
+            }
+            try
+            {
+                using (MailMessage mm = new MailMessage(EmailFrom, Account.Email))
+                {
+                    //Tiêu đề mail
+                    mm.Subject = "Xác nhận thay đổi email";
+                    //Nội dung mail - gửi kèm link xác nhận có userid để nhận diện khi confirm
+                    mm.Body = $"Để xác nhận thay đổi email vui lòng nhấp vào link sau <a href=\"https://localhost:44315/Home/ConfirmEmailChange/?userid={Account.ID}&newEmail={newEmail}\">Xác nhận thay đổi email</a>";
+                    mm.IsBodyHtml = true;
+                    using (SmtpClient smtp = new SmtpClient())
+                    {
+                        smtp.Host = EmailHost;
+                        smtp.EnableSsl = true;
+
+                        //tài khoản đăng kí sử dụng smtp
+                        NetworkCredential cred = new NetworkCredential(EmailFrom, EmailFromPassword);
+                        smtp.UseDefaultCredentials = true;
+                        smtp.Credentials = cred;
+                        smtp.Port = 587;
+                        smtp.Send(mm);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Đã có lỗi xảy ra trong quá trình thay đổi email!" + ex.Message });
+
+            }
+
+            return Json(new { success = true, message = "Vui lòng kiểm tra email xác nhận để hoàn tất thay đổi Email!" });
+
+        }
+
+        public ActionResult ConfirmEmailChange(string userid, string newEmail)
+        {
+            var account = db.tb_User.Where(x => x.ID.ToString() == userid).FirstOrDefault();
+            if (account != null)
+            {
+                account.Email = newEmail;
+                db.SaveChanges();
+                Session["UserInfor"] = account;
+            }
             return View();
         }
     }

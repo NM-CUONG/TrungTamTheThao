@@ -1,0 +1,24 @@
+﻿
+@{
+    ViewBag.Title = "ConfirmEmailChange";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .back {
+        position: fixed;
+        top: 20px; /* điều chỉnh khoảng cách từ trên xuống */
+        right: 20px; /* điều chỉnh khoảng cách từ phải sang trái */
+        z-index: 9999; /* đảm bảo nút này luôn hiển thị phía trên các phần tử khác */
+        background-color: #FF5733;
+        color: white;
+        border: 1px solid #FF5733;
+        padding: 10px 20px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+</style>
+
+<a class="back" href="/Home/Account"> <span class="bi bi-arrow-return-left"> </span>Quay lại</a>
+<div class="alert alert-success">Cập nhật email thành công</div>
+

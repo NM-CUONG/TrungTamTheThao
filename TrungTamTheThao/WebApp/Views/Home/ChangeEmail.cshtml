@@ -1,12 +1,13 @@
 ﻿
 @{
-    ViewBag.Title = "Account";
+    ViewBag.Title = "ChangeEmail";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 @model WebApp.Models.tb_User
 
 <style>
-    .container-account {
+    .container-login {
         width: 100%;
         height: 100vh;
         background-image: url('/Uploads/regis_loginImage.jpg');
@@ -37,8 +38,31 @@
         color: black;
         text-shadow: 0 0 10px revert-layer;
     }
+
+    label {
+        padding-left: 0px !important;
+    }
+
+    .back {
+        position: fixed;
+        top: 20px; /* điều chỉnh khoảng cách từ trên xuống */
+        right: 20px; /* điều chỉnh khoảng cách từ phải sang trái */
+        z-index: 9999; /* đảm bảo nút này luôn hiển thị phía trên các phần tử khác */
+        background-color: #FF5733;
+        color: white;
+        border: 1px solid #FF5733;
+        padding: 10px 20px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+        .back:hover {
+            background-color: white;
+            color: #FF5733; /* chữ màu cam nổi bật khi di chuột vào */
+        }
 </style>
 
+<a class="back" href="/Home/Account"> <span class="bi bi-arrow-return-left"> </span>Quay lại</a>
 
 @if (ViewBag.Error != null)
 {
@@ -46,45 +70,34 @@
 }
 else
 {
-    <div class="container-account">
+    <div class="container-login">
         <div class="d-flex justify-content-center align-items-center" style="height: 100%; transform: translateY(-10%) ">
-            <div class="col-md-5">
+            <div class="col-md-4">
                 <div class="card" style="background-color: rgba(255, 255, 255, 1);">
-                    <div class="card-header text-center fs-3 fw-bold text-uppercase">Thông tin tài khoản</div>
+                    <div class="card-header text-center fs-3 fw-bold text-uppercase">Thông tin email</div>
                     <div class="card-body">
-                        @using (Ajax.BeginForm("Account", "Home", new AjaxOptions()
+                        @using (Ajax.BeginForm("ChangeEmail", "Home", new AjaxOptions()
                         {
                             HttpMethod = "POST",
-                            OnSuccess = "handleSuccess",
-                            OnFailure = "handleFailure",
+                            OnSuccess = "changeEmailSuccess",
+                            OnFailure = "changeEmailFailure",
                         }))
                         {
-                            @Html.HiddenFor(m => m.ID)
+                            @Html.AntiForgeryToken()
 
                             <div class="form-group row px-4 py-2">
-                                @Html.LabelFor(m => m.FullName, new { @class = "row label" })
-                                @Html.TextBoxFor(m => m.FullName, new { @class = "form-control textbox" })
-                                <span id="fullNameError" class="text-danger"></span>
+                                <label class="col-12">Email hiện tại</label>
+                                @Html.TextBoxFor(m => m.Email, new { @class = "form-control textbox", disabled = "disabled" })
                             </div>
+
                             <div class="form-group row px-4 py-2">
-                                @Html.LabelFor(m => m.Phone, new { @class = "row label" })
-                                @Html.TextBoxFor(m => m.Phone, new { @class = "form-control textbox" })
-                                <span id="phoneError" class="text-danger"></span>
-                            </div>
-                            <div class="form-group row px-4 py-2">
-                                @Html.LabelFor(m => m.Address, new { @class = "row label" })
-                                @Html.TextBoxFor(m => m.Address, new { @class = "form-control textbox" })
-                                <span id="addressError" class="text-danger"></span>
-                            </div>
-                            <div class="form-group row px-4 py-2">
-                                <button type="button" onclick="redirectToChangeEmail()" class="btn btn-outline-info">Thông tin email</button>
-                            </div>
-                            <div class="form-group row px-4 py-2">
-                                <button type="button" onclick="redirectToChangePassword()" class="btn btn-outline-primary">Thay đổi mật khẩu</button>
+                                <label class="col-12">Email mới<span class="text-danger"> *</span> </label>
+                                <input type="email" name="newEmail" id="newEmail" value="" class="form-control" required />
+                                <span id="newEmailError" class="text-danger"></span>
                             </div>
 
                             <div class="form-group row px-4 py-4">
-                                <button type="submit" class="btn btn-outline-secondary btn-block">Lưu thay đổi</button>
+                                <button id="btn-submit" type="submit" class="btn btn-outline-secondary btn-block">Lưu</button>
                             </div>
                         }
                     </div>
@@ -94,33 +107,11 @@ else
     </div>
 }
 
-
-
 <script>
 
-    // Hàm kiểm tra số điện thoại
-    function validatePhone() {
-        var phoneInput = document.getElementById('Phone');
-        var phoneError = document.getElementById('phoneError');
-        var phonePattern = /^0\d{9}$/;
-
-        if (!phonePattern.test(phoneInput.value)) {
-            phoneError.textContent = "Số điện thoại không hợp lệ";
-            return false;
-        } else {
-            phoneError.textContent = "";
-            return true;
-        }
-    }
-
-    $('button[type="submit"]').click(function (event) {
-        if (!validatePhone()) {
-            event.preventDefault();
-        }
-    });
-
-    function handleSuccess(response) {
-        if (response.success == true) {
+    function changeEmailSuccess(data) {
+        debugger
+        if (!data.success) {
             toastr.options = {
                 "closeButton": true,
                 "debug": false,
@@ -138,7 +129,7 @@ else
                 "showMethod": "fadeIn",
                 "hideMethod": "fadeOut"
             }
-            toastr["success"](response.message, "Thông báo")
+            toastr["error"](data.message, "Thông báo");
         } else {
             toastr.options = {
                 "closeButton": true,
@@ -157,11 +148,12 @@ else
                 "showMethod": "fadeIn",
                 "hideMethod": "fadeOut"
             }
-            toastr["error"](response.message, "Thông báo")
+            toastr["success"](data.message, "Thông báo")
         }
     }
 
-    function handleFailure() {
+    function changeEmailFailure() {
+        debugger
         toastr.options = {
             "closeButton": true,
             "debug": false,
@@ -179,17 +171,38 @@ else
             "showMethod": "fadeIn",
             "hideMethod": "fadeOut"
         }
-        toastr["error"]("Đã có lỗi xảy ra trong quá trình sửa đổi thông tin!", "Thông báo")
+        toastr["error"]("Đã có lỗi xảy ra!", "Thông báo")
+
     }
 
-    function redirectToChangePassword() {
-        var userId = document.getElementById('@Html.IdFor(m => m.ID)').value;
-        window.location.href = "/Home/ChangePassword?Id=" + userId;
+    function validateEmail() {
+        var email = document.getElementById('newEmail').value;
+        var emailError = document.getElementById('newEmailError');
+        @{
+            string emailRegexPattern = @"/^[^\s@]+@[^\s@]+\.[^\s@]+$/";
+        }
+        var emailRegexPattern = @emailRegexPattern;
+
+        if (email.trim() === '') {
+            emailError.textContent = 'Email không được để trống.';
+            return false;
+        } else if (!emailRegexPattern.test(email)) {
+            emailError.textContent = 'Email không hợp lệ.';
+            return false;
+        } else {
+            emailError.textContent = '';
+            return true;
+        }
     }
 
-    function redirectToChangeEmail() {
-        window.location.href = "/Home/ChangeEmail";
-    }
 
+    $('button[type="submit"]').click(function (event) {
+        if (!validateEmail()) {
+            event.preventDefault();
+        }
+    });
 
 </script>
+
+
+
