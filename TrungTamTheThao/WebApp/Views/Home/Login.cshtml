@@ -46,6 +46,7 @@
 
         .forgotPassword:hover {
             font-weight: bold;
+            cursor: pointer;
         }
 </style>
 
@@ -81,7 +82,7 @@
                             <button type="submit" class="btn btn-outline-secondary btn-block">Đăng nhập</button>
                         </div>
                         <div>
-                            <a class="forgotPassword" href="/Home/ForgotPassword">Quên mật khẩu</a>
+                            <a class="forgotPassword" onclick="redirectToForgotPassword(event)">Quên mật khẩu</a>
                         </div>
                     }
                 </div>
@@ -91,8 +92,9 @@
 </div>
 <script>
 
+
+
     function loginSuccess(data) {
-        debugger
         if (data.success) {
             window.location.href = '/Home/BookingBadminton';
         } else {
@@ -139,6 +141,35 @@
 
     }
 
+    function redirectToForgotPassword(event) {
+        const username = document.getElementById('UserName').value.trim();
+        if (!username) {
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr["error"]("Vui lòng nhập tên tài khoản!", "Thông báo");
+            event.preventDefault();
+        } else {
+            debugger
+            url = "/Home/ForgotPassword/?username=" + username;
+            window.location.href = url;
+        }
+    }
+
     $(document).ready(function () {
         isValid = true;
         // Validation for UserName
@@ -146,7 +177,7 @@
             var userName = $(this).val().trim();
             var $userNameError = $('#userNameError');
             if (userName === "") {
-                $userNameError.text("Vui lòng nhập tên đăng nhập.");
+                $userNameError.text("Vui lòng nhập tên tài khoản.");
                 isValid = false;
             } else {
                 $userNameError.text("");

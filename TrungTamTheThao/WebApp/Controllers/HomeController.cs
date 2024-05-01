@@ -78,6 +78,7 @@ namespace WebApp.Controllers
             {
                 model.UserID = "U00";
             }
+            model.Status = 0;
             // Mã hóa mật khẩu trước khi lưu
             model.Password = PasswordManager.HashPassword(model.Password);
             //Lưu
@@ -156,13 +157,17 @@ namespace WebApp.Controllers
                 {
                     if (PasswordManager.VerifyPassword(model.Password, account.Password))
                     {
+                        if (account.Status == 0)
+                        {
+                            return Json(new { success = false, message = "Tài khoản chưa được kích hoạt, vui lòng kiểm tra email!" });
+                        }
                         Session["UserInfor"] = account;
                         return Json(new { success = true, });
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    throw;
+                    return Json(new { success = false, message = "Đăng nhập không thành công!" + ex.Message });
                 }
 
             }
@@ -610,15 +615,21 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        public ActionResult getCapTra(tb_User model)
+        public ActionResult getCapTra(string UserID)
         {
-            tb_User account = db.tb_User.Where(x => x.UserID == model.UserID).FirstOrDefault();
-            if (account == null)
+            if (string.IsNullOrEmpty(UserID))
             {
                 return Json(new { success = false, message = "Không tìm thấy thông tin tài khoản!" }, JsonRequestBehavior.AllowGet);
+
+            }
+            tb_User account = db.tb_User.Where(x => x.UserID == UserID).FirstOrDefault();
+            if (account == null)
+            {
+                return Json(new { success = false, message = "Đã xảy ra lỗi!" }, JsonRequestBehavior.AllowGet);
             }
             try
             {
+               
                 using (MailMessage mm = new MailMessage(EmailFrom, account.Email))
                 {
                     //Tiêu đề mail
@@ -626,6 +637,7 @@ namespace WebApp.Controllers
                     //Nội dung mail - gửi kèm link xác nhận có userid để nhận diện khi confirm
                     Random random = new Random();
                     var captra = random.Next(1000, 10000);
+                    Session["captra"] = captra;
                     mm.Body = $"Mã captra của bạn là: " + captra;
                     mm.IsBodyHtml = true;
                     using (SmtpClient smtp = new SmtpClient())
@@ -641,7 +653,6 @@ namespace WebApp.Controllers
                         smtp.Send(mm);
                     }
 
-                    Session["captra"] = captra;
                 }
             }
             catch (Exception ex)
@@ -651,9 +662,9 @@ namespace WebApp.Controllers
             return Json(new { success = true, message = "Vui lòng kiểm tra email để lấy mã xác nhận!" }, JsonRequestBehavior.AllowGet);
         }
 
-        [HttpGet]
-        public ActionResult ForgotPassword(tb_User model)
+        public ActionResult ForgotPassword(string username)
         {
+            var model = db.tb_User.Where(x => x.UserName == username).FirstOrDefault();
             if (model == null)
             {
                 ViewBag.Error = "Không tìm thấy thông tin tài khoản!";
@@ -668,17 +679,18 @@ namespace WebApp.Controllers
             string userID = form["UserID"];
             string passWord = form["Password"];
             string ct = form["captra"];
-            string captra = Session["captra"] as string;
+            
 
             if (string.IsNullOrEmpty(userID) || 
-                string.IsNullOrEmpty(passWord) || 
-                string.IsNullOrEmpty(captra) || 
+                string.IsNullOrEmpty(passWord) ||
+                Session["captra"] == null || 
                 string.IsNullOrEmpty(ct))
             {
                 return Json(new { success = false, message = "Quên mật khẩu không thành công, đã có lỗi xảy ra!" }, JsonRequestBehavior.AllowGet);
             }
 
-            if (captra != ct)
+            var captra = (int)Session["captra"];
+            if (captra.ToString() != ct)
             {
                 return Json(new { success = false, message = "Mã xác nhận không đúng!" }, JsonRequestBehavior.AllowGet);
             }

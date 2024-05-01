@@ -1,20 +1,10 @@
-﻿
-@{
-    Layout = null;
+﻿@{
+    ViewBag.Title = "Xác nhận ti khoản";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!DOCTYPE html>
-
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Xác nhận đăng ký tài khoản</title>
-</head>
-<body>
-    <div>
-        <div class="alert alert-success" role="alert">
-            Xác nhận đăng ký tài khoản thành công <a href="@Url.Action("Login", "Home")" class="alert-link">Đăng nhập</a>
-        </div>
+<div>
+    <div class="alert alert-success" role="alert">
+        Tài khoản của bạn đã được kích hoạt <a href="@Url.Action("Login", "Home")" class="alert-link">Đăng nhập</a>
     </div>
-</body>
-</html>
+</div>

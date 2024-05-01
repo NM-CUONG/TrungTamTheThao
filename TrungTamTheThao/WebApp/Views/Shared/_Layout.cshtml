@@ -56,10 +56,22 @@
                 <li><a class="nav-link" href="@Url.Action("Regis","Home") ">Đăng ký</a></li>
                 <li><a class="nav-link" href="@Url.Action("Login","Home") ">Đăng nhập</a></li>
                 <li><a class="nav-link" href="@Url.Action("Account","Home") ">Tài khoản</a></li>
-                <li><a class="nav-link" href="@Url.Action("BookingBadminton","Home") ">Đặt sân cầu lông</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        Đặt phòng
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="@Url.Action("BookingBadminton","Home")">Đặt sân cầu lông</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("BookingFootball","Home")">Đặt sân bóng</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("BookingGym","Home")">Đặt phòng gym</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("BookingSwimming","Home")">Đặt bể bơi</a></li>
+                    </ul>
+                </li>
+               
+                @*<li><a class="nav-link" href="@Url.Action("BookingBadminton","Home") ">Đặt sân cầu lông</a></li>
                 <li><a class="nav-link" href="@Url.Action("BookingFootball","Home") ">Đặt sân bóng</a></li>
                 <li><a class="nav-link" href="@Url.Action("BookingGym","Home") ">Đặt phòng gym</a></li>
-                <li><a class="nav-link" href="@Url.Action("BookingSwimming","Home") ">Đặt bể bơi</a></li>
+                <li><a class="nav-link" href="@Url.Action("BookingSwimming","Home") ">Đặt bể bơi</a></li>*@
                 <li><a class="nav-link" href="@Url.Action("HistoriesBooking","Home") ">Lịch sử đặt phòng</a></li>
             </ul>
         </div>
@@ -123,6 +135,24 @@
 
         }
         
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var dropdownToggle = document.querySelectorAll('.dropdown-toggle');
+
+            dropdownToggle.forEach(function (toggle) {
+                toggle.addEventListener('click', function () {
+                    var dropdownMenu = this.nextElementSibling;
+
+                    if (dropdownMenu.style.display === 'block') {
+                        dropdownMenu.style.display = 'none';
+                    } else {
+                        dropdownMenu.style.display = 'block';
+                    }
+                });
+            });
+        });
     </script>
 
 </body>
