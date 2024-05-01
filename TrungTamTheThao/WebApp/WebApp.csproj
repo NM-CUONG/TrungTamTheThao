@@ -2297,6 +2297,9 @@
     <Content Include="Views\Home\_BookingFootballPartial.cshtml" />
     <Content Include="Views\Home\BookingGym.cshtml" />
     <Content Include="Views\Home\_BookingGymPartial.cshtml" />
+    <Content Include="Views\Home\BookingSwimming.cshtml" />
+    <Content Include="Views\Home\_BookingSwimmingPartial.cshtml" />
+    <Content Include="Views\Home\ForgotPassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

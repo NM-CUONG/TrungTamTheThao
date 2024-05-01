@@ -1,0 +1,496 @@
+﻿
+
+
+@model WebApp.Models.tb_Arena
+@{
+    WebApp.Models.tb_Shift khungGioSwimming = ViewBag.khungGioSwimming;
+}
+
+<style>
+    .col {
+        margin-bottom: 15px !important;
+    }
+
+    .button-container {
+        display: flex;
+    }
+
+    .button {
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        margin-bottom: 10px;
+        background-color: #e9ecef;
+    }
+
+    .active {
+        background-color: dodgerblue;
+        color: white;
+    }
+
+    .btn-1 {
+        border-radius: 20px 0px 0px 20px;
+    }
+
+    .btn-2 {
+        border-radius: 0px 20px 20px 0px;
+    }
+
+    .datetimepicker {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 50px;
+        font-size: 16px;
+        cursor: pointer;
+        padding: 10px 15px;
+    }
+
+    .datetimepicker-ngayketthuc {
+        background-color: #e9ecef;
+    }
+
+    .select-SoThang {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 50px;
+        font-size: 16px;
+        cursor: pointer;
+        padding: 10px 15px;
+        width: 80%;
+    }
+
+    .codinh {
+        display: none;
+    }
+
+    .items-khung-gio {
+        margin: 2px;
+        border: none;
+    }
+
+    .selected-item {
+        background-color: dodgerblue;
+        color: white;
+    }
+
+    .price, .money {
+        color: red;
+        font-size: 16px;
+        font-weight: bold;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="card mb-3 p-0">
+            <div class="row g-0">
+                <div class="col-md-4" style="overflow: hidden; ">
+                    <img src="~/Uploads/background-dung-cu-the-thao.jpg" class="img-fluid rounded-start" alt="Ảnh bể bơi">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <p id="arenaId" style="display: none">@Model.ArenaID</p>
+                        <input type="text" name="ArenaID" value="@Model.ArenaID" style="display: none;" />
+                        <h5 class="card-title">@Model.ArenaName</h5>
+                        <div class="card-text">Loại bể: @Model.tb_Size.SizeName</div>
+                        <div class="card-text">Sức chứa: @Model.MaxPersons người</div>
+                        <div class="card-text"><small class="text-body-secondary">Mô tả: @Model.Description</small></div>
+                        <input type="text" class="isCoDinh" name="isCoDinh" value="0" style="display: none;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row pb-3">
+        <div class="form-group col col-lg-6 col-md-12 col-sm-12">
+            <label class="form-label col-12">Tên người đặt <span class="text-danger">*</span></label>
+            <input type="text" name="ContactName" value="" class="form-control " required />
+            <span id="contactNameError" class="text-danger"></span>
+        </div>
+        <div class="form-group col col-lg-6 col-md-12 col-sm-12">
+            <label class="form-label col-12">Số điện thoại <span class="text-danger">*</span></label>
+            <input type="text" name="PhoneNumber" class="form-control" value="" required />
+            <span id="phoneNumberError" class="text-danger"></span>
+        </div>
+        <div class="form-group col-lg-6 col-md-6 col-sm-12 ">
+            <label class="form-label col-12">Ghi chú</label>
+            <textarea type="text" name="Note" value="" class="form-control" rows="2" />
+        </div>
+        <div class="form-group col-lg-6 col-md-12 col-sm-12">
+            <label class="form-label col-12">Bạn muốn đặt bể bơi</label>
+            <div class="button-container">
+                <div class="button active btn-1" onclick="toggleButton(this)">Vãng lai</div>
+                <div class="button btn-2" onclick="toggleButton(this)">Cố định</div>
+            </div>
+        </div>
+    </div>
+    <div class="row pb-3">
+
+        <div class="form-group col col-lg-6 col-md-12 col-sm-12 vanglai">
+            <label class="form-label col-12">Chọn ngày sử dụng bể bơi</label>
+            <input type="date" class="datetimepicker datetimepicker-ngaysudung" name="ngaySuDung" value="">
+            <span id="ngaysudungError" class="text-danger col-12"></span>
+        </div>
+        <div class="row">
+
+            <div class="form-group col col-lg-4 col-md-12 col-sm-12 codinh">
+                <label class="form-label col-12" style="padding-left: 4px;">Chọn ngày bắt đầu</label>
+                <input type="date" class="datetimepicker datetimepicker-ngaybatdau" name="StartTime" value="">
+                <span id="ngaybatdauError" class="text-danger col-12"></span>
+
+            </div>
+            <div class="form-group col col-lg-4 col-md-12 col-sm-12 codinh">
+                <label class="form-label col-12" style="padding-left: 4px;">Chọn số tháng</label>
+                <select class="select-SoThang">
+
+                    @for (var i = 1; i <= 36; i++)
+                    {
+                        <option value="@i">@i tháng</option>
+                    }
+                </select>
+
+            </div>
+            <div class="form-group col col-lg-4 col-md-12 col-sm-12 codinh">
+                <label class="form-label col-12" style="padding-left: 4px;">Ngày kết thúc</label>
+                <input type="date" class="datetimepicker datetimepicker-ngayketthuc" name="EndTime" value="" readonly>
+                <span id="ngayketthucError" class="text-danger col-12"></span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row" style="border: 1px dashed rgba(0, 0, 0, 0.3); padding: 10px;">
+        <div class=" col-12">
+            <div class="" style="font-size: 16px; font-weight: bold; margin-top: 10px; margin-bottom: 10px;">Tình trạng bể bơi</div>
+            <div class="khungGioTrong">
+                @if (ViewBag.khungGioSwimming == null)
+                {
+                    <div class="alert alert-danger">bể bơi hiện chưa cho thuê</div>
+                }
+                else
+                {
+                    <input type="text" name="ShiftID" value="@khungGioSwimming.ShiftID" style="display: none;" />
+                    <div class="alert alert-success" data-status="" id="tinhTrang"></div>
+                }
+            </div>
+            <span id="khungGioTrongError" class="text-danger col-12"></span>
+        </div>
+        <div class="row" style="padding-top: 20px;">
+            <div style="display: none;" class="col-md-4  col-sm-12">Giá:( ngàn VNĐ) <input type="text" name="price" value="@khungGioSwimming.Price" class="form-control price" /></div>
+            <div class="col-md-4 col-sm-12">Tiền( ngàn VNĐ): <input type="text" name="money" value="" class="form-control money" disabled /></div>
+        </div>
+    </div>
+</div>
+<script>
+
+    // Hàm kiểm tra tên người đặt
+    function validateContactName() {
+        var contactName = document.getElementsByName("ContactName")[0].value.trim();
+
+        if (contactName === "") {
+            document.getElementById("contactNameError").innerText = "Vui lòng nhập tên người đặt";
+            return false;
+        } else {
+            document.getElementById("contactNameError").innerText = "";
+            return true;
+        }
+    }
+
+    // Hàm kiểm tra số điện thoại
+    function validatePhoneNumber() {
+        var phoneNumber = document.getElementsByName("PhoneNumber")[0].value.trim();
+
+        // Kiểm tra xem số điện thoại có hợp lệ không (bắt đầu bằng số 0 và có 10 chữ số)
+        var phoneRegex = /^0[0-9]{9}$/;
+
+        if (!phoneRegex.test(phoneNumber)) {
+            document.getElementById("phoneNumberError").innerText = "Số điện thoại không hợp lệ";
+            return false;
+        } else {
+            document.getElementById("phoneNumberError").innerText = "";
+            return true;
+        }
+    }
+
+    //Hàm kiểm tra khung giờ
+    function validateTinhTrang() {
+        $('#khungGioTrongError').text("");
+
+        var tinhTrang = document.getElementById('tinhTrang').getAttribute('data-status');
+
+        if (tinhTrang === null || tinhTrang === "") {
+            $('#khungGioTrongError').text('Không thể đặt bể bơi');
+            return false;
+        }
+        if (tinhTrang == 1) {
+            $('#khungGioTrongError').text('Không thể đặt bể bơi vì đã hết chỗ trống');
+            return false;
+        }
+        return true;
+    }
+
+    // Hàm bật tắt bể bơi vãng lai/cố định
+    function toggleButton(button) {
+        var buttons = document.getElementsByClassName("button");
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove("active");
+        }
+        button.classList.add("active");
+        removeTien();
+
+
+
+        var vanglaiFields = document.querySelectorAll('.vanglai');
+        var codinhFields = document.querySelectorAll('.codinh');
+
+        if (button.classList.contains('btn-1')) { // Vãng lai được chọn
+            for (var i = 0; i < vanglaiFields.length; i++) {
+                vanglaiFields[i].style.display = 'block';
+            }
+            for (var j = 0; j < codinhFields.length; j++) {
+                codinhFields[j].style.display = 'none';
+            }
+            const arenaId = $("#arenaId").text();
+            var startTime = $('.datetimepicker-ngaysudung').val();
+            var endTime = $('.datetimepicker-ngaysudung').val();
+            getEmptyShift(arenaId, startTime, endTime);
+
+            //
+            $('.isCoDinh').val(0);
+
+        } else if (button.classList.contains('btn-2')) { // Cố định được chọn
+            for (var k = 0; k < vanglaiFields.length; k++) {
+                vanglaiFields[k].style.display = 'none';
+            }
+            for (var l = 0; l < codinhFields.length; l++) {
+                codinhFields[l].style.display = 'block';
+            }
+            const arenaId = $("#arenaId").text();
+            var startTime = $('.datetimepicker-ngaybatdau').val();
+            var endTime = $('.datetimepicker-ngayketthuc').val();
+            getEmptyShift(arenaId, startTime, endTime);
+            //
+            $('.isCoDinh').val(1);
+
+        }
+        TinhTien();
+
+    }
+
+    // Hàm đổ ngày hiện tại vào datetimepicker
+    function GetNowDaySetDateTimePiker(ClassNameDateTimePicker) {
+        var datetimepicker = document.getElementsByClassName(ClassNameDateTimePicker);
+        // Lấy ngày hiện tại
+        var currentDate = new Date();
+        var year = currentDate.getFullYear();
+        var month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+        var day = currentDate.getDate().toString().padStart(2, "0");
+        var today = year + "-" + month + "-" + day;
+
+        // Đặt giá trị ngày hiện tại cho datetimepicker
+        datetimepicker[0].value = today;
+
+    }
+
+    // Hàm check ngày sử dụng bể bơi
+    function validateNgaySuDung() {
+        var ngaySuDungInput = $('.datetimepicker-ngaysudung');
+        var ngaySuDung = new Date(ngaySuDungInput.val());
+        var currentDate = new Date();
+        var diffTime = ngaySuDung.getTime() - currentDate.getTime();
+        var diffDays = diffTime / (1000 * 3600 * 24);
+        if (ngaySuDung.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0) || diffDays > 5) {
+            $('#ngaysudungError').text('Ngày sử dụng bể bơi phải là ngày hiện tại hoặc trong vòng 5 ngày kể từ ngày hiện tại.');
+            return false;
+        } else {
+            $('#ngaysudungError').text('');
+            return true;
+        }
+    }
+
+    //Hàm check ngày bắt đầu
+    function validateNgayBatDau() {
+        var ngaySuDungInput = $('.datetimepicker-ngaybatdau');
+        var ngaySuDung = new Date(ngaySuDungInput.val());
+        var currentDate = new Date();
+        var diffTime = ngaySuDung.getTime() - currentDate.getTime();
+        var diffDays = diffTime / (1000 * 3600 * 24);
+        if (ngaySuDung.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0) || diffDays > 5) {
+            $('#ngaybatdauError').text('Ngày sử dụng bể bơi phải là ngày hiện tại hoặc trong vòng 5 ngày kể từ ngày hiện tại.');
+            return false;
+        } else {
+            $('#ngaybatdauError').text('');
+            return true;
+        }
+    }
+
+    //Hàm tính ngày kết thúc
+    function calculateEndDate() {
+        var ngayBatDauInput = $('.datetimepicker-ngaybatdau');
+        var soThang = parseInt($('.select-SoThang').val());
+
+        if (isNaN(soThang)) {
+            $('.datetimepicker-ngayketthuc').val('');
+            return;
+        }
+
+        var ngayBatDau = new Date(ngayBatDauInput.val());
+        var ngayKetThuc = new Date(ngayBatDau.getFullYear(), ngayBatDau.getMonth() + soThang, ngayBatDau.getDate());
+
+        var year = ngayKetThuc.getFullYear();
+        var month = (ngayKetThuc.getMonth() + 1).toString().padStart(2, '0');
+        var day = ngayKetThuc.getDate().toString().padStart(2, '0');
+
+        var formattedEndDate = year + '-' + month + '-' + day;
+
+        $('.datetimepicker-ngayketthuc').val(formattedEndDate);
+    }
+
+    // Hàm tính tiền
+    function TinhTien() {
+
+        var isCoDinh = $('.isCoDinh').val();
+
+
+        let price = $('.price').val();
+
+        if (!price) {
+            $('.money').val("");
+            return;
+        }
+
+        if (isCoDinh == 0) {
+            $('.money').val(price);
+            return;
+        }
+
+        price = price * 10 / 2;
+
+        const soThang = parseInt($('.select-SoThang').val());
+        if (!soThang) {
+            $('.money').val("");
+            return;
+        }
+
+        if (soThang < 3) {
+            const total = price * soThang;
+            $('.money').val(total);
+            return;
+        }
+
+        if (soThang < 6) {
+            const total = price * soThang * 80 / 100;
+            $('.money').val(total);
+            return;
+        }
+
+        if (soThang < 12) {
+            const total = price * soThang * 70 / 100;
+            $('.money').val(total);
+            return;
+        }
+
+        const total = price * soThang * 50 / 100;
+        $('.money').val(total);
+        return;
+    }
+
+    //Hàm lấy ra khung giờ trống
+    function getEmptyShift(arenaId, ngayBatDau, ngayKetThuc) {
+        $.ajax({
+            url: '/Home/getEmptyShift2',
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                arenaId: arenaId,
+                ngayBatDau: ngayBatDau,
+                ngayKetThuc: ngayKetThuc
+            },
+            success: function (response) {
+                $('#tinhTrang').text(response.message);
+                if (!response.success)
+                    document.getElementById('tinhTrang').setAttribute('data-status', 1);
+                else
+                    document.getElementById('tinhTrang').setAttribute('data-status', 0);
+
+                validateTinhTrang();
+            },
+            error: function (xhr, status, error) {
+
+            }
+        });
+    }
+
+    //Hàm xóa ô giá và tiền
+    function removeTien() {
+        $(".money").val(null);
+    }
+
+    $(document).ready(function () {
+
+        // Đổ ngày hiện tại vào datetimepicker
+        GetNowDaySetDateTimePiker("datetimepicker-ngaysudung");
+        GetNowDaySetDateTimePiker("datetimepicker-ngaybatdau");
+
+        //Check ngày sử dụng
+        $('.datetimepicker-ngaysudung').change(function () {
+            validateNgaySuDung();
+
+        });
+        //Check ngày bắt đầu
+        $('.datetimepicker-ngaybatdau').change(function () {
+            validateNgayBatDau();
+        });
+
+
+        //Gọi hàm tính ngày kết thúc
+        calculateEndDate();
+
+        $('.select-SoThang').change(function () {
+            calculateEndDate();
+        });
+
+        $('.datetimepicker-ngaybatdau').change(function () {
+            calculateEndDate();
+        });
+
+        // Gọi hàm tính tiền
+        TinhTien();
+
+        //Gọi hàm lấy ra tình trạng của bể bơi khi mới load
+        const arenaId = $("#arenaId").text();
+        var startTime = $('.datetimepicker-ngaysudung').val();
+        var endTime = $('.datetimepicker-ngaysudung').val();
+        getEmptyShift(arenaId, startTime, endTime)
+
+        // Gọi hàm lấy ra tình trạng của bể bơi khi ngày sử dụng thay đổi
+        $('.datetimepicker-ngaysudung').change(function () {
+            const arenaId = $("#arenaId").text();
+            var startTime = $('.datetimepicker-ngaysudung').val();
+            var endTime = $('.datetimepicker-ngaysudung').val();
+            getEmptyShift(arenaId, startTime, endTime);
+
+        });
+
+        // Gọi hàm lấy ra tình trạng bể bơi khi ngày bắt đầu thay đổi
+        $('.datetimepicker-ngaybatdau').change(function () {
+            const arenaId = $("#arenaId").text();
+            var startTime = $('.datetimepicker-ngaybatdau').val();
+            var endTime = $('.datetimepicker-ngayketthuc').val();
+            getEmptyShift(arenaId, startTime, endTime);
+
+        });
+
+        // Gọi hàm lấy ra tình trạng của bể bơi khi số tháng thay đổi
+        $('.select-SoThang').change(function () {
+            const arenaId = $("#arenaId").text();
+            var startTime = $('.datetimepicker-ngaybatdau').val();
+            var endTime = $('.datetimepicker-ngayketthuc').val();
+            getEmptyShift(arenaId, startTime, endTime)
+            removeTien();
+            TinhTien();
+        });
+
+    })
+
+</script>

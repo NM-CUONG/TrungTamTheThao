@@ -229,12 +229,20 @@ namespace WebApp.Controllers
                 }
             }
 
-            if  (persons >= maxPerson)
+            if (persons >= maxPerson)
             {
-                return Json(new { success = false, message = "Phòng đã đủ người!" }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = "Đã đủ người!" }, JsonRequestBehavior.AllowGet);
             }
-            return Json(new { success = true, message = "Phòng vẫn còn chỗ trống" }, JsonRequestBehavior.AllowGet);
+            return Json(new { success = true, message = "Vẫn còn chỗ trống" }, JsonRequestBehavior.AllowGet);
         }
+
+        public ActionResult BookingSwimming()
+        {
+            List<tb_Arena> Swimmings = db.tb_Arena.Where(x => x.CateID == "swimming").ToList();
+            ViewBag.Swimmings = Swimmings;
+            return View();
+        }
+
         public ActionResult BookingGym()
         {
             List<tb_Arena> Gyms = db.tb_Arena.Where(x => x.CateID == "gym").ToList();
@@ -255,7 +263,14 @@ namespace WebApp.Controllers
             ViewBag.Badmintons = Badmintons;
             return View();
         }
+        public ActionResult GetFormBookingSwimming(string arenaID)
+        {
+            tb_Arena swimming = db.tb_Arena.Where(x => x.ArenaID == arenaID).FirstOrDefault();
+            tb_Shift khungGioSwimming = db.tb_Shift.Where(x => x.CateID == "swimming").FirstOrDefault();
 
+            ViewBag.khungGioSwimming = khungGioSwimming;
+            return PartialView("_BookingSwimmingPartial", swimming);
+        }
         public ActionResult GetFormBookingGym(string arenaID)
         {
             tb_Arena Gym = db.tb_Arena.Where(x => x.ArenaID == arenaID).FirstOrDefault();
@@ -400,6 +415,49 @@ namespace WebApp.Controllers
             catch (Exception ex)
             {
                 return Json(new { success = false, message = "Đặt sân không thành công!, Có lỗi: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult HandleBookingSwimming(tb_Booking model)
+        {
+            tb_Booking lastBooking = db.tb_Booking.OrderByDescending(b => b.ID).FirstOrDefault();
+
+            if (lastBooking != null)
+            {
+                model.BookingID = "B" + (lastBooking.ID + 1);
+            }
+            else
+            {
+                model.BookingID = "B0";
+            }
+
+            if (model.isCoDinh == 0)
+            {
+                model.StartTime = model.ngaySuDung;
+                model.EndTime = model.ngaySuDung;
+            }
+
+            tb_User userInfor = Session["UserInfor"] as tb_User;
+            if (userInfor != null)
+            {
+                model.UserID = userInfor.UserID;
+            }
+
+            model.Status = 0;
+
+            // lưu vào csdl
+
+            try
+            {
+                db.tb_Booking.Add(model);
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Đặt bể bơi không thành công!, Có lỗi: " + ex.Message }, JsonRequestBehavior.AllowGet);
             }
 
             return Json(new { success = true }, JsonRequestBehavior.AllowGet);
@@ -552,6 +610,94 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
+        public ActionResult getCapTra(tb_User model)
+        {
+            tb_User account = db.tb_User.Where(x => x.UserID == model.UserID).FirstOrDefault();
+            if (account == null)
+            {
+                return Json(new { success = false, message = "Không tìm thấy thông tin tài khoản!" }, JsonRequestBehavior.AllowGet);
+            }
+            try
+            {
+                using (MailMessage mm = new MailMessage(EmailFrom, account.Email))
+                {
+                    //Tiêu đề mail
+                    mm.Subject = "Quên mật khẩu";
+                    //Nội dung mail - gửi kèm link xác nhận có userid để nhận diện khi confirm
+                    Random random = new Random();
+                    var captra = random.Next(1000, 10000);
+                    mm.Body = $"Mã captra của bạn là: " + captra;
+                    mm.IsBodyHtml = true;
+                    using (SmtpClient smtp = new SmtpClient())
+                    {
+                        smtp.Host = EmailHost;
+                        smtp.EnableSsl = true;
+
+                        //tài khoản đăng kí sử dụng smtp
+                        NetworkCredential cred = new NetworkCredential(EmailFrom, EmailFromPassword);
+                        smtp.UseDefaultCredentials = true;
+                        smtp.Credentials = cred;
+                        smtp.Port = 587;
+                        smtp.Send(mm);
+                    }
+
+                    Session["captra"] = captra;
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Đã xảy ra lỗi trong quá trình lấy mã!" + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { success = true, message = "Vui lòng kiểm tra email để lấy mã xác nhận!" }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult ForgotPassword(tb_User model)
+        {
+            if (model == null)
+            {
+                ViewBag.Error = "Không tìm thấy thông tin tài khoản!";
+                return View();
+            }
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult ForgotPassword( FormCollection form)
+        {
+            string userID = form["UserID"];
+            string passWord = form["Password"];
+            string ct = form["captra"];
+            string captra = Session["captra"] as string;
+
+            if (string.IsNullOrEmpty(userID) || 
+                string.IsNullOrEmpty(passWord) || 
+                string.IsNullOrEmpty(captra) || 
+                string.IsNullOrEmpty(ct))
+            {
+                return Json(new { success = false, message = "Quên mật khẩu không thành công, đã có lỗi xảy ra!" }, JsonRequestBehavior.AllowGet);
+            }
+
+            if (captra != ct)
+            {
+                return Json(new { success = false, message = "Mã xác nhận không đúng!" }, JsonRequestBehavior.AllowGet);
+            }
+            try
+            {
+                tb_User tk = db.tb_User.Where(x => x.UserID == userID).FirstOrDefault();
+                tk.Password = PasswordManager.HashPassword(passWord);
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Quên mật khẩu không thành công, đã có lỗi xảy ra!" }, JsonRequestBehavior.AllowGet);
+            }
+
+            Session.Remove("captra");
+            return Json(new { success = true, message = "Quên mật khẩu thành công!" }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
         public ActionResult ChangeEmail()
         {
             tb_User Account = Session["UserInfor"] as tb_User;
@@ -563,6 +709,8 @@ namespace WebApp.Controllers
             }
             return View(Account);
         }
+
+
 
         [HttpPost]
         public ActionResult ChangeEmail(FormCollection form)
