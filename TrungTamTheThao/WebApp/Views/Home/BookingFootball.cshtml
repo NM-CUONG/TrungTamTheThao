@@ -1,13 +1,13 @@
 ﻿
 @{
-    ViewBag.Title = "BookingBadminton";
+    ViewBag.Title = "BookingFootball";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+
 @model WebApp.Models.tb_Arena
 @{
-    List<WebApp.Models.tb_Arena> Badmintons = ViewBag.Badmintons;
-    List<WebApp.Models.BookTimeEmpty> Badmintons_Booked = ViewBag.Badmintons_Booked;
+    List<WebApp.Models.tb_Arena> Footballs = ViewBag.Footballs;
 }
 
 <style>
@@ -37,10 +37,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5 text-center text-uppercase" id="staticBackdropLabel">Đặt sân cầu lông</h1>
+                <h1 class="modal-title fs-5 text-center text-uppercase" id="staticBackdropLabel">Đặt sân bóng</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            @using (Ajax.BeginForm("HandleBookingBadminton", "Home", new AjaxOptions()
+            @using (Ajax.BeginForm("HandleBookingFootball", "Home", new AjaxOptions()
             {
                 HttpMethod = "POST",
                 OnSuccess = "handleSuccess",
@@ -62,7 +62,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        @foreach (var item in Badmintons)
+        @foreach (var item in Footballs)
         {
 
             <div class="col-lg-3 col-md-6 col-sm-12 my-2" onclick="GetFormBooking('@item.ArenaID')">
@@ -134,7 +134,7 @@
     // Hàm mở form đặt sân
     function GetFormBooking(arenaID) {
         $.ajax({
-            url: '/Home/GetFormBookingBadminton/',
+            url: '/Home/GetFormBookingFootball/',
             type: 'GET',
             data: { arenaID: arenaID },
             success: function (data) {
@@ -159,6 +159,8 @@
             }
         });
     })
-    
+
 
 </script>
+
+

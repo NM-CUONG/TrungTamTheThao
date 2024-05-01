@@ -2293,6 +2293,10 @@
     <Content Include="Views\Home\ChangePassword.cshtml" />
     <Content Include="Views\Home\ChangeEmail.cshtml" />
     <Content Include="Views\Home\ConfirmEmailChange.cshtml" />
+    <Content Include="Views\Home\BookingFootball.cshtml" />
+    <Content Include="Views\Home\_BookingFootballPartial.cshtml" />
+    <Content Include="Views\Home\BookingGym.cshtml" />
+    <Content Include="Views\Home\_BookingGymPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

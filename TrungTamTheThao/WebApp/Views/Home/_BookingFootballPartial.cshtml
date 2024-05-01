@@ -1,5 +1,5 @@
-﻿@model WebApp.Models.tb_Arena 
-
+﻿
+@model WebApp.Models.tb_Arena
 
 <style>
     .col {
@@ -22,12 +22,15 @@
         background-color: dodgerblue;
         color: white;
     }
+
     .btn-1 {
         border-radius: 20px 0px 0px 20px;
     }
+
     .btn-2 {
         border-radius: 0px 20px 20px 0px;
     }
+
     .datetimepicker {
         padding: 10px;
         border: 1px solid #ccc;
@@ -36,9 +39,11 @@
         cursor: pointer;
         padding: 10px 15px;
     }
+
     .datetimepicker-ngayketthuc {
         background-color: #e9ecef;
     }
+
     .select-SoThang {
         padding: 10px;
         border: 1px solid #ccc;
@@ -48,23 +53,26 @@
         padding: 10px 15px;
         width: 80%;
     }
+
     .codinh {
         display: none;
     }
+
     .items-khung-gio {
         margin: 2px;
         border: none;
     }
+
     .selected-item {
         background-color: dodgerblue;
         color: white;
     }
-    .price,.money{
+
+    .price, .money {
         color: red;
         font-size: 16px;
         font-weight: bold;
     }
-
 </style>
 
 <div class="container-fluid">
@@ -113,7 +121,7 @@
         </div>
     </div>
     <div class="row pb-3">
-        
+
         <div class="form-group col col-lg-6 col-md-12 col-sm-12 vanglai">
             <label class="form-label col-12">Chọn ngày sử dụng sân</label>
             <input type="date" class="datetimepicker datetimepicker-ngaysudung" name="ngaySuDung" value="">
@@ -146,18 +154,18 @@
         </div>
 
     </div>
-   
+
     <div class="row" style="border: 1px dashed rgba(0, 0, 0, 0.3); padding: 10px;">
         <div class=" col-12">
             <div class="" style="font-size: 16px; font-weight: bold; margin-top: 10px; margin-bottom: 10px;">Các khung giờ trống</div>
             <div class="khungGioTrong">
-              
+
             </div>
             <span id="khungGioTrongError" class="text-danger col-12"></span>
         </div>
         <div class="row" style="padding-top: 20px;">
-            <div class="col-md-4  col-sm-12">Giá:( ngàn VNĐ) <input type="text" name="price" value="" class="form-control price" disabled/></div>
-            <div class="col-md-4 col-sm-12 ">Tiền( ngàn VNĐ): <input type="text" name="money" value="" class="form-control money" disabled/></div>
+            <div class="col-md-4  col-sm-12">Giá:( ngàn VNĐ) <input type="text" name="price" value="" class="form-control price" disabled /></div>
+            <div class="col-md-4 col-sm-12 ">Tiền( ngàn VNĐ): <input type="text" name="money" value="" class="form-control money" disabled /></div>
         </div>
     </div>
 </div>
@@ -195,7 +203,6 @@
     //Hàm kiểm tra khung giờ
     function validateKhungGio() {
         var selectedShiftID = $('.ShiftID').val();
-
         if (!selectedShiftID) {
             $('#khungGioTrongError').text('Vui lòng chọn một khung giờ.');
             return false;
@@ -215,7 +222,6 @@
 
         removeTien();
         $('.ShiftID').val("");
-
 
         var vanglaiFields = document.querySelectorAll('.vanglai');
         var codinhFields = document.querySelectorAll('.codinh');
@@ -252,7 +258,7 @@
             var cateId = $("#cateId").text();
             getEmptyShift(arenaId, cateId, startTime, endTime)
 
-            // 
+            //
             $('.isCoDinh').val(1);
 
         }
@@ -270,7 +276,7 @@
 
         // Đặt giá trị ngày hiện tại cho datetimepicker
         datetimepicker[0].value = today;
-       
+
     }
 
     // Hàm check ngày sử dụng sân
@@ -332,7 +338,7 @@
 
         const shiftID = $(item).data("shiftid");
         $('.ShiftID').val(shiftID);
-        
+
         $('.items-khung-gio').removeClass('selected-item');
         $(item).addClass('selected-item');
         const price = $(item).data("price");
@@ -343,7 +349,7 @@
         } else {
             var soThang = parseInt($('.select-SoThang').val());
             if (!isNaN(soThang)) {
-                var totalPrice = soThang >= 3 ? price * soThang * 80 / 100 : price * soThang;
+                var totalPrice = soThang >= 3 ? (price * soThang * 80 / 100) : (price * soThang);
                 $(".money").val(totalPrice);
             }
         }
@@ -395,12 +401,12 @@
         $('.datetimepicker-ngaysudung').change(function () {
             validateNgaySuDung();
         });
-        //Check ngày bắt đầu 
+        //Check ngày bắt đầu
         $('.datetimepicker-ngaybatdau').change(function () {
             validateNgayBatDau();
         });
 
-       
+
         //Gọi hàm tính ngày kết thúc
         calculateEndDate();
 
@@ -418,7 +424,7 @@
         var startTime = $('.datetimepicker-ngaysudung').val();
         var endTime = $('.datetimepicker-ngaysudung').val();
         var cateId = $("#cateId").text();
-        getEmptyShift(arenaId, cateId, startTime, endTime);
+        getEmptyShift(arenaId, cateId, startTime, endTime)
 
         // Gọi hàm lấy ra khung giờ trống khi ngày sử dụng thay đổi
         $('.datetimepicker-ngaysudung').change(function () {
@@ -454,7 +460,7 @@
         });
 
     })
-   
-   
+
+
 
 </script>

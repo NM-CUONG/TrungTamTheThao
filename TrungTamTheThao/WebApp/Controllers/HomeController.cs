@@ -202,6 +202,52 @@ namespace WebApp.Controllers
 
             return Json(new { listEmptyShift }, JsonRequestBehavior.AllowGet);
         }
+
+        public JsonResult getEmptyShift2(string arenaId, DateTime ngayBatDau, DateTime ngayKetThuc)
+        {
+            int? maxPerson = db.tb_Arena.Where(x => x.ArenaID == arenaId).FirstOrDefault().MaxPersons;
+
+            if (maxPerson == null)
+            {
+                return Json(new { success = false, message = "Đã xảy ra lỗi khi truy vấn CSDL!" });
+            }
+
+            var listBooked = db.tb_Booking.Where(x => x.ArenaID == arenaId).ToList();
+            var persons = 0;
+
+            foreach (var item in listBooked)
+            {
+                if (!(ngayKetThuc < item.StartTime || ngayBatDau > item.EndTime))
+                {
+                    persons++;
+
+                }
+                else
+                {
+                    continue;
+
+                }
+            }
+
+            if  (persons >= maxPerson)
+            {
+                return Json(new { success = false, message = "Phòng đã đủ người!" }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { success = true, message = "Phòng vẫn còn chỗ trống" }, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult BookingGym()
+        {
+            List<tb_Arena> Gyms = db.tb_Arena.Where(x => x.CateID == "gym").ToList();
+            ViewBag.Gyms = Gyms;
+            return View();
+        }
+
+        public ActionResult BookingFootball()
+        {
+            List<tb_Arena> Footballs = db.tb_Arena.Where(x => x.CateID == "football").ToList();
+            ViewBag.Footballs = Footballs;
+            return View();
+        }
         public ActionResult BookingBadminton()
         {
 
@@ -210,10 +256,24 @@ namespace WebApp.Controllers
             return View();
         }
 
+        public ActionResult GetFormBookingGym(string arenaID)
+        {
+            tb_Arena Gym = db.tb_Arena.Where(x => x.ArenaID == arenaID).FirstOrDefault();
+            tb_Shift khungGioGym = db.tb_Shift.Where(x => x.CateID == "gym").FirstOrDefault();
+
+            ViewBag.khungGioGym = khungGioGym;
+            return PartialView("_BookingGymPartial", Gym);
+        }
         public ActionResult GetFormBookingBadminton(string arenaID)
         {
             tb_Arena Badminton = db.tb_Arena.Where(x => x.ArenaID == arenaID).FirstOrDefault();
             return PartialView("_BookingBadmintonPartial", Badminton);
+        }
+
+        public ActionResult GetFormBookingFootball(string arenaID)
+        {
+            tb_Arena Badminton = db.tb_Arena.Where(x => x.ArenaID == arenaID).FirstOrDefault();
+            return PartialView("_BookingFootballPartial", Badminton);
         }
 
         [HttpPost]
@@ -259,10 +319,93 @@ namespace WebApp.Controllers
             return Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpPost]
+        public JsonResult HandleBookingFootball(tb_Booking model)
+        {
+            tb_Booking lastBooking = db.tb_Booking.OrderByDescending(b => b.ID).FirstOrDefault();
 
+            if (lastBooking != null)
+            {
+                model.BookingID = "B" + (lastBooking.ID + 1);
+            }
+            else
+            {
+                model.BookingID = "B0";
+            }
+
+            if (model.isCoDinh == 0)
+            {
+                model.StartTime = model.ngaySuDung;
+                model.EndTime = model.ngaySuDung;
+            }
+
+            tb_User userInfor = Session["UserInfor"] as tb_User;
+            if (userInfor != null)
+            {
+                model.UserID = userInfor.UserID;
+            }
+
+            model.Status = 0;
+
+            // lưu vào csdl
+
+            try
+            {
+                db.tb_Booking.Add(model);
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Đặt sân không thành công!, Có lỗi: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult HandleBookingGym(tb_Booking model)
+        {
+            tb_Booking lastBooking = db.tb_Booking.OrderByDescending(b => b.ID).FirstOrDefault();
+
+            if (lastBooking != null)
+            {
+                model.BookingID = "B" + (lastBooking.ID + 1);
+            }
+            else
+            {
+                model.BookingID = "B0";
+            }
+
+            if (model.isCoDinh == 0)
+            {
+                model.StartTime = model.ngaySuDung;
+                model.EndTime = model.ngaySuDung;
+            }
+
+            tb_User userInfor = Session["UserInfor"] as tb_User;
+            if (userInfor != null)
+            {
+                model.UserID = userInfor.UserID;
+            }
+
+            model.Status = 0;
+
+            // lưu vào csdl
+
+            try
+            {
+                db.tb_Booking.Add(model);
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Đặt sân không thành công!, Có lỗi: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+        }
         public ActionResult Payment()
         {
-
             return View();
         }
 

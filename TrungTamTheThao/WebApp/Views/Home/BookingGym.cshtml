@@ -1,13 +1,12 @@
 ﻿
 @{
-    ViewBag.Title = "BookingBadminton";
+    ViewBag.Title = "BookingGym";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @model WebApp.Models.tb_Arena
 @{
-    List<WebApp.Models.tb_Arena> Badmintons = ViewBag.Badmintons;
-    List<WebApp.Models.BookTimeEmpty> Badmintons_Booked = ViewBag.Badmintons_Booked;
+    List<WebApp.Models.tb_Arena> Gyms = ViewBag.Gyms;
 }
 
 <style>
@@ -37,10 +36,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5 text-center text-uppercase" id="staticBackdropLabel">Đặt sân cầu lông</h1>
+                <h1 class="modal-title fs-5 text-center text-uppercase" id="staticBackdropLabel">Đặt phòng gym</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            @using (Ajax.BeginForm("HandleBookingBadminton", "Home", new AjaxOptions()
+            @using (Ajax.BeginForm("HandleBookingGym", "Home", new AjaxOptions()
             {
                 HttpMethod = "POST",
                 OnSuccess = "handleSuccess",
@@ -52,7 +51,7 @@
                     <!-- Partial view sẽ được hiển thị ở đây -->
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Đặt sân</button>
+                    <button type="submit" class="btn btn-primary">Đặt phòng</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                 </div>
             }
@@ -62,7 +61,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        @foreach (var item in Badmintons)
+        @foreach (var item in Gyms)
         {
 
             <div class="col-lg-3 col-md-6 col-sm-12 my-2" onclick="GetFormBooking('@item.ArenaID')">
@@ -72,7 +71,8 @@
                     </div>
                     <div class="card-body">
                         <p class="fs-5 fw-bolder">@item.ArenaName</p>
-                        <p>Loại sân: @item.tb_Size.SizeName</p>
+                        <p>Loại phòng: @item.tb_Size.SizeName</p>
+                        <p>Sức chứa: @item.MaxPersons người</p>
                     </div>
                 </div>
             </div>
@@ -127,14 +127,14 @@
             "showMethod": "fadeIn",
             "hideMethod": "fadeOut"
         }
-        toastr["error"]("Đã có lỗi xảy ra trong quá đặt sân!", "Thông báo")
+        toastr["error"]("Đã có lỗi xảy ra trong quá đặt phòng!", "Thông báo")
 
     }
 
     // Hàm mở form đặt sân
     function GetFormBooking(arenaID) {
         $.ajax({
-            url: '/Home/GetFormBookingBadminton/',
+            url: '/Home/GetFormBookingGym/',
             type: 'GET',
             data: { arenaID: arenaID },
             success: function (data) {
@@ -152,13 +152,14 @@
         $('button[type="submit"]').click(function (event) {
             if (!validateContactName() ||
                 !validatePhoneNumber() ||
-                !validateKhungGio() ||
+                !validateTinhTrang() ||
                 !validateNgayBatDau() ||
                 !validateNgaySuDung()) {
                 event.preventDefault();
             }
         });
     })
-    
+
 
 </script>
+

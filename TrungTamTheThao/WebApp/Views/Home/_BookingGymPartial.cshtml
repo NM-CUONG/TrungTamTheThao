@@ -1,5 +1,9 @@
-﻿@model WebApp.Models.tb_Arena 
+﻿
 
+@model WebApp.Models.tb_Arena
+@{
+    WebApp.Models.tb_Shift khungGioGym = ViewBag.khungGioGym;
+}
 
 <style>
     .col {
@@ -22,12 +26,15 @@
         background-color: dodgerblue;
         color: white;
     }
+
     .btn-1 {
         border-radius: 20px 0px 0px 20px;
     }
+
     .btn-2 {
         border-radius: 0px 20px 20px 0px;
     }
+
     .datetimepicker {
         padding: 10px;
         border: 1px solid #ccc;
@@ -36,9 +43,11 @@
         cursor: pointer;
         padding: 10px 15px;
     }
+
     .datetimepicker-ngayketthuc {
         background-color: #e9ecef;
     }
+
     .select-SoThang {
         padding: 10px;
         border: 1px solid #ccc;
@@ -48,23 +57,26 @@
         padding: 10px 15px;
         width: 80%;
     }
+
     .codinh {
         display: none;
     }
+
     .items-khung-gio {
         margin: 2px;
         border: none;
     }
+
     .selected-item {
         background-color: dodgerblue;
         color: white;
     }
-    .price,.money{
+
+    .price, .money {
         color: red;
         font-size: 16px;
         font-weight: bold;
     }
-
 </style>
 
 <div class="container-fluid">
@@ -72,17 +84,16 @@
         <div class="card mb-3 p-0">
             <div class="row g-0">
                 <div class="col-md-4" style="overflow: hidden; ">
-                    <img src="~/Uploads/background-dung-cu-the-thao.jpg" class="img-fluid rounded-start" alt="Ảnh sân cầu lông">
+                    <img src="~/Uploads/background-dung-cu-the-thao.jpg" class="img-fluid rounded-start" alt="Ảnh phòng cầu lông">
                 </div>
                 <div class="col-md-8">
                     <div class="card-body">
                         <p id="arenaId" style="display: none">@Model.ArenaID</p>
                         <input type="text" name="ArenaID" value="@Model.ArenaID" style="display: none;" />
-                        <p id="cateId" style="display: none">@Model.CateID</p>
                         <h5 class="card-title">@Model.ArenaName</h5>
-                        <p class="card-text">Loại sân: @Model.tb_Size.SizeName</p>
-                        <p class="card-text"><small class="text-body-secondary">Mô tả: @Model.Description</small></p>
-                        <input type="text" class="ShiftID" name="ShiftID" value="" style="display: none;" />
+                        <div class="card-text">Loại phòng: @Model.tb_Size.SizeName</div>
+                        <div class="card-text">Sức chứa: @Model.MaxPersons người</div>
+                        <div class="card-text"><small class="text-body-secondary">Mô tả: @Model.Description</small></div>
                         <input type="text" class="isCoDinh" name="isCoDinh" value="0" style="display: none;" />
                     </div>
                 </div>
@@ -105,7 +116,7 @@
             <textarea type="text" name="Note" value="" class="form-control" rows="2" />
         </div>
         <div class="form-group col-lg-6 col-md-12 col-sm-12">
-            <label class="form-label col-12">Bạn muốn đặt sân</label>
+            <label class="form-label col-12">Bạn muốn đặt phòng</label>
             <div class="button-container">
                 <div class="button active btn-1" onclick="toggleButton(this)">Vãng lai</div>
                 <div class="button btn-2" onclick="toggleButton(this)">Cố định</div>
@@ -113,9 +124,9 @@
         </div>
     </div>
     <div class="row pb-3">
-        
+
         <div class="form-group col col-lg-6 col-md-12 col-sm-12 vanglai">
-            <label class="form-label col-12">Chọn ngày sử dụng sân</label>
+            <label class="form-label col-12">Chọn ngày sử dụng phòng</label>
             <input type="date" class="datetimepicker datetimepicker-ngaysudung" name="ngaySuDung" value="">
             <span id="ngaysudungError" class="text-danger col-12"></span>
         </div>
@@ -146,18 +157,26 @@
         </div>
 
     </div>
-   
+
     <div class="row" style="border: 1px dashed rgba(0, 0, 0, 0.3); padding: 10px;">
         <div class=" col-12">
-            <div class="" style="font-size: 16px; font-weight: bold; margin-top: 10px; margin-bottom: 10px;">Các khung giờ trống</div>
+            <div class="" style="font-size: 16px; font-weight: bold; margin-top: 10px; margin-bottom: 10px;">Tình trạng phòng</div>
             <div class="khungGioTrong">
-              
+                @if (ViewBag.khungGioGym == null)
+                {
+                    <div class="alert alert-danger">Phòng hiện chưa cho thuê</div>
+                }
+                else
+                {
+                    <input type="text" name="ShiftID" value="@khungGioGym.ShiftID" style="display: none;" />
+                    <div class="alert alert-success" data-status="" id="tinhTrang"></div>
+                }
             </div>
             <span id="khungGioTrongError" class="text-danger col-12"></span>
         </div>
         <div class="row" style="padding-top: 20px;">
-            <div class="col-md-4  col-sm-12">Giá:( ngàn VNĐ) <input type="text" name="price" value="" class="form-control price" disabled/></div>
-            <div class="col-md-4 col-sm-12 ">Tiền( ngàn VNĐ): <input type="text" name="money" value="" class="form-control money" disabled/></div>
+            <div style="display: none;" class="col-md-4  col-sm-12">Giá:( ngàn VNĐ) <input type="text" name="price" value="@khungGioGym.Price" class="form-control price" /></div>
+            <div class="col-md-4 col-sm-12">Tiền( ngàn VNĐ): <input type="text" name="money" value="" class="form-control money" disabled /></div>
         </div>
     </div>
 </div>
@@ -193,29 +212,32 @@
     }
 
     //Hàm kiểm tra khung giờ
-    function validateKhungGio() {
-        var selectedShiftID = $('.ShiftID').val();
+    function validateTinhTrang() {
+        $('#khungGioTrongError').text("");
 
-        if (!selectedShiftID) {
-            $('#khungGioTrongError').text('Vui lòng chọn một khung giờ.');
+        var tinhTrang = document.getElementById('tinhTrang').getAttribute('data-status');
+
+        if (tinhTrang === null || tinhTrang === "") {
+            $('#khungGioTrongError').text('Không thể đặt phòng');
             return false;
-        } else {
-            $('#khungGioTrongError').text('');
-            return true;
         }
+        if (tinhTrang == 1) {
+            $('#khungGioTrongError').text('Không thể đặt phòng vì đã hết chỗ trống');
+            return false;
+        }
+        return true;
     }
 
-    // Hàm bật tắt sân vãng lai/cố định
+    // Hàm bật tắt phòng vãng lai/cố định
     function toggleButton(button) {
         var buttons = document.getElementsByClassName("button");
         for (var i = 0; i < buttons.length; i++) {
             buttons[i].classList.remove("active");
         }
         button.classList.add("active");
-
         removeTien();
-        $('.ShiftID').val("");
 
+        
 
         var vanglaiFields = document.querySelectorAll('.vanglai');
         var codinhFields = document.querySelectorAll('.codinh');
@@ -227,12 +249,10 @@
             for (var j = 0; j < codinhFields.length; j++) {
                 codinhFields[j].style.display = 'none';
             }
-            //Gọi hàm lấy ra khung giờ trống khi nút cố định được trọn
             const arenaId = $("#arenaId").text();
             var startTime = $('.datetimepicker-ngaysudung').val();
             var endTime = $('.datetimepicker-ngaysudung').val();
-            var cateId = $("#cateId").text();
-            getEmptyShift(arenaId, cateId, startTime, endTime)
+            getEmptyShift(arenaId, startTime, endTime);
 
             //
             $('.isCoDinh').val(0);
@@ -244,18 +264,16 @@
             for (var l = 0; l < codinhFields.length; l++) {
                 codinhFields[l].style.display = 'block';
             }
-
-            // Gọi hàm load lại khung giờ trống khi nút cố định được bấm
             const arenaId = $("#arenaId").text();
             var startTime = $('.datetimepicker-ngaybatdau').val();
             var endTime = $('.datetimepicker-ngayketthuc').val();
-            var cateId = $("#cateId").text();
-            getEmptyShift(arenaId, cateId, startTime, endTime)
-
-            // 
+            getEmptyShift(arenaId, startTime, endTime);
+            //
             $('.isCoDinh').val(1);
 
         }
+        TinhTien();
+
     }
 
     // Hàm đổ ngày hiện tại vào datetimepicker
@@ -270,10 +288,10 @@
 
         // Đặt giá trị ngày hiện tại cho datetimepicker
         datetimepicker[0].value = today;
-       
+
     }
 
-    // Hàm check ngày sử dụng sân
+    // Hàm check ngày sử dụng phòng
     function validateNgaySuDung() {
         var ngaySuDungInput = $('.datetimepicker-ngaysudung');
         var ngaySuDung = new Date(ngaySuDungInput.val());
@@ -281,7 +299,7 @@
         var diffTime = ngaySuDung.getTime() - currentDate.getTime();
         var diffDays = diffTime / (1000 * 3600 * 24);
         if (ngaySuDung.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0) || diffDays > 5) {
-            $('#ngaysudungError').text('Ngày sử dụng sân phải là ngày hiện tại hoặc trong vòng 5 ngày kể từ ngày hiện tại.');
+            $('#ngaysudungError').text('Ngày sử dụng phòng phải là ngày hiện tại hoặc trong vòng 5 ngày kể từ ngày hiện tại.');
             return false;
         } else {
             $('#ngaysudungError').text('');
@@ -297,7 +315,7 @@
         var diffTime = ngaySuDung.getTime() - currentDate.getTime();
         var diffDays = diffTime / (1000 * 3600 * 24);
         if (ngaySuDung.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0) || diffDays > 5) {
-            $('#ngaybatdauError').text('Ngày sử dụng sân phải là ngày hiện tại hoặc trong vòng 5 ngày kể từ ngày hiện tại.');
+            $('#ngaybatdauError').text('Ngày sử dụng phòng phải là ngày hiện tại hoặc trong vòng 5 ngày kể từ ngày hiện tại.');
             return false;
         } else {
             $('#ngaybatdauError').text('');
@@ -327,49 +345,74 @@
         $('.datetimepicker-ngayketthuc').val(formattedEndDate);
     }
 
-    // Hàm xử lý khi chọn một khung giờ
-    function selectItem(item) {
+    // Hàm tính tiền
+    function TinhTien() {
 
-        const shiftID = $(item).data("shiftid");
-        $('.ShiftID').val(shiftID);
-        
-        $('.items-khung-gio').removeClass('selected-item');
-        $(item).addClass('selected-item');
-        const price = $(item).data("price");
-        $(".price").val(price);
+        var isCoDinh = $('.isCoDinh').val();
 
-        if ($('.button.btn-1').hasClass('active')) {
-            $(".money").val(price);
-        } else {
-            var soThang = parseInt($('.select-SoThang').val());
-            if (!isNaN(soThang)) {
-                var totalPrice = soThang >= 3 ? price * soThang * 80 / 100 : price * soThang;
-                $(".money").val(totalPrice);
-            }
+
+        let price = $('.price').val();
+
+        if (!price) {
+            $('.money').val("");
+            return;
         }
+
+        if (isCoDinh == 0) {
+            $('.money').val(price);
+            return;
+        }
+
+        price = price * 10 / 2;
+
+        const soThang = parseInt($('.select-SoThang').val());
+        if (!soThang) {
+            $('.money').val("");
+            return;
+        }
+
+        if (soThang < 3) {
+            const total = price * soThang;
+            $('.money').val(total);
+            return;
+        }
+
+        if (soThang < 6) {
+            const total = price * soThang * 80 / 100;
+            $('.money').val(total);
+            return;
+        }
+
+        if (soThang < 12) {
+            const total = price * soThang * 70 / 100;
+            $('.money').val(total);
+            return;
+        }
+
+        const total = price * soThang * 50 / 100;
+        $('.money').val(total);
+        return;
     }
 
     //Hàm lấy ra khung giờ trống
-    function getEmptyShift(arenaId, cateId, ngayBatDau, ngayKetThuc) {
+    function getEmptyShift(arenaId, ngayBatDau, ngayKetThuc) {
         $.ajax({
-            url: '/Home/getEmptyShift',
+            url: '/Home/getEmptyShift2',
             type: 'GET',
             dataType: 'json',
             data: {
                 arenaId: arenaId,
-                cateId: cateId,
                 ngayBatDau: ngayBatDau,
                 ngayKetThuc: ngayKetThuc
             },
             success: function (response) {
-                $(".khungGioTrong").empty();
-                if (response.listEmptyShift && response.listEmptyShift.length > 0) {
-                    response.listEmptyShift.forEach(item => {
-                        $(".khungGioTrong").append('<div onclick="selectItem(this)" data-price="' + item.Price +'" data-shiftid="' + item.ShiftID +'" class="btn btn-success items-khung-gio">' + item.ShiftName + '</div>');
-                    });
+                $('#tinhTrang').text(response.message);
+                if (!response.success)
+                    document.getElementById('tinhTrang').setAttribute('data-status', 1);
+                else
+                    document.getElementById('tinhTrang').setAttribute('data-status', 0);
 
-                }
-
+                validateTinhTrang();
             },
             error: function (xhr, status, error) {
 
@@ -379,13 +422,10 @@
 
     //Hàm xóa ô giá và tiền
     function removeTien() {
-        $(".price").val(null);
         $(".money").val(null);
     }
 
-
     $(document).ready(function () {
-
 
         // Đổ ngày hiện tại vào datetimepicker
         GetNowDaySetDateTimePiker("datetimepicker-ngaysudung");
@@ -394,13 +434,14 @@
         //Check ngày sử dụng
         $('.datetimepicker-ngaysudung').change(function () {
             validateNgaySuDung();
+            
         });
-        //Check ngày bắt đầu 
+        //Check ngày bắt đầu
         $('.datetimepicker-ngaybatdau').change(function () {
             validateNgayBatDau();
         });
 
-       
+
         //Gọi hàm tính ngày kết thúc
         calculateEndDate();
 
@@ -412,49 +453,43 @@
             calculateEndDate();
         });
 
+        // Gọi hàm tính tiền
+        TinhTien();
 
-        //Gọi hàm lấy ra khung giờ trống khi mới load
+        //Gọi hàm lấy ra tình trạng của phòng khi mới load
         const arenaId = $("#arenaId").text();
         var startTime = $('.datetimepicker-ngaysudung').val();
         var endTime = $('.datetimepicker-ngaysudung').val();
-        var cateId = $("#cateId").text();
-        getEmptyShift(arenaId, cateId, startTime, endTime);
+        getEmptyShift(arenaId, startTime, endTime)
 
-        // Gọi hàm lấy ra khung giờ trống khi ngày sử dụng thay đổi
+        // Gọi hàm lấy ra tình trạng của phòng khi ngày sử dụng thay đổi
         $('.datetimepicker-ngaysudung').change(function () {
             const arenaId = $("#arenaId").text();
             var startTime = $('.datetimepicker-ngaysudung').val();
             var endTime = $('.datetimepicker-ngaysudung').val();
-            var cateId = $("#cateId").text();
-            getEmptyShift(arenaId, cateId, startTime, endTime);
-            removeTien();
-
+            getEmptyShift(arenaId, startTime, endTime);
+           
         });
 
-        // Gọi hàm lấy ra khung giờ trống khi ngày bắt đầu thay đổi
+        // Gọi hàm lấy ra tình trạng phòng khi ngày bắt đầu thay đổi
         $('.datetimepicker-ngaybatdau').change(function () {
             const arenaId = $("#arenaId").text();
             var startTime = $('.datetimepicker-ngaybatdau').val();
             var endTime = $('.datetimepicker-ngayketthuc').val();
-            var cateId = $("#cateId").text();
-            getEmptyShift(arenaId, cateId, startTime, endTime);
-            removeTien();
+            getEmptyShift(arenaId, startTime, endTime);
 
         });
 
-        // Gọi hàm lấy ra khung giờ trống khi số tháng thay đổi
+        // Gọi hàm lấy ra tình trạng của phòng khi số tháng thay đổi
         $('.select-SoThang').change(function () {
             const arenaId = $("#arenaId").text();
             var startTime = $('.datetimepicker-ngaybatdau').val();
             var endTime = $('.datetimepicker-ngayketthuc').val();
-            var cateId = $("#cateId").text();
-            getEmptyShift(arenaId, cateId, startTime, endTime)
+            getEmptyShift(arenaId, startTime, endTime)
             removeTien();
-
+            TinhTien();
         });
 
     })
-   
-   
 
 </script>
