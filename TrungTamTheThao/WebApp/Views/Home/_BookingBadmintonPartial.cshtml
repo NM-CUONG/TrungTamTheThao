@@ -365,9 +365,12 @@
                 $(".khungGioTrong").empty();
                 if (response.listEmptyShift && response.listEmptyShift.length > 0) {
                     response.listEmptyShift.forEach(item => {
-                        $(".khungGioTrong").append('<div onclick="selectItem(this)" data-price="' + item.Price +'" data-shiftid="' + item.ShiftID +'" class="btn btn-success items-khung-gio">' + item.ShiftName + '</div>');
+                        $(".khungGioTrong").append('<div onclick="selectItem(this)" data-price="' + item.Price + '" data-shiftid="' + item.ShiftID + '" class="btn btn-success items-khung-gio">' + item.ShiftName + '</div>');
                     });
 
+                }
+                else {
+                    $(".khungGioTrong").append('<div class="alert alert-warning">Xin quý khách thông cảm, hiện tại sân đã không còn khung giờ trống!</div>');
                 }
 
             },

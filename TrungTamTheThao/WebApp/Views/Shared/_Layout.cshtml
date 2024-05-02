@@ -45,6 +45,31 @@
             }
     </style>
 
+    <style>
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            display: none;
+            float: left;
+            min-width: 10rem;
+            padding: .5rem 0;
+            margin: .125rem 0 0;
+            font-size: 1rem;
+            color: #212529;
+            text-align: left;
+            list-style: none;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid rgba(0,0,0,.15);
+            border-radius: .25rem;
+            z-index: 1000;
+        }
+
+            .dropdown-menu.show {
+                display: block;
+            }
+    </style>
 
 </head>
 <body>
@@ -52,10 +77,10 @@
     <div class="container-fluid">
         <div class="sidebar" id="sidebar">
             <ul class="nav flex-column">
-                <li><a class="nav-link" href="@Url.Action("Index","Home") ">Trang chủ</a></li>
-                <li><a class="nav-link" href="@Url.Action("Regis","Home") ">Đăng ký</a></li>
-                <li><a class="nav-link" href="@Url.Action("Login","Home") ">Đăng nhập</a></li>
-                <li><a class="nav-link" href="@Url.Action("Account","Home") ">Tài khoản</a></li>
+                <li><a class="nav-link" href="@Url.Action("Index","Home") "><i class="bi bi-house-door"></i> Trang chủ</a></li>
+                <li><a class="nav-link" href="@Url.Action("Regis","Home") "> Đăng ký</a></li>
+                <li><a class="nav-link" href="@Url.Action("Login","Home") "><i class="bi bi-box-arrow-in-right"></i> Đăng nhập</a></li>
+                <li><a class="nav-link" href="@Url.Action("Account","Home") "><i class="bi bi-person-circle"></i> Tài khoản</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
                         Đặt phòng
@@ -67,12 +92,9 @@
                         <li><a class="dropdown-item" href="@Url.Action("BookingSwimming","Home")">Đặt bể bơi</a></li>
                     </ul>
                 </li>
-               
-                @*<li><a class="nav-link" href="@Url.Action("BookingBadminton","Home") ">Đặt sân cầu lông</a></li>
-                <li><a class="nav-link" href="@Url.Action("BookingFootball","Home") ">Đặt sân bóng</a></li>
-                <li><a class="nav-link" href="@Url.Action("BookingGym","Home") ">Đặt phòng gym</a></li>
-                <li><a class="nav-link" href="@Url.Action("BookingSwimming","Home") ">Đặt bể bơi</a></li>*@
                 <li><a class="nav-link" href="@Url.Action("HistoriesBooking","Home") ">Lịch sử đặt phòng</a></li>
+                <li><a class="nav-link" href="@Url.Action("Logout","Home") ">Đăng xuất</a></li>
+                
             </ul>
         </div>
 
@@ -142,13 +164,20 @@
             var dropdownToggle = document.querySelectorAll('.dropdown-toggle');
 
             dropdownToggle.forEach(function (toggle) {
-                toggle.addEventListener('click', function () {
+                toggle.addEventListener('click', function (event) {
                     var dropdownMenu = this.nextElementSibling;
 
-                    if (dropdownMenu.style.display === 'block') {
-                        dropdownMenu.style.display = 'none';
-                    } else {
-                        dropdownMenu.style.display = 'block';
+                    dropdownMenu.classList.toggle('show');
+                    event.stopPropagation();
+                });
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function (event) {
+                var dropdownMenus = document.querySelectorAll('.dropdown-menu');
+                dropdownMenus.forEach(function (menu) {
+                    if (!menu.contains(event.target)) {
+                        menu.classList.remove('show');
                     }
                 });
             });

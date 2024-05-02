@@ -140,6 +140,12 @@ namespace WebApp.Controllers
             return View();
         }
 
+        public ActionResult Logout()
+        {
+            Session.Remove("UserInfor");
+            return View("Login");
+        }
+
         //Hiển thị màn hình đăng nhập
         public ActionResult Login()
         {
@@ -785,5 +791,12 @@ namespace WebApp.Controllers
             }
             return View();
         }
+
+
+        // Phần của admin
+        public ActionResult ManageRole()
+        {
+            return View();
+        } 
     }
 }

@@ -8,6 +8,8 @@
 @model WebApp.Models.tb_Arena
 @{
     List<WebApp.Models.tb_Arena> Footballs = ViewBag.Footballs;
+    WebApp.Models.tb_User Account = Session["UserInfor"] as WebApp.Models.tb_User;
+
 }
 
 <style>
@@ -147,6 +149,33 @@
         })
     }
 
+    
+    function checkLogintoBook() {
+    if (eval(@Account)== null) {
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+        toastr["info"]("Bạn cần đăng nhập để có thể đặt sân!", "Thông báo");
+        return false;
+
+    }
+    return true;
+}
+
     // Kiểm tra hợp lệ dữ liệu nhập trước khi submit
     $(document).ready(function () {
         $('button[type="submit"]').click(function (event) {
@@ -154,7 +183,8 @@
                 !validatePhoneNumber() ||
                 !validateKhungGio() ||
                 !validateNgayBatDau() ||
-                !validateNgaySuDung()) {
+                !validateNgaySuDung() ||
+                !checkLogintoBook()){
                 event.preventDefault();
             }
         });
