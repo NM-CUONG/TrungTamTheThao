@@ -2300,6 +2300,8 @@
     <Content Include="Views\Home\BookingSwimming.cshtml" />
     <Content Include="Views\Home\_BookingSwimmingPartial.cshtml" />
     <Content Include="Views\Home\ForgotPassword.cshtml" />
+    <Content Include="Views\Home\ManageRole.cshtml" />
+    <Content Include="Views\Home\_CreateRolePartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

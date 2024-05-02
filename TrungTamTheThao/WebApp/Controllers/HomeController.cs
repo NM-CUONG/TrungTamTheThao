@@ -796,7 +796,15 @@ namespace WebApp.Controllers
         // Phần của admin
         public ActionResult ManageRole()
         {
+            List<tb_Role> listRole = db.tb_Role.ToList();
+            ViewBag.listRole = listRole;
             return View();
-        } 
+        }
+
+        [HttpGet]
+        public ActionResult CreateRole()
+        {
+            return View("_CreateRolePartial");
+        }
     }
 }
