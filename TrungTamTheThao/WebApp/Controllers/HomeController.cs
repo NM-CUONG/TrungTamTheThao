@@ -804,7 +804,53 @@ namespace WebApp.Controllers
         [HttpGet]
         public ActionResult CreateRole()
         {
-            return View("_CreateRolePartial");
+            tb_Role lastRole = db.tb_Role.OrderByDescending(x => x.ID).FirstOrDefault();
+            tb_Role role= new tb_Role();
+            role.RoleID = "R" + (lastRole.ID + 1);
+            return View("_CreateRolePartial", role);
         }
+
+        [HttpPost]
+        public ActionResult CreateRole(tb_Role model)
+        {
+            try
+            {
+                db.tb_Role.Add(model);
+                db.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Thêm mới không thành công, lỗi: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { success = true, message = "Thêm mới thành công" }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        public ActionResult ManageAccount()
+        {
+            List<tb_User> listUser = db.tb_User.ToList();
+            ViewBag.listUser = listUser;
+            tb_User User = new tb_User(); 
+            return View(User);
+        }
+
+        [HttpPost]
+        public ActionResult CreateAccount(tb_User model)
+        {
+            try
+            {
+                db.tb_User.Add(model);
+                db.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Thêm mới không thành công, lỗi: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { success = true, message = "Thêm mới thành công" }, JsonRequestBehavior.AllowGet);
+
+        }
+
     }
 }

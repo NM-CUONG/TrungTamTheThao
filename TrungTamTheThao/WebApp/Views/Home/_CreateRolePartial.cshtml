@@ -1,24 +1,137 @@
-﻿<div class="modal-dialog">
+﻿
+@model WebApp.Models.tb_Role
+
+<style>
+    .modal-header {
+        background-color: #2a86bb;
+        color: white;
+    }
+</style>
+
+<div class="modal-dialog">
     <div class="modal-content">
-        <div class="modal-header">
-            <h1 class="modal-title fs-5 text-center text-uppercase" id="staticBackdropLabel">Thêm mới quyền</h1>
+        <div class="modal-header ">
+            <h1 class="modal-title w-100 text-center fs-5 text-uppercase" id="staticBackdropLabel">Thêm mới quyền</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         @using (Ajax.BeginForm("CreateRole", "Home", new AjaxOptions()
         {
             HttpMethod = "POST",
-            OnSuccess = "handleSuccess",
-            OnFailure = "handleFailure",
+            OnSuccess = "createRoleSuccess",
+            OnFailure = "createRoleFailure",
         }))
         {
             @Html.AntiForgeryToken()
             <div class="modal-body">
-                
+                <div class="row">
+                    <div class="col col-sm-12 col-md-6 col-lg-6" style="padding: 0px 50px;">
+                        <label class="form-label" for="RoleID">Mã quyền<span class="text-danger"> *</span></label>
+                        <div class="col-sm-10">
+                            <input type="text" name="RoleID" value="@Model.RoleID" id="RoleID" class="form-control" readonly />
+                        </div>
+                    </div>
+                    <div class="col col-sm-12 col-md-6 col-lg-6" style="padding: 0px 50px;">
+                        <label class="form-label" for="RoleName">Tên quyền<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            <input type="text" name="RoleName" value="@Model.RoleName" id="RoleName" class="form-control" />
+                            <span id="roleNameError" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Thêm mới</button>
+                <button type="submit" class="btn-submit btn btn-primary">Thêm mới</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
             </div>
         }
     </div>
 </div>
+
+<script>
+
+    function createRoleSuccess(data) {
+        debugger
+        if (!data.success) {
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr["error"](data.message, "Thông báo");
+        } else {
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr["success"](data.message, "Thông báo");
+        }
+    }
+
+    function createRoleFailure() {
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+        toastr["error"]("Đã có lỗi xảy ra khi thêm mới!", "Thông báo")
+
+    }
+
+    function validateRoleName() {
+        var roleName = document.getElementById("RoleName").value;
+        var roleNameError = document.getElementById("roleNameError");
+
+        if (roleName.trim() === "") {
+            roleNameError.innerHTML = "Vui lòng nhập tên quyền";
+            return false;
+        } else {
+            roleNameError.innerHTML = "";
+            return true;
+        }
+    }
+
+
+    $('.btn-submit').on('click', function (event) {
+        if (!validateRoleName()) {
+            event.preventDefault();
+        }
+    })
+
+</script>

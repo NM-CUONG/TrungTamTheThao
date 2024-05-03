@@ -2302,6 +2302,7 @@
     <Content Include="Views\Home\ForgotPassword.cshtml" />
     <Content Include="Views\Home\ManageRole.cshtml" />
     <Content Include="Views\Home\_CreateRolePartial.cshtml" />
+    <Content Include="Views\Home\ManageAccount.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
