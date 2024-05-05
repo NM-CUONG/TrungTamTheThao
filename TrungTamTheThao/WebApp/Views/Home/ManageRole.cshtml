@@ -199,10 +199,10 @@
             data: { ID: ID },
             success: function (rs) {
                 if (!rs.success) {
-                    toastr.error("Đã có lỗi xảy ra khi xóa", "Thông báo");
+                    toastr.error(rs.message, "Thông báo");
                     return;
                 }
-                toastr.success("Xóa thành công", "Thông báo");
+                toastr.success(rs.message, "Thông báo");
                 GetTable();
             },
             error: function () {
@@ -214,6 +214,8 @@
     document.getElementById('cancelBtn').addEventListener('click', handleCancel);
     document.getElementById('confirmBtn').addEventListener('click', handleConfirm);
 
+
+    // Các hàm xử lý validate
     function validateRoleName() {
         var roleNameValue = $('#RoleName').val().trim();
         var errorElement = $('#roleNameError');
@@ -228,12 +230,9 @@
         }
     }
 
-    $('.btn-submit').on('click', function (event) {
-        if (!validateRoleName()) {
-            event.preventDefault();
-        }
-    });
 
+    
+    
     $(document).ready(function () {
         GetTable();
     })

@@ -40,3 +40,11 @@
         }
     </div>
 </div>
+
+<script>
+    $('.btn-submit').on('click', function (event) {
+        if (!validateRoleName()) {
+            event.preventDefault();
+        }
+    })
+</script>

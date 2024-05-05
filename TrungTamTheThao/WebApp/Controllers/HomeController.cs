@@ -810,6 +810,9 @@ namespace WebApp.Controllers
 
 
         // Phần của admin
+
+
+        #region Các hàm xử lý Role
         public ActionResult ManageRole()
         {
             List<tb_Role> listRole = db.tb_Role.ToList();
@@ -889,6 +892,8 @@ namespace WebApp.Controllers
             return Json(new { success = true, message = "Xóa bản ghi thành công" }, JsonRequestBehavior.AllowGet);
 
         }
+
+        #endregion
 
         public ActionResult ManageAccount()
         {
