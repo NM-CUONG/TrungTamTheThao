@@ -814,12 +814,23 @@ namespace WebApp.Controllers
         {
             List<tb_Role> listRole = db.tb_Role.ToList();
             ViewBag.listRole = listRole;
+            return View();
+        }
 
+        public ActionResult GetTableRole()
+        {
+            List<tb_Role> listRole = db.tb_Role.ToList();
+            ViewBag.listRole = listRole;
+            return PartialView("_TableRolePartial");
+        }
+
+        public ActionResult CreateRole()
+        {
             tb_Role role = new tb_Role();
             tb_Role lastRole = db.tb_Role.OrderByDescending(x => x.ID).FirstOrDefault();
             role.RoleID = "R" + (lastRole.ID + 1);
 
-            return View(role);
+            return PartialView("_CreateRolePartial", role);
         }
 
         [HttpPost]
@@ -838,14 +849,14 @@ namespace WebApp.Controllers
 
         }
 
-        public ActionResult GetFormFix(long ID)
+        public ActionResult EditRole(long ID)
         {
             tb_Role role = db.tb_Role.FirstOrDefault(x => x.ID == ID);
-            return PartialView("_GetFormFixPartial", role);
+            return PartialView("_EditRolePartial", role);
         }
 
         [HttpPost]
-        public ActionResult UpdateRole(tb_Role model)
+        public ActionResult EditRole(tb_Role model)
         {
             try
             {

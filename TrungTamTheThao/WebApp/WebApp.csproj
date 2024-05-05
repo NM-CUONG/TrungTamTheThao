@@ -2302,9 +2302,10 @@
     <Content Include="Views\Home\_BookingSwimmingPartial.cshtml" />
     <Content Include="Views\Home\ForgotPassword.cshtml" />
     <Content Include="Views\Home\ManageRole.cshtml" />
-    <Content Include="Views\Home\_CreateRolePartial.cshtml" />
     <Content Include="Views\Home\ManageAccount.cshtml" />
-    <Content Include="Views\Home\_GetFormFixPartial.cshtml" />
+    <Content Include="Views\Home\_EditRolePartial.cshtml" />
+    <Content Include="Views\Home\_CreateRolePartial.cshtml" />
+    <Content Include="Views\Home\_TableRolePartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
