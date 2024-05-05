@@ -31,6 +31,22 @@ namespace WebApp.Controllers
             return BCrypt.Net.BCrypt.Verify(enteredPassword, hashedPassword);
         }
     }
+
+    // Chuyển ENUM thành droplist
+
+    public static class SelectListHelper
+    {
+        public static List<SelectListItem> ToSelectList<T>(this IEnumerable<T> source, Func<T, string> textSelector, Func<T, string> valueSelector)
+        {
+            return source.Select(item => new SelectListItem
+            {
+                Text = textSelector(item),
+                Value = valueSelector(item)
+            }).ToList();
+        }
+    }
+
+
     //Các chức năng
     public class HomeController : Controller
     {
@@ -635,7 +651,7 @@ namespace WebApp.Controllers
             }
             try
             {
-               
+
                 using (MailMessage mm = new MailMessage(EmailFrom, account.Email))
                 {
                     //Tiêu đề mail
@@ -680,16 +696,16 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult ForgotPassword( FormCollection form)
+        public ActionResult ForgotPassword(FormCollection form)
         {
             string userID = form["UserID"];
             string passWord = form["Password"];
             string ct = form["captra"];
-            
 
-            if (string.IsNullOrEmpty(userID) || 
+
+            if (string.IsNullOrEmpty(userID) ||
                 string.IsNullOrEmpty(passWord) ||
-                Session["captra"] == null || 
+                Session["captra"] == null ||
                 string.IsNullOrEmpty(ct))
             {
                 return Json(new { success = false, message = "Quên mật khẩu không thành công, đã có lỗi xảy ra!" }, JsonRequestBehavior.AllowGet);
@@ -798,16 +814,12 @@ namespace WebApp.Controllers
         {
             List<tb_Role> listRole = db.tb_Role.ToList();
             ViewBag.listRole = listRole;
-            return View();
-        }
 
-        [HttpGet]
-        public ActionResult CreateRole()
-        {
+            tb_Role role = new tb_Role();
             tb_Role lastRole = db.tb_Role.OrderByDescending(x => x.ID).FirstOrDefault();
-            tb_Role role= new tb_Role();
             role.RoleID = "R" + (lastRole.ID + 1);
-            return View("_CreateRolePartial", role);
+
+            return View(role);
         }
 
         [HttpPost]
@@ -817,7 +829,6 @@ namespace WebApp.Controllers
             {
                 db.tb_Role.Add(model);
                 db.SaveChanges();
-
             }
             catch (Exception ex)
             {
@@ -827,11 +838,66 @@ namespace WebApp.Controllers
 
         }
 
+        public ActionResult GetFormFix(long ID)
+        {
+            tb_Role role = db.tb_Role.FirstOrDefault(x => x.ID == ID);
+            return PartialView("_GetFormFixPartial", role);
+        }
+
+        [HttpPost]
+        public ActionResult UpdateRole(tb_Role model)
+        {
+            try
+            {
+                var role = db.tb_Role.FirstOrDefault(x => x.ID == model.ID);
+                role.RoleID = model.RoleID;
+                role.RoleName = model.RoleName;
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Sửa bản ghi không thành công!" }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { success = true, message = "Sửa bản ghi thành công!" }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        public ActionResult DeleteRole(long ID)
+        {
+            try
+            {
+                tb_Role model = db.tb_Role.Where(x => x.ID == ID).FirstOrDefault();
+                db.tb_Role.Remove(model);
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Đã gặp lỗi khi xóa!" }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { success = true, message = "Xóa bản ghi thành công" }, JsonRequestBehavior.AllowGet);
+
+        }
+
         public ActionResult ManageAccount()
         {
             List<tb_User> listUser = db.tb_User.ToList();
+            List<tb_Role> listRole = db.tb_Role.ToList();
+
+            ViewBag.listRole = listRole.ToSelectList(r => r.RoleName, r => r.ID.ToString());
             ViewBag.listUser = listUser;
-            tb_User User = new tb_User(); 
+            foreach (var item in listUser)
+            {
+                item.StatusName = TrangThaiTaiKhoanConstant.GetDisplayNameByValue(item.Status);
+
+                var roleName = listRole.FirstOrDefault(x => x.RoleID == item.RoleID)?.RoleName;
+                if (roleName != null)
+                {
+                    item.RoleName = roleName;
+                }
+
+            }
+            tb_User User = new tb_User();
             return View(User);
         }
 

@@ -1,4 +1,4 @@
-namespace WebApp.Models
+﻿namespace WebApp.Models
 {
     using System;
     using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace WebApp.Models
         [StringLength(10)]
         public string RoleID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Vui lòng nhập trường thông tin này!")]
         [StringLength(255)]
         public string RoleName { get; set; }
 

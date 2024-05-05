@@ -6,6 +6,7 @@
 
 @{
     var listUser = ViewBag.listUser;
+    var listRole = ViewBag.listRole;
 }
 
 @model WebApp.Models.tb_User
@@ -39,17 +40,75 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-sm-6">
-                            <label class="form-label" for="RoleID">Mã quyền<span class="text-danger"> *</span></label>
+                            <label class="form-label" for="UserID">Mã tài khoản<span class="text-danger"> *</span></label>
                             <div class="col-sm-12">
-                                <input type="text" name="UserID" value="@Model.UserID" id="UserID" class="form-control" readonly />
+                                @Html.TextBoxFor(m => m.UserID, new {@class = "form-control"})
+                                @Html.ValidationMessageFor(m => m.UserID,"", new {@class = "text-danger"})
                             </div>
                         </div>
 
                         <div class="col-sm-6">
-                            <label class="form-label" for="RoleName">Tên quyền<span class="text-danger"> *</span></label>
+                            <label class="form-label" for="UserName">Tên tài khoản<span class="text-danger"> *</span></label>
                             <div class="col-sm-12 col-lg-12">
-                                <input type="text" name="UserName" value="@Model.UserName" id="UserName" class="form-control" />
-                                <span id="userNameError" class="text-danger"></span>
+                                @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="form-label" for="Password">Mật khẩu<span class="text-danger"> *</span></label>
+                            <div class="col-sm-12 col-lg-12">
+                                @Html.TextBoxFor(m => m.Password, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="form-label" for="FullName">Họ và tên<span class="text-danger"> *</span></label>
+                            <div class="col-sm-12 col-lg-12">
+                                @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="form-label" for="Email">Email<span class="text-danger"> *</span></label>
+                            <div class="col-sm-12 col-lg-12">
+                                @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="form-label" for="Phone">Số điện thoại<span class="text-danger"> *</span></label>
+                            <div class="col-sm-12 col-lg-12">
+                                @Html.TextBoxFor(m => m.Phone, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="form-label" for="Address">Địa chỉ<span class="text-danger"> *</span></label>
+                            <div class="col-sm-12 col-lg-12">
+                                @Html.TextBoxFor(m => m.Address, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => m.Address, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="form-label" for="RoleName">Trạng thái<span class="text-danger"> *</span></label>
+                            <div class="col-sm-12 col-lg-12">
+                                @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="form-label" for="RoleName">Quyền<span class="text-danger"> *</span></label>
+                            <div class="col-sm-12 col-lg-12">
+                                @Html.DropDownListFor(m => m.RoleID, listRole as List<SelectListItem>, "--Chọn quyền--", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+
                             </div>
                         </div>
 
@@ -73,9 +132,14 @@
             <thead>
                 <tr>
                     <th scope="col">STT</th>
-                    <th scope="col">Mã quyền</th>
-                    <th scope="col">Tên quyền</th>
-                    <th scope="col">Thao tác</th>
+                    <th scope="col">Mã tài khoản</th>
+                    <th scope="col">Tên tài khoản</th>
+                    <th scope="col">Họ và tên</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">SĐT</th>
+                    <th scope="col">Địa chỉ</th>
+                    <th scope="col">Quyền</th>
+                    <th scope="col">Trạng thái</th>
                 </tr>
             </thead>
             <tbody class="table-content">
@@ -87,6 +151,12 @@
                             <td>@STT</td>
                             <td>@item.UserID</td>
                             <td>@item.UserName</td>
+                            <td>@item.FullName</td>
+                            <td>@item.Email</td>
+                            <td>@item.Phone</td>
+                            <td>@item.Address</td>
+                            <td>@item.RoleName</td>
+                            <td>@item.Status</td>
                             <td>
                                 <div class="btn btn-warning"><i class="bi bi-tools"></i> Sửa</div>
                                 <div class="btn btn-danger"><i class="bi bi-trash"></i> Xóa</div>
@@ -169,12 +239,5 @@
         toastr["error"]("Đã có lỗi xảy ra khi thêm mới!", "Thông báo")
 
     }
-
-
-    $('.btn-submit').on('click', function (event) {
-        //if (!validateRoleName()) {
-        //    event.preventDefault();
-        //}
-    })
 
 </script>

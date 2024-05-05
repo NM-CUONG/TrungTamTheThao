@@ -159,6 +159,7 @@
     <Compile Include="Models\tb_Shift.cs" />
     <Compile Include="Models\tb_Size.cs" />
     <Compile Include="Models\tb_User.cs" />
+    <Compile Include="Models\TrangThaiTaiKhoanConstant.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -2303,6 +2304,7 @@
     <Content Include="Views\Home\ManageRole.cshtml" />
     <Content Include="Views\Home\_CreateRolePartial.cshtml" />
     <Content Include="Views\Home\ManageAccount.cshtml" />
+    <Content Include="Views\Home\_GetFormFixPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
