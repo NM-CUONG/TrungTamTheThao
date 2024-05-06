@@ -6,6 +6,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
+    using WebApp.Constant;
 
     public partial class tb_User
     {
@@ -60,7 +61,7 @@
         public string RoleID { get; set; }
 
         [NotMapped]
-        public string StatusName { get; set; }
+        public string StatusName => TrangThaiUserConstant.GetDisplayName(Status);
 
         [NotMapped]
         public string RoleName { get; set; }

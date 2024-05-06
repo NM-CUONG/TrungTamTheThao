@@ -12,6 +12,10 @@ using WebApp.Models;
 using Newtonsoft.Json;
 using Microsoft.SqlServer.Server;
 using System.Data.Entity.Migrations;
+using System.Web.WebPages;
+using System.Web.UI.WebControls;
+using WebApp.Constant;
+using System.ComponentModel;
 
 namespace WebApp.Controllers
 {
@@ -811,7 +815,6 @@ namespace WebApp.Controllers
 
         // Phần của admin
 
-
         #region Các hàm xử lý Role
         public ActionResult ManageRole()
         {
@@ -895,36 +898,50 @@ namespace WebApp.Controllers
 
         #endregion
 
-        public ActionResult ManageAccount()
+        #region Các hàm xử lý User
+        public ActionResult ManageUser()
         {
             List<tb_User> listUser = db.tb_User.ToList();
-            List<tb_Role> listRole = db.tb_Role.ToList();
-
-            ViewBag.listRole = listRole.ToSelectList(r => r.RoleName, r => r.ID.ToString());
             ViewBag.listUser = listUser;
-            foreach (var item in listUser)
+
+            return View();
+        }
+
+        public ActionResult GetTableUser()
+        {
+            List<tb_User> listUser = db.tb_User.ToList();
+
+            foreach(var item in listUser)
             {
-                item.StatusName = TrangThaiTaiKhoanConstant.GetDisplayNameByValue(item.Status);
-
-                var roleName = listRole.FirstOrDefault(x => x.RoleID == item.RoleID)?.RoleName;
-                if (roleName != null)
-                {
-                    item.RoleName = roleName;
-                }
-
+                item.RoleName = db.tb_Role.Where(x => x.RoleID == item.RoleID).FirstOrDefault().RoleName;
             }
+            ViewBag.listUser = listUser;
+
+           
+            return PartialView("_TableUserPartial");
+        }
+
+        public ActionResult CreateUser()
+        {
             tb_User User = new tb_User();
-            return View(User);
+            tb_User lastUser = db.tb_User.OrderByDescending(x => x.ID).FirstOrDefault();
+            User.UserID = "U" + (lastUser.ID + 1);
+
+            var listRole = db.tb_Role.ToList();
+            ViewBag.listRole = listRole.ToSelectList(r => r.RoleName, r => r.RoleID);
+            ViewBag.listStatus = TrangThaiUserConstant.GetSelectListItems(-1);
+
+            return PartialView("_CreateUserPartial", User);
         }
 
         [HttpPost]
-        public ActionResult CreateAccount(tb_User model)
+        public ActionResult CreateUser(tb_User model)
         {
             try
             {
+                model.Password = PasswordManager.HashPassword(model.Password);
                 db.tb_User.Add(model);
                 db.SaveChanges();
-
             }
             catch (Exception ex)
             {
@@ -933,6 +950,70 @@ namespace WebApp.Controllers
             return Json(new { success = true, message = "Thêm mới thành công" }, JsonRequestBehavior.AllowGet);
 
         }
+
+        public ActionResult EditUser(long ID)
+        {
+            var listRole = db.tb_Role.ToList();
+            ViewBag.listRole = listRole.ToSelectList(r => r.RoleName, r => r.RoleID);
+            ViewBag.listStatus = TrangThaiUserConstant.GetSelectListItems(-1);
+
+            tb_User User = db.tb_User.FirstOrDefault(x => x.ID == ID);
+            return PartialView("_EditUserPartial", User);
+        }
+
+        [HttpPost]
+        public ActionResult EditUser(tb_User model)
+        {
+            try
+            {
+                var User = db.tb_User.FirstOrDefault(x => x.ID == model.ID);
+                User.UserID = model.UserID;
+
+                if (db.tb_User.Where(x => x.ID == model.ID && model.UserName != User.UserName).Any())
+                {
+                    return Json(new { success = false, message = "Tên tài khoản đã tồn tại!" }, JsonRequestBehavior.AllowGet);
+                }
+
+                User.UserName = model.UserName;
+                if (!PasswordManager.VerifyPassword(model.Password, User.Password))
+                {
+                    User.Password = PasswordManager.HashPassword(model.Password);
+                }
+                User.FullName = model.FullName;
+                User.Email = model.Email;
+                User.Phone = model.Phone;
+                User.Address = model.Address;
+                User.Status = model.Status;
+                User.RoleID = model.RoleID;
+
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Sửa bản ghi không thành công!" }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { success = true, message = "Sửa bản ghi thành công!" }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        public ActionResult DeleteUser(long ID)
+        {
+            try
+            {
+                tb_User model = db.tb_User.Where(x => x.ID == ID).FirstOrDefault();
+                db.tb_User.Remove(model);
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Đã gặp lỗi khi xóa!" }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { success = true, message = "Xóa bản ghi thành công" }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        #endregion
 
     }
 }

@@ -1,9 +1,8 @@
 ﻿
 @{
-    ViewBag.Title = "ManageRole";
+    ViewBag.Title = "ManageUser";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 
 <style>
     .btn-add {
@@ -60,7 +59,7 @@
         <button class="btn btn-primary btn-add" onclick="Create()">Thêm mới</button>
     </div>
     <div class="container">
-        
+
     </div>
 
 </div>
@@ -90,7 +89,7 @@
     // Các hàm xử lý bảng
     function GetTable() {
         $.ajax({
-            url: '/Home/GetTableRole',
+            url: '/Home/GetTableUser',
             type: 'GET',
             success: function (rs) {
                 $('.container').empty();
@@ -107,7 +106,7 @@
 
     function Create() {
         $.ajax({
-            url: '/Home/CreateRole',
+            url: '/Home/CreateUser',
             type: 'GET',
             success: function (rs) {
                 if (!rs) {
@@ -132,7 +131,7 @@
             return;
         }
         $.ajax({
-            url: '/Home/EditRole',
+            url: '/Home/EditUser',
             type: 'GET',
             data: { ID: ID },
             success: function (rs) {
@@ -176,7 +175,7 @@
 
     function closeConfirmationDialog() {
         document.getElementById('confirmationDialog').style.display = 'none';
-        $('#roleNameError').html('');
+        $('#userNameError').html('');
 
     }
 
@@ -194,7 +193,7 @@
         }
 
         $.ajax({
-            url: '/Home/DeleteRole',
+            url: '/Home/DeleteUser',
             type: 'GET',
             data: { ID: ID },
             success: function (rs) {
@@ -216,24 +215,76 @@
 
 
     // Các hàm xử lý validate
-    function validateRoleName() {
-        var roleNameValue = $('#RoleName').val().trim();
-        var errorElement = $('#roleNameError');
+    function validateUserName() {
+        var userNameValue = $('#UserName').val().trim();
+        var errorElement = $('#userNameError');
 
-        if (roleNameValue === "") {
+        if (userNameValue === "") {
             errorElement.html("Vui lòng nhập trường thông tin này");
-            $('#RoleName').focus();
+            $('#UserName').focus();
             return false;
         } else {
             errorElement.html("");
             return true;
         }
     }
-    
-    
+
+    function validatePassword() {
+        var password = document.getElementById("Password").value;
+        if (password.length < 8) {
+            document.getElementById("passwordError").innerText = "Mật khẩu phải có ít nhất 8 kí tự";
+            return false;
+        }
+        var uppercaseRegex = /[A-Z]/;
+        if (!uppercaseRegex.test(password)) {
+            document.getElementById("passwordError").innerText = "Mật khẩu phải có ít nhất 1 chữ hoa";
+            return false;
+        }
+        document.getElementById("passwordError").innerText = "";
+        return true;
+    }
+
+
+    function validateEmail() {
+        var email = document.getElementById("Email").value.trim();
+        var $emailError = $('#emailError');
+
+         // Biểu thức chính quy để kiểm tra email
+         @{
+            string emailRegexPattern = @"/^[^\s@]+@[^\s@]+\.[^\s@]+$/";
+         }
+        var emailRegex = @emailRegexPattern;
+
+        if (email === "" || !emailRegex.test(email)) {
+            $emailError.text("Địa chỉ email không hợp lệ.");
+            return false;
+        }
+        else {
+            $emailError.text("");
+            return true;
+        }
+    }
+
+    function validatePhone() {
+        var phoneInput = document.getElementById('Phone');
+        var phoneError = document.getElementById('phoneError');
+        var phonePattern = /^0\d{9}$/;
+
+        if (!phonePattern.test(phoneInput.value)) {
+            phoneError.textContent = "Số điện thoại không hợp lệ";
+            return false;
+        } else {
+            phoneError.textContent = "";
+            return true;
+        }
+    }
+
+
     $(document).ready(function () {
         GetTable();
     })
 
 
 </script>
+
+

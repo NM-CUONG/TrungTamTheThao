@@ -145,6 +145,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Constant\TrangThaiUserConstant.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -159,7 +160,6 @@
     <Compile Include="Models\tb_Shift.cs" />
     <Compile Include="Models\tb_Size.cs" />
     <Compile Include="Models\tb_User.cs" />
-    <Compile Include="Models\TrangThaiTaiKhoanConstant.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -2302,10 +2302,13 @@
     <Content Include="Views\Home\_BookingSwimmingPartial.cshtml" />
     <Content Include="Views\Home\ForgotPassword.cshtml" />
     <Content Include="Views\Home\ManageRole.cshtml" />
-    <Content Include="Views\Home\ManageAccount.cshtml" />
     <Content Include="Views\Home\_EditRolePartial.cshtml" />
     <Content Include="Views\Home\_CreateRolePartial.cshtml" />
     <Content Include="Views\Home\_TableRolePartial.cshtml" />
+    <Content Include="Views\Home\ManageUser.cshtml" />
+    <Content Include="Views\Home\_TableUserPartial.cshtml" />
+    <Content Include="Views\Home\_CreateUserPartial.cshtml" />
+    <Content Include="Views\Home\_EditUserPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

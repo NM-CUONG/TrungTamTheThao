@@ -1,0 +1,114 @@
+﻿
+@model WebApp.Models.tb_User
+
+@{
+    var listRole = ViewBag.listRole as List<SelectListItem>;
+    var listStatus = ViewBag.listStatus as List<SelectListItem>;
+}
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header ">
+            <h1 class="modal-title w-100 text-center fs-5 text-uppercase" id="staticBackdropLabel">Thêm tài khoản</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        @using (Ajax.BeginForm("CreateUser", "Home", new AjaxOptions()
+        {
+            HttpMethod = "POST",
+            OnSuccess = "Success",
+            OnFailure = "Failure",
+        }))
+        {
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="col-sm-6">
+                        <label class="form-label" for="UserID">Mã tài khoản<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12">
+                            @Html.TextBoxFor(m => m.UserID, new { @class = "form-control mauxam ", @readonly = "readonly" })
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="form-label" for="UserName">Tên tài khoản<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+                            <span id="userNameError" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="UserName">Mật khẩu<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.TextBoxFor(m => m.Password, new { @class = "form-control", type= "password" })
+                            <span id="passwordError" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="UserName">Họ và tên</label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+                            <span id="fullnameError" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="form-label" for="UserName">Email<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                            <span id="emailError" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="form-label" for="UserName">SĐT</label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control" })
+                            <span id="phoneError" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="UserName">Địa chỉ</label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.TextBoxFor(m => m.Address, new { @class = "form-control" })
+                            <span id="addressError" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="form-label" for="UserName">Trạng thái</label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.DropDownList("Status", listStatus, "--Chọn trạng thái--", new {@class="form-control"})
+                            <span id="statusError" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="form-label" for="UserName">Phân quyền</label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.DropDownList("RoleID", listRole, "--Chọn quyền--", new { @class = "form-control" })
+                            <span id="roleError" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn-submit btn btn-primary">Thêm</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+
+    $('.btn-submit').on('click', function (event) {
+        if (!validateUserName() || 
+            !validatePassword() ||
+            !validateEmail() ||
+            !validatePhone()
+        ) {
+            event.preventDefault();
+        }
+    })
+</script>
