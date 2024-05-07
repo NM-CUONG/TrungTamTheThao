@@ -3,11 +3,11 @@
     var listUser = ViewBag.listUser;
 }
 
-<table class="table table-striped table-hover">
+<table class="table table-striped table-hover" style="font-size: 13px;">
     <thead>
         <tr>
             <th scope="col">STT</th>
-            <th scope="col">Mã người dùng</th>
+            @*<th scope="col">Mã người dùng</th>*@
             <th scope="col">Tên người dùng</th>
             <th scope="col">Họ và tên</th>
             <th scope="col">Email</th>
@@ -25,7 +25,7 @@
             {
                 <tr>
                     <td>@STT</td>
-                    <td>@item.UserID</td>
+                    @*<td>@item.UserID</td>*@
                     <td>@item.UserName</td>
                     <td>@item.FullName</td>
                     <td>@item.Email</td>
@@ -34,8 +34,8 @@
                     <td>@item.StatusName</td>
                     <td>@item.RoleName</td>
                     <td>
-                        <div class="btn btn-warning btn-fix" onclick="Edit(@item.ID)"><i class="bi bi-tools"></i> Sửa</div>
-                        <div data-id="@item.ID" onclick="openConfirmationDialog(this)" class="btn btn-danger btn-delete"><i class="bi bi-trash"></i> Xóa</div>
+                        <div style="font-size: 12px;" class="btn btn-warning btn-fix" onclick="Edit(@item.ID)"><i class="bi bi-tools"></i> Sửa</div>
+                        <div style="font-size: 12px;" data-id="@item.ID" onclick="openConfirmationDialog(this)" class="btn btn-danger btn-delete"><i class="bi bi-trash"></i> Xóa</div>
                     <td>
                 </tr>
                 STT++;

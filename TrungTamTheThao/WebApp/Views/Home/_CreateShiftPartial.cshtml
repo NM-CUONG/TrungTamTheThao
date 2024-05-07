@@ -1,0 +1,69 @@
+﻿
+
+@model WebApp.Models.tb_Shift
+
+@{
+    var listCategory = ViewBag.listCategory as List<SelectListItem>;
+}
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header ">
+            <h1 class="modal-title w-100 text-center fs-5 text-uppercase" id="staticBackdropLabel">Thêm khung giờ</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        @using (Ajax.BeginForm("CreateShift", "Home", new AjaxOptions()
+        {
+            HttpMethod = "POST",
+            OnSuccess = "Success",
+            OnFailure = "Failure",
+        }))
+        {
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label class="form-label" for="ShiftID">Mã khung giờ<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12">
+                            @Html.TextBoxFor(m => m.ShiftID, new { @class = "form-control mauxam ", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="ShiftName">Tên khung giờ<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.TextBoxFor(m => m.ShiftName, new { @class = "form-control" })
+                            <span id="shiftNameError" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="ShiftName">Giá tiền<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.TextBoxFor(m => m.Price, new { @class = "form-control" })
+                            <span id="priceError" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="ShiftName">Loại khu vực <span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.DropDownList("CateID", listCategory, "--Chọn quyền--", new { @class = "form-control" })
+                            <span id="cateError" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn-submit btn btn-primary">Thêm</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+
+    $('.btn-submit').on('click', function (event) {
+        if (!validateShiftName() || !validatePrice() || !validateCategory())
+        {
+            event.preventDefault();
+        }
+    })
+</script>

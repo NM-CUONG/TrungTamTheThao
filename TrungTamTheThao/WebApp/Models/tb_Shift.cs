@@ -29,6 +29,8 @@ namespace WebApp.Models
 
         [StringLength(10)]
         public string CateID { get; set; }
+        [NotMapped]
+        public string CateName { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<tb_Booking> tb_Booking { get; set; }

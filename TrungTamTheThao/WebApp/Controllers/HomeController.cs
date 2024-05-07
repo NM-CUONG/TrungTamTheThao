@@ -83,12 +83,12 @@ namespace WebApp.Controllers
         public JsonResult Regis(tb_User model)
         {
 
-            //Check trùng username
+            //Check trùng shiftname
             if (CheckExistsUserName(model.UserName))
             {
                 return Json(new { success = false, message = "Tên đăng nhập đã tồn tại" });
             }
-            //Sinh userid tự động
+            //Sinh shiftid tự động
             var lastItem = db.tb_User.OrderByDescending(x => x.ID).FirstOrDefault();
             if (lastItem != null)
             {
@@ -122,8 +122,8 @@ namespace WebApp.Controllers
                 {
                     //Tiêu đề mail
                     mm.Subject = "Xác nhận đăng ký tài khoản";
-                    //Nội dung mail - gửi kèm link xác nhận có userid để nhận diện khi confirm
-                    mm.Body = $"Để xác nhận tài khoản vui lòng nhấp vào link sau <a href=\"https://localhost:44315/Home/ConfirmEmailRegis/?userid={UserID}\">Xác nhận đăng ký tài khoản</a>";
+                    //Nội dung mail - gửi kèm link xác nhận có shiftid để nhận diện khi confirm
+                    mm.Body = $"Để xác nhận tài khoản vui lòng nhấp vào link sau <a href=\"https://localhost:44315/Home/ConfirmEmailRegis/?shiftid={UserID}\">Xác nhận đăng ký tài khoản</a>";
                     mm.IsBodyHtml = true;
                     using (SmtpClient smtp = new SmtpClient())
                     {
@@ -148,10 +148,10 @@ namespace WebApp.Controllers
         }
 
         //Xác nhận email đăng ký tài khoản
-        public ActionResult ConfirmEmailRegis(string userid)
+        public ActionResult ConfirmEmailRegis(string shiftid)
         {
             //lay ra account vua dang ky de xac nhan bang cach chinh status = 1
-            var account = db.tb_User.Where(x => x.UserID == userid).FirstOrDefault();
+            var account = db.tb_User.Where(x => x.UserID == shiftid).FirstOrDefault();
             if (account != null)
             {
                 account.Status = 1;
@@ -342,10 +342,10 @@ namespace WebApp.Controllers
                 model.EndTime = model.ngaySuDung;
             }
 
-            tb_User userInfor = Session["UserInfor"] as tb_User;
-            if (userInfor != null)
+            tb_User shiftInfor = Session["UserInfor"] as tb_User;
+            if (shiftInfor != null)
             {
-                model.UserID = userInfor.UserID;
+                model.UserID = shiftInfor.UserID;
             }
 
             model.Status = 0;
@@ -385,10 +385,10 @@ namespace WebApp.Controllers
                 model.EndTime = model.ngaySuDung;
             }
 
-            tb_User userInfor = Session["UserInfor"] as tb_User;
-            if (userInfor != null)
+            tb_User shiftInfor = Session["UserInfor"] as tb_User;
+            if (shiftInfor != null)
             {
-                model.UserID = userInfor.UserID;
+                model.UserID = shiftInfor.UserID;
             }
 
             model.Status = 0;
@@ -428,10 +428,10 @@ namespace WebApp.Controllers
                 model.EndTime = model.ngaySuDung;
             }
 
-            tb_User userInfor = Session["UserInfor"] as tb_User;
-            if (userInfor != null)
+            tb_User shiftInfor = Session["UserInfor"] as tb_User;
+            if (shiftInfor != null)
             {
-                model.UserID = userInfor.UserID;
+                model.UserID = shiftInfor.UserID;
             }
 
             model.Status = 0;
@@ -471,10 +471,10 @@ namespace WebApp.Controllers
                 model.EndTime = model.ngaySuDung;
             }
 
-            tb_User userInfor = Session["UserInfor"] as tb_User;
-            if (userInfor != null)
+            tb_User shiftInfor = Session["UserInfor"] as tb_User;
+            if (shiftInfor != null)
             {
-                model.UserID = userInfor.UserID;
+                model.UserID = shiftInfor.UserID;
             }
 
             model.Status = 0;
@@ -574,16 +574,16 @@ namespace WebApp.Controllers
         {
             try
             {
-                var user = db.tb_User.Where(x => x.ID == model.ID).FirstOrDefault();
-                if (user == null)
+                var shift = db.tb_User.Where(x => x.ID == model.ID).FirstOrDefault();
+                if (shift == null)
                 {
                     return Json(new { success = false, message = "Không tìm thấy tài khoản trong CSDL!" });
                 }
-                user.FullName = model.FullName;
-                user.Phone = model.Phone;
-                user.Address = model.Address;
+                shift.FullName = model.FullName;
+                shift.Phone = model.Phone;
+                shift.Address = model.Address;
                 db.SaveChanges();
-                Session["UserInfor"] = user;
+                Session["UserInfor"] = shift;
             }
             catch (Exception ex)
             {
@@ -660,7 +660,7 @@ namespace WebApp.Controllers
                 {
                     //Tiêu đề mail
                     mm.Subject = "Quên mật khẩu";
-                    //Nội dung mail - gửi kèm link xác nhận có userid để nhận diện khi confirm
+                    //Nội dung mail - gửi kèm link xác nhận có shiftid để nhận diện khi confirm
                     Random random = new Random();
                     var captra = random.Next(1000, 10000);
                     Session["captra"] = captra;
@@ -688,9 +688,9 @@ namespace WebApp.Controllers
             return Json(new { success = true, message = "Vui lòng kiểm tra email để lấy mã xác nhận!" }, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult ForgotPassword(string username)
+        public ActionResult ForgotPassword(string shiftname)
         {
-            var model = db.tb_User.Where(x => x.UserName == username).FirstOrDefault();
+            var model = db.tb_User.Where(x => x.UserName == shiftname).FirstOrDefault();
             if (model == null)
             {
                 ViewBag.Error = "Không tìm thấy thông tin tài khoản!";
@@ -702,12 +702,12 @@ namespace WebApp.Controllers
         [HttpPost]
         public ActionResult ForgotPassword(FormCollection form)
         {
-            string userID = form["UserID"];
+            string shiftID = form["UserID"];
             string passWord = form["Password"];
             string ct = form["captra"];
 
 
-            if (string.IsNullOrEmpty(userID) ||
+            if (string.IsNullOrEmpty(shiftID) ||
                 string.IsNullOrEmpty(passWord) ||
                 Session["captra"] == null ||
                 string.IsNullOrEmpty(ct))
@@ -722,7 +722,7 @@ namespace WebApp.Controllers
             }
             try
             {
-                tb_User tk = db.tb_User.Where(x => x.UserID == userID).FirstOrDefault();
+                tb_User tk = db.tb_User.Where(x => x.UserID == shiftID).FirstOrDefault();
                 tk.Password = PasswordManager.HashPassword(passWord);
                 db.SaveChanges();
             }
@@ -773,8 +773,8 @@ namespace WebApp.Controllers
                 {
                     //Tiêu đề mail
                     mm.Subject = "Xác nhận thay đổi email";
-                    //Nội dung mail - gửi kèm link xác nhận có userid để nhận diện khi confirm
-                    mm.Body = $"Để xác nhận thay đổi email vui lòng nhấp vào link sau <a href=\"https://localhost:44315/Home/ConfirmEmailChange/?userid={Account.ID}&newEmail={newEmail}\">Xác nhận thay đổi email</a>";
+                    //Nội dung mail - gửi kèm link xác nhận có shiftid để nhận diện khi confirm
+                    mm.Body = $"Để xác nhận thay đổi email vui lòng nhấp vào link sau <a href=\"https://localhost:44315/Home/ConfirmEmailChange/?shiftid={Account.ID}&newEmail={newEmail}\">Xác nhận thay đổi email</a>";
                     mm.IsBodyHtml = true;
                     using (SmtpClient smtp = new SmtpClient())
                     {
@@ -800,9 +800,9 @@ namespace WebApp.Controllers
 
         }
 
-        public ActionResult ConfirmEmailChange(string userid, string newEmail)
+        public ActionResult ConfirmEmailChange(string shiftid, string newEmail)
         {
-            var account = db.tb_User.Where(x => x.ID.ToString() == userid).FirstOrDefault();
+            var account = db.tb_User.Where(x => x.ID.ToString() == shiftid).FirstOrDefault();
             if (account != null)
             {
                 account.Email = newEmail;
@@ -889,7 +889,7 @@ namespace WebApp.Controllers
             }
             catch (Exception)
             {
-                return Json(new { success = false, message = "Đã gặp lỗi khi xóa!" }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = "Không thể xóa bản ghi này!!" }, JsonRequestBehavior.AllowGet);
             }
 
             return Json(new { success = true, message = "Xóa bản ghi thành công" }, JsonRequestBehavior.AllowGet);
@@ -913,6 +913,7 @@ namespace WebApp.Controllers
 
             foreach(var item in listUser)
             {
+                if (item.RoleID == null) continue;
                 item.RoleName = db.tb_Role.Where(x => x.RoleID == item.RoleID).FirstOrDefault().RoleName;
             }
             ViewBag.listUser = listUser;
@@ -1006,7 +1007,198 @@ namespace WebApp.Controllers
             }
             catch (Exception)
             {
-                return Json(new { success = false, message = "Đã gặp lỗi khi xóa!" }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = "Không thể xóa bản ghi này!!" }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { success = true, message = "Xóa bản ghi thành công" }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        #endregion
+
+
+        #region Các hàm xử lý Size
+        public ActionResult ManageSize()
+        {
+            List<tb_Size> listSize = db.tb_Size.ToList();
+            ViewBag.listSize = listSize;
+            return View();
+        }
+
+        public ActionResult GetTableSize()
+        {
+            List<tb_Size> listSize = db.tb_Size.ToList();
+            ViewBag.listSize = listSize;
+            return PartialView("_TableSizePartial");
+        }
+
+        public ActionResult CreateSize()
+        {
+            tb_Size size = new tb_Size();
+            tb_Size lastSize = db.tb_Size.OrderByDescending(x => x.ID).FirstOrDefault();
+            size.SizeID = "S" + (lastSize.ID + 1);
+
+            return PartialView("_CreateSizePartial", size);
+        }
+
+        [HttpPost]
+        public ActionResult CreateSize(tb_Size model)
+        {
+            try
+            {
+                db.tb_Size.Add(model);
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Thêm mới không thành công, lỗi: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { success = true, message = "Thêm mới thành công" }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        public ActionResult EditSize(long ID)
+        {
+            tb_Size size = db.tb_Size.FirstOrDefault(x => x.ID == ID);
+            return PartialView("_EditSizePartial", size);
+        }
+
+        [HttpPost]
+        public ActionResult EditSize(tb_Size model)
+        {
+            try
+            {
+                var size = db.tb_Size.FirstOrDefault(x => x.ID == model.ID);
+                size.SizeID = model.SizeID;
+                size.SizeName = model.SizeName;
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Sửa bản ghi không thành công!" }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { success = true, message = "Sửa bản ghi thành công!" }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        public ActionResult DeleteSize(long ID)
+        {
+            try
+            {
+                tb_Size model = db.tb_Size.Where(x => x.ID == ID).FirstOrDefault();
+                db.tb_Size.Remove(model);
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Không thể xóa bản ghi này!!" }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { success = true, message = "Xóa bản ghi thành công" }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        #endregion
+
+
+        #region Các hàm xử lý Shift
+        public ActionResult ManageShift()
+        {
+            List<tb_Shift> listShift = db.tb_Shift.ToList();
+            ViewBag.listShift = listShift;
+
+            return View();
+        }
+
+        public ActionResult GetTableShift()
+        {
+            List<tb_Shift> listShift = db.tb_Shift.ToList();
+            try
+            {
+                foreach (var item in listShift)
+                {
+                    if (item.CateID == null) continue;
+                    item.CateName = db.tb_Category.Where(x => x.CateID == item.CateID).FirstOrDefault().CateName;
+                }
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Đã xảy ra lỗi trong quá trình lấy dữ liệu!" }, JsonRequestBehavior.AllowGet);
+            }
+           
+            ViewBag.listShift = listShift;
+
+            return PartialView("_TableShiftPartial");
+        }
+
+        public ActionResult CreateShift()
+        {
+            tb_Shift Shift = new tb_Shift();
+            tb_Shift lastShift = db.tb_Shift.OrderByDescending(x => x.ID).FirstOrDefault();
+            Shift.ShiftID = "Ca" + (lastShift.ID + 1);
+
+            var listCategory = db.tb_Category.ToList();
+            ViewBag.listCategory = listCategory.ToSelectList(r => r.CateName, r => r.CateID);
+
+            return PartialView("_CreateShiftPartial", Shift);
+        }
+
+        [HttpPost]
+        public ActionResult CreateShift(tb_Shift model)
+        {
+            try
+            {
+                db.tb_Shift.Add(model);
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Thêm mới không thành công, lỗi: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { success = true, message = "Thêm mới thành công" }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        public ActionResult EditShift(long ID)
+        {
+            var listCategory = db.tb_Category.ToList();
+            ViewBag.listCategory = listCategory.ToSelectList(r => r.CateName, r => r.CateID);
+
+            tb_Shift Shift = db.tb_Shift.FirstOrDefault(x => x.ID == ID);
+            return PartialView("_EditShiftPartial", Shift);
+        }
+
+        [HttpPost]
+        public ActionResult EditShift(tb_Shift model)
+        {
+            try
+            {
+                var Shift = db.tb_Shift.FirstOrDefault(x => x.ID == model.ID);
+                Shift.ShiftID = model.ShiftID;
+                Shift.ShiftName = model.ShiftName;
+                Shift.Price = model.Price;
+                Shift.CateID = model.CateID;
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Sửa bản ghi không thành công!" }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { success = true, message = "Sửa bản ghi thành công!" }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        public ActionResult DeleteShift(long ID)
+        {
+            try
+            {
+                tb_Shift model = db.tb_Shift.Where(x => x.ID == ID).FirstOrDefault();
+                db.tb_Shift.Remove(model);
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Không thể xóa bản ghi này!!" }, JsonRequestBehavior.AllowGet);
             }
 
             return Json(new { success = true, message = "Xóa bản ghi thành công" }, JsonRequestBehavior.AllowGet);

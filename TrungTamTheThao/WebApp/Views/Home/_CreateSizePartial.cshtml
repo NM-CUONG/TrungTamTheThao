@@ -1,0 +1,48 @@
+﻿
+@model WebApp.Models.tb_Size
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header ">
+            <h1 class="modal-title w-100 text-center fs-5 text-uppercase" id="staticBackdropLabel">Thêm loại phòng</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        @using (Ajax.BeginForm("CreateSize", "Home", new AjaxOptions()
+        {
+            HttpMethod = "POST",
+            OnSuccess = "Success",
+            OnFailure = "Failure",
+        }))
+        {
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label class="form-label" for="UserID">Mã loại phòng<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12">
+                            @Html.TextBoxFor(m => m.SizeID, new { @class = "form-control mauxam ", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="SizeName">Tên loại phòng<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.TextBoxFor(m => m.SizeName, new { @class = "form-control" })
+                            <span id="sizeNameError" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn-submit btn btn-primary">Thêm</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    $('.btn-submit').on('click', function (event) {
+        if (!validateSizeName()) {
+            event.preventDefault();
+        }
+    })
+</script>

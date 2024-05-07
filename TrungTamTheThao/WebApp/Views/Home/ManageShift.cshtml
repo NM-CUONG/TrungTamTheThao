@@ -1,0 +1,271 @@
+﻿
+@{
+    ViewBag.Title = "ManageShift";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+    .btn-add {
+        margin-right: 30px;
+    }
+    .modal-header {
+        background-color: #2a86bb;
+        color: white;
+    }
+    .mauxam {
+        background-color: gainsboro;
+    }
+    .confirmation-dialog {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+    }
+    .confirmation-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+    }
+    .buttons {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .confirm-btn,
+    .cancel-btn {
+        min-width: 80px;
+        margin: 0 10px;
+        cursor: pointer;
+    }
+</style>
+
+
+<div>
+    <div class="d-flex flex-row-reverse">
+        <button class="btn btn-primary btn-add" onclick="Create()">Thêm mới</button>
+    </div>
+    <div class="container">
+
+    </div>
+</div>
+
+<div id="confirmationDialog" class="confirmation-dialog">
+    <div class="confirmation-content">
+        <h5 class="">Bạn có chắc chắn muốn xóa?</h5>
+        <div>
+            <div style="display: none;"><input type="text" id="hiddenID" name="hiddenID" value="" /></div>
+            <div class="buttons">
+                <button id="confirmBtn" type="submit" class="confirm-btn btn btn-primary"><i class="bi bi-check-circle-fill"></i> Có</button>
+                <button id="cancelBtn" type="button" class="cancel-btn btn btn-danger"><i class="bi bi-x-circle-fill"></i> Không</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="form">
+    <div class="modal modal-lg fade" id="popup" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+
+    </div>
+</div>
+
+
+<script>
+
+    // Các hàm xử lý bảng
+    function GetTable() {
+        $.ajax({
+            url: '/Home/GetTableShift',
+            type: 'GET',
+            success: function (rs) {
+                $('.container').empty();
+                $('.container').html(rs);
+            },
+            error: function () {
+                toastr.error("Đã có lỗi xảy ra khi lấy bảng", "Thông báo");
+            }
+        })
+    }
+
+
+    // Các hàm xử lý thêm khung giờ
+
+    function Create() {
+        $.ajax({
+            url: '/Home/CreateShift',
+            type: 'GET',
+            success: function (rs) {
+                if (!rs) {
+                    toastr.error(rs.message, "Thông báo")
+                    return;
+                }
+
+                $('#popup').html(rs);
+                $('#popup').modal('show');
+
+            },
+            error: function () {
+                toastr.error("Không thể thêm, đã xảy ra lỗi!", "Thông báo");
+            }
+        })
+    }
+
+    // Các hàm xử lý sửa khung giờ
+    function Edit(ID) {
+        if (!ID) {
+            toastr.error("Không thể sửa, đã xảy ra lỗi!", "Thông báo");
+            return;
+        }
+        $.ajax({
+            url: '/Home/EditShift',
+            type: 'GET',
+            data: { ID: ID },
+            success: function (rs) {
+                if (!rs) {
+                    toastr.error(rs.message, "Thông báo")
+                    return;
+                }
+
+                $('#popup').html(rs);
+                $('#popup').modal('show');
+
+            },
+            error: function () {
+                toastr.error("Không thể sửa, đã xảy ra lỗi!", "Thông báo");
+            }
+        })
+    }
+
+    function Success(rs) {
+        if (!rs.success) {
+            toastr.error(rs.message, "Thông báo")
+            return;
+        }
+
+        $('#popup').modal('hide');
+        GetTable();
+        toastr.success(rs.message, "Thông báo")
+
+    }
+
+    function Failure() {
+        toastr.error("Đã xảy ra lỗi", "Thông báo")
+    }
+
+    // Các hàm xử lý xóa khung giờ
+    function openConfirmationDialog(button) {
+        document.getElementById('confirmationDialog').style.display = 'block';
+        var dataId = button.getAttribute('data-id');
+        $('#hiddenID').val(dataId);
+    }
+
+    function closeConfirmationDialog() {
+        document.getElementById('confirmationDialog').style.display = 'none';
+        $('#shiftNameError').html('');
+
+    }
+
+    function handleCancel() {
+        closeConfirmationDialog();
+    }
+
+    function handleConfirm() {
+        closeConfirmationDialog();
+
+        const ID = $('#hiddenID').val();
+        if (ID == null) {
+            toastr.error("Đã có lỗi xảy ra khi xóa", "Thông báo");
+            return;
+        }
+
+        $.ajax({
+            url: '/Home/DeleteShift',
+            type: 'GET',
+            data: { ID: ID },
+            success: function (rs) {
+                if (!rs.success) {
+                    toastr.error(rs.message, "Thông báo");
+                    return;
+                }
+                toastr.success(rs.message, "Thông báo");
+                GetTable();
+            },
+            error: function () {
+                toastr.error("Đã có lỗi xảy ra khi xóa", "Thông báo");
+            }
+        })
+    }
+
+    document.getElementById('cancelBtn').addEventListener('click', handleCancel);
+    document.getElementById('confirmBtn').addEventListener('click', handleConfirm);
+
+
+    // Các hàm xử lý validate
+    function validateShiftName() {
+        var shiftNameValue = $('#ShiftName').val().trim();
+        var errorElement = $('#shiftNameError');
+
+        if (shiftNameValue === "") {
+            errorElement.html("Vui lòng nhập trường thông tin này");
+            $('#ShiftName').focus();
+            return false;
+        } else {
+            errorElement.html("");
+            return true;
+        }
+    }
+
+    function validatePrice() {
+        var priceInput = document.getElementById('Price').value;
+        var priceError = document.getElementById('priceError');
+
+        // Kiểm tra xem trường giá tiền có được nhập hay không
+        if (priceInput.trim() === '') {
+            priceError.textContent = 'Vui lòng nhập giá tiền';
+            return false;
+        }
+
+        // Kiểm tra xem giá trị nhập vào có phải là một số không
+        if (isNaN(priceInput)) {
+            priceError.textContent = 'Giá tiền phải là một số';
+            return false;
+        }
+
+        // Xóa thông báo lỗi nếu không có lỗi
+        priceError.textContent = '';
+        return true;
+    }
+
+    function validateCategory() {
+        var categoryInput = document.getElementById('CateID');
+        var categoryError = document.getElementById('cateError');
+
+        // Kiểm tra xem đã chọn một loại khu vực hay chưa
+        if (categoryInput.value === '') {
+            categoryError.textContent = 'Vui lòng chọn một loại khu vực';
+            return false;
+        }
+
+        // Xóa thông báo lỗi nếu không có lỗi
+        categoryError.textContent = '';
+        return true;
+    }
+
+
+    $(document).ready(function () {
+        GetTable();
+    })
+
+
+</script>
+
+
+
+

@@ -2309,6 +2309,14 @@
     <Content Include="Views\Home\_TableUserPartial.cshtml" />
     <Content Include="Views\Home\_CreateUserPartial.cshtml" />
     <Content Include="Views\Home\_EditUserPartial.cshtml" />
+    <Content Include="Views\Home\ManageSize.cshtml" />
+    <Content Include="Views\Home\_TableSizePartial.cshtml" />
+    <Content Include="Views\Home\_CreateSizePartial.cshtml" />
+    <Content Include="Views\Home\_EditSizePartial.cshtml" />
+    <Content Include="Views\Home\ManageShift.cshtml" />
+    <Content Include="Views\Home\_TableShiftPartial.cshtml" />
+    <Content Include="Views\Home\_CreateShiftPartial.cshtml" />
+    <Content Include="Views\Home\_EditShiftPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
