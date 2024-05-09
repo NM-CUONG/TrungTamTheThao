@@ -1,6 +1,10 @@
 ﻿
 @model WebApp.Models.tb_Size
 
+@{
+    var listCategory = ViewBag.listCategory as List<SelectListItem>;
+}
+
 <div class="modal-dialog">
     <div class="modal-content">
         <div class="modal-header ">
@@ -32,6 +36,14 @@
                             <span id="sizeNameError" class="text-danger"></span>
                         </div>
                     </div>
+
+                    <div class="col-sm-6">
+                        <label class="form-label" for="ShiftName">Loại khu vực <span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.DropDownList("CateID", listCategory, "--Chọn quyền--", new { @class = "form-control" })
+                            <span id="cateError" class="text-danger"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -44,7 +56,7 @@
 
 <script>
     $('.btn-submit').on('click', function (event) {
-        if (!validateSizeName()) {
+        if (!validateSizeName() || !validateCategory()) {
             event.preventDefault();
         }
     })

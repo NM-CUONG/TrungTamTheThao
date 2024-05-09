@@ -1,3 +1,4 @@
+
 namespace WebApp.Models
 {
     using System;
@@ -25,8 +26,6 @@ namespace WebApp.Models
         [StringLength(255)]
         public string ArenaName { get; set; }
 
-        public int Status { get; set; }
-
         [StringLength(255)]
         public string Image { get; set; }
 
@@ -35,6 +34,11 @@ namespace WebApp.Models
 
         [StringLength(10)]
         public string SizeID { get; set; }
+        [NotMapped]
+        public string SizeName { get; set; }
+
+        [NotMapped]
+        public string CateName { get; set; }
 
         public string Description { get; set; }
 

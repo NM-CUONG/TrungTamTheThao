@@ -11,8 +11,8 @@ namespace WebApp.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public tb_Category()
         {
-            tb_Arena = new HashSet<tb_Arena>();
-            tb_Shift = new HashSet<tb_Shift>();
+            //tb_Arena = new HashSet<tb_Arena>();
+            //tb_Shift = new HashSet<tb_Shift>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -24,12 +24,12 @@ namespace WebApp.Models
 
         [Required]
         [StringLength(255)]
-        public string CateName { get; set; }
+        public string CateName { get; set; }    
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tb_Arena> tb_Arena { get; set; }
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        //public virtual ICollection<tb_Arena> tb_Arena { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tb_Shift> tb_Shift { get; set; }
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        //public virtual ICollection<tb_Shift> tb_Shift { get; set; }
     }
 }

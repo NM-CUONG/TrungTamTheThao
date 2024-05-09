@@ -1,9 +1,8 @@
 ﻿
 @{
-    ViewBag.Title = "ManageSize";
+    ViewBag.Title = "ManageArena";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 
 <style>
     .btn-add {
@@ -90,7 +89,7 @@
     // Các hàm xử lý bảng
     function GetTable() {
         $.ajax({
-            url: '/Home/GetTableSize',
+            url: '/Home/GetTableArena',
             type: 'GET',
             success: function (rs) {
                 $('.container').empty();
@@ -107,7 +106,7 @@
 
     function Create() {
         $.ajax({
-            url: '/Home/CreateSize',
+            url: '/Home/CreateArena',
             type: 'GET',
             success: function (rs) {
                 if (!rs) {
@@ -132,7 +131,7 @@
             return;
         }
         $.ajax({
-            url: '/Home/EditSize',
+            url: '/Home/EditArena',
             type: 'GET',
             data: { ID: ID },
             success: function (rs) {
@@ -176,6 +175,7 @@
 
     function closeConfirmationDialog() {
         document.getElementById('confirmationDialog').style.display = 'none';
+
     }
 
     function handleCancel() {
@@ -192,7 +192,7 @@
         }
 
         $.ajax({
-            url: '/Home/DeleteSize',
+            url: '/Home/DeleteArena',
             type: 'GET',
             data: { ID: ID },
             success: function (rs) {
@@ -213,39 +213,48 @@
     document.getElementById('confirmBtn').addEventListener('click', handleConfirm);
 
 
-    // Các hàm xử lý validate
-    function validateSizeName() {
-        var sizeNameValue = $('#SizeName').val().trim();
-        var errorElement = $('#sizeNameError');
+    $(document).ready(function () {
+        GetTable();
+    })
 
-        if (sizeNameValue === "") {
-            errorElement.html("Vui lòng nhập trường thông tin này");
-            $('#SizeName').focus();
+    function validateArenaName() {
+        var arenaName = document.getElementById('ArenaName').value;
+        var arenaNameError = document.getElementById('arenaNameError');
+
+        if (arenaName.trim() === '') {
+            arenaNameError.innerText = 'Tên phòng không được để trống';
             return false;
         } else {
-            errorElement.html("");
+            arenaNameError.innerText = '';
             return true;
         }
     }
 
-    function validateCategory() {
-        var categoryInput = document.getElementById('CateID');
-        var categoryError = document.getElementById('cateError');
+    function validateCate() {
+        var cateID = document.getElementById('CateID').value;
+        var cateError = document.getElementById('cateError');
 
-        // Kiểm tra xem đã chọn một loại khu vực hay chưa
-        if (categoryInput.value === '') {
-            categoryError.textContent = 'Vui lòng chọn một loại khu vực';
+        if (cateID.trim() === '' || cateID === '--Chọn khu vực--') {
+            cateError.innerText = 'Vui lòng chọn loại khu vực';
             return false;
+        } else {
+            cateError.innerText = ''; 
+            return true;
         }
-
-        // Xóa thông báo lỗi nếu không có lỗi
-        categoryError.textContent = '';
-        return true;
     }
 
-    $(document).ready(function () {
-        GetTable();
-    })
+    function validateSize() {
+        var sizeID = document.getElementById('SizeID').value;
+        var sizeError = document.getElementById('sizeError');
+
+        if (sizeID.trim() === '' || sizeID === '--Chọn loại phòng--') {
+            sizeError.innerText = 'Vui lòng chọn loại phòng';
+            return false;
+        } else {
+            sizeError.innerText = ''; 
+            return true;
+        }
+    }
 
 
 </script>

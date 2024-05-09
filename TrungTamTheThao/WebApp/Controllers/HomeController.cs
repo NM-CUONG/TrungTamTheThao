@@ -59,7 +59,7 @@ namespace WebApp.Controllers
 
         //Cấu hình email
         private static string EmailHost = "smtp.gmail.com";
-        private static string EmailPort = "587";
+        private static int EmailPort = 587;
         private static string EmailFrom = "nguyenmanhcuong2k2.hsbg@gmail.com";
         private static string EmailFromPassword = "amyr nbnb akdc djgc";
 
@@ -134,7 +134,7 @@ namespace WebApp.Controllers
                         NetworkCredential cred = new NetworkCredential(EmailFrom, EmailFromPassword);
                         smtp.UseDefaultCredentials = true;
                         smtp.Credentials = cred;
-                        smtp.Port = 587;
+                        smtp.Port = EmailPort;
                         smtp.Send(mm);
                     }
                 }
@@ -675,7 +675,7 @@ namespace WebApp.Controllers
                         NetworkCredential cred = new NetworkCredential(EmailFrom, EmailFromPassword);
                         smtp.UseDefaultCredentials = true;
                         smtp.Credentials = cred;
-                        smtp.Port = 587;
+                        smtp.Port = EmailPort;
                         smtp.Send(mm);
                     }
 
@@ -785,7 +785,7 @@ namespace WebApp.Controllers
                         NetworkCredential cred = new NetworkCredential(EmailFrom, EmailFromPassword);
                         smtp.UseDefaultCredentials = true;
                         smtp.Credentials = cred;
-                        smtp.Port = 587;
+                        smtp.Port = EmailPort;
                         smtp.Send(mm);
                     }
                 }
@@ -832,11 +832,11 @@ namespace WebApp.Controllers
 
         public ActionResult CreateRole()
         {
-            tb_Role role = new tb_Role();
+            tb_Role size = new tb_Role();
             tb_Role lastRole = db.tb_Role.OrderByDescending(x => x.ID).FirstOrDefault();
-            role.RoleID = "R" + (lastRole.ID + 1);
+            size.RoleID = "R" + (lastRole.ID + 1);
 
-            return PartialView("_CreateRolePartial", role);
+            return PartialView("_CreateRolePartial", size);
         }
 
         [HttpPost]
@@ -857,8 +857,8 @@ namespace WebApp.Controllers
 
         public ActionResult EditRole(long ID)
         {
-            tb_Role role = db.tb_Role.FirstOrDefault(x => x.ID == ID);
-            return PartialView("_EditRolePartial", role);
+            tb_Role size = db.tb_Role.FirstOrDefault(x => x.ID == ID);
+            return PartialView("_EditRolePartial", size);
         }
 
         [HttpPost]
@@ -866,9 +866,9 @@ namespace WebApp.Controllers
         {
             try
             {
-                var role = db.tb_Role.FirstOrDefault(x => x.ID == model.ID);
-                role.RoleID = model.RoleID;
-                role.RoleName = model.RoleName;
+                var size = db.tb_Role.FirstOrDefault(x => x.ID == model.ID);
+                size.RoleID = model.RoleID;
+                size.RoleName = model.RoleName;
                 db.SaveChanges();
             }
             catch (Exception)
@@ -911,14 +911,14 @@ namespace WebApp.Controllers
         {
             List<tb_User> listUser = db.tb_User.ToList();
 
-            foreach(var item in listUser)
+            foreach (var item in listUser)
             {
                 if (item.RoleID == null) continue;
                 item.RoleName = db.tb_Role.Where(x => x.RoleID == item.RoleID).FirstOrDefault().RoleName;
             }
             ViewBag.listUser = listUser;
 
-           
+
             return PartialView("_TableUserPartial");
         }
 
@@ -1016,7 +1016,6 @@ namespace WebApp.Controllers
 
         #endregion
 
-
         #region Các hàm xử lý Size
         public ActionResult ManageSize()
         {
@@ -1029,6 +1028,18 @@ namespace WebApp.Controllers
         {
             List<tb_Size> listSize = db.tb_Size.ToList();
             ViewBag.listSize = listSize;
+            try
+            {
+                foreach (var item in listSize)
+                {
+                    if (item.CateID == null) continue;
+                    item.CateName = db.tb_Category.Where(x => x.CateID == item.CateID).FirstOrDefault().CateName;
+                }
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Đã xảy ra lỗi trong quá trình lấy dữ liệu!" }, JsonRequestBehavior.AllowGet);
+            }
             return PartialView("_TableSizePartial");
         }
 
@@ -1037,6 +1048,9 @@ namespace WebApp.Controllers
             tb_Size size = new tb_Size();
             tb_Size lastSize = db.tb_Size.OrderByDescending(x => x.ID).FirstOrDefault();
             size.SizeID = "S" + (lastSize.ID + 1);
+
+            var listCategory = db.tb_Category.ToList();
+            ViewBag.listCategory = listCategory.ToSelectList(r => r.CateName, r => r.CateID);
 
             return PartialView("_CreateSizePartial", size);
         }
@@ -1059,6 +1073,9 @@ namespace WebApp.Controllers
 
         public ActionResult EditSize(long ID)
         {
+            var listCategory = db.tb_Category.ToList();
+            ViewBag.listCategory = listCategory.ToSelectList(r => r.CateName, r => r.CateID);
+
             tb_Size size = db.tb_Size.FirstOrDefault(x => x.ID == ID);
             return PartialView("_EditSizePartial", size);
         }
@@ -1071,6 +1088,7 @@ namespace WebApp.Controllers
                 var size = db.tb_Size.FirstOrDefault(x => x.ID == model.ID);
                 size.SizeID = model.SizeID;
                 size.SizeName = model.SizeName;
+                size.CateID = model.CateID;
                 db.SaveChanges();
             }
             catch (Exception)
@@ -1100,7 +1118,6 @@ namespace WebApp.Controllers
 
         #endregion
 
-
         #region Các hàm xử lý Shift
         public ActionResult ManageShift()
         {
@@ -1125,7 +1142,7 @@ namespace WebApp.Controllers
             {
                 return Json(new { success = false, message = "Đã xảy ra lỗi trong quá trình lấy dữ liệu!" }, JsonRequestBehavior.AllowGet);
             }
-           
+
             ViewBag.listShift = listShift;
 
             return PartialView("_TableShiftPartial");
@@ -1207,5 +1224,141 @@ namespace WebApp.Controllers
 
         #endregion
 
+        #region Các hàm xử lý Arena
+        public ActionResult ManageArena()
+        {
+            List<tb_Arena> listArena = db.tb_Arena.ToList();
+            ViewBag.listArena = listArena;
+            return View();
+        }
+
+        public ActionResult GetTableArena()
+        {
+            List<tb_Arena> listArena = db.tb_Arena.ToList();
+
+            foreach (var item in listArena)
+            {
+                if (item.SizeID == null) continue;
+                item.SizeName = db.tb_Size.Where(x => x.SizeID == item.SizeID).FirstOrDefault().SizeName;
+            }
+
+            foreach (var item in listArena)
+            {
+                if (item.CateID == null) continue;
+                item.CateName = db.tb_Category.Where(x => x.CateID == item.CateID).FirstOrDefault().CateName;
+            }
+
+            ViewBag.listArena = listArena;
+
+
+            return PartialView("_TableArenaPartial");
+        }
+
+        public ActionResult CreateArena()
+        {
+            tb_Arena Arena = new tb_Arena();
+            tb_Arena lastArena = db.tb_Arena.OrderByDescending(x => x.ID).FirstOrDefault();
+            Arena.ArenaID = "A" + (lastArena.ID + 1);
+
+            //var listSize = db.tb_Size.ToList();
+            //ViewBag.listSize = listSize.ToSelectList(r => r.SizeName, r => r.SizeID);
+
+            var listCate = db.tb_Category.ToList();
+            ViewBag.listCate = listCate.ToSelectList(r => r.CateName, r => r.CateID);
+
+            return PartialView("_CreateArenaPartial", Arena);
+        }
+
+        [HttpPost]
+        public ActionResult CreateArena(tb_Arena model)
+        {
+            try
+            {
+                db.tb_Arena.Add(model);
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Thêm mới không thành công, lỗi: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { success = true, message = "Thêm mới thành công" }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        //public ActionResult EditArena(long ID)
+        //{
+        //    var listSize = db.tb_Size.ToList();
+        //    ViewBag.listSize = listSize.ToSelectList(r => r.SizeName, r => r.SizeID);
+        //    ViewBag.listStatus = TrangThaiArenaConstant.GetSelectListItems(-1);
+
+        //    tb_Arena Arena = db.tb_Arena.FirstOrDefault(x => x.ID == ID);
+        //    return PartialView("_EditArenaPartial", Arena);
+        //}
+
+        //[HttpPost]
+        //public ActionResult EditArena(tb_Arena model)
+        //{
+        //    try
+        //    {
+        //        var Arena = db.tb_Arena.FirstOrDefault(x => x.ID == model.ID);
+        //        Arena.ArenaID = model.ArenaID;
+
+        //        if (db.tb_Arena.Where(x => x.ID == model.ID && model.ArenaName != Arena.ArenaName).Any())
+        //        {
+        //            return Json(new { success = false, message = "Tên tài khoản đã tồn tại!" }, JsonRequestBehavior.AllowGet);
+        //        }
+
+        //        Arena.ArenaName = model.ArenaName;
+        //        if (!PasswordManager.VerifyPassword(model.Password, Arena.Password))
+        //        {
+        //            Arena.Password = PasswordManager.HashPassword(model.Password);
+        //        }
+        //        Arena.FullName = model.FullName;
+        //        Arena.Email = model.Email;
+        //        Arena.Phone = model.Phone;
+        //        Arena.Address = model.Address;
+        //        Arena.Status = model.Status;
+        //        Arena.SizeID = model.SizeID;
+
+        //        db.SaveChanges();
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return Json(new { success = false, message = "Sửa bản ghi không thành công!" }, JsonRequestBehavior.AllowGet);
+        //    }
+        //    return Json(new { success = true, message = "Sửa bản ghi thành công!" }, JsonRequestBehavior.AllowGet);
+
+        //}
+
+        public ActionResult DeleteArena(long ID)
+        {
+            try
+            {
+                tb_Arena model = db.tb_Arena.Where(x => x.ID == ID).FirstOrDefault();
+                db.tb_Arena.Remove(model);
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Không thể xóa bản ghi này!!" }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { success = true, message = "Xóa bản ghi thành công" }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        [HttpGet]
+        public ActionResult GetDropDownSise(string cateID)
+        {
+            var listSize = db.tb_Size.Where(x => x.CateID == cateID).ToList();
+            if (listSize.Count > 0)
+            {
+                var Sizes  = listSize.ToSelectList(r => r.SizeName, r => r.SizeID);
+                return Json(new { success = true, data = Sizes }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { success = false });
+        }
+
+        #endregion
     }
 }

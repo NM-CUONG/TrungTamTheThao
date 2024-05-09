@@ -9,6 +9,7 @@
             <th scope="col">STT</th>
             <th scope="col">Mã loại phòng</th>
             <th scope="col">Tên loại phòng</th>
+            <th scope="col">Loại khu vực áp dụng</th>
             <th scope="col">Thao tác</th>
         </tr>
     </thead>
@@ -21,6 +22,7 @@
                     <td>@STT</td>
                     <td>@item.SizeID</td>
                     <td>@item.SizeName</td>
+                    <td>@item.CateName</td>
                     <td>
                         <div class="btn btn-warning btn-fix" onclick="Edit(@item.ID)"><i class="bi bi-tools"></i> Sửa</div>
                         <div data-id="@item.ID" onclick="openConfirmationDialog(this)" class="btn btn-danger btn-delete"><i class="bi bi-trash"></i> Xóa</div>

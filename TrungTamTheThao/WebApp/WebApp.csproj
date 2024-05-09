@@ -2317,6 +2317,9 @@
     <Content Include="Views\Home\_TableShiftPartial.cshtml" />
     <Content Include="Views\Home\_CreateShiftPartial.cshtml" />
     <Content Include="Views\Home\_EditShiftPartial.cshtml" />
+    <Content Include="Views\Home\ManageArena.cshtml" />
+    <Content Include="Views\Home\_TableArenaPartial.cshtml" />
+    <Content Include="Views\Home\_CreateArenaPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

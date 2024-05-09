@@ -1,0 +1,50 @@
+﻿
+
+@{
+    var listArena = ViewBag.listArena;
+}
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th scope="col">STT</th>
+            <th scope="col">Mã phòng</th>
+            <th scope="col">Tên phòng</th>
+            <th scope="col">Ảnh</th>
+            <th scope="col">Khu vực</th>
+            <th scope="col">Loại sân</th>
+            <th scope="col">Lượng người tối đa</th>
+            <th scope="col">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody class="table-content">
+        @{
+            var STT = 1;
+            foreach (var item in listArena)
+            {
+                <tr>
+                    <td>@STT</td>
+                    <td>@item.ArenaID</td>
+                    <td>@item.ArenaName</td>
+                    <td>@item.Image</td>
+                    <td>@item.CateName</td>
+                    <td>@item.SizeName</td>
+                    @if (item.CateID == "gym" || item.CateID == "swimming")
+                    {
+                        <td>@item.MaxPersons</td>
+                    }
+                    else
+                    {
+                        <td>Không áp dụng</td>
+                    }
+                    <td>
+                        <div style="font-size: 12px;" class="btn btn-warning btn-fix" onclick="Edit(@item.ID)"><i class="bi bi-tools"></i> Sửa</div>
+                        <div style="font-size: 12px;" data-id="@item.ID" onclick="openConfirmationDialog(this)" class="btn btn-danger btn-delete"><i class="bi bi-trash"></i> Xóa</div>
+                    <td>
+                </tr>
+                STT++;
+            }
+        }
+    </tbody>
+
+</table>
