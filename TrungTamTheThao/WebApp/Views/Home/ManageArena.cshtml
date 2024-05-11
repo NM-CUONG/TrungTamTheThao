@@ -51,13 +51,22 @@
         margin: 0 10px;
         cursor: pointer;
     }
+
+    .search-box {
+        width: 40%;
+    }
 </style>
 
 
-<div>
+<div class="">
+    <h1 class="text-uppercase">Quản lý phòng</h1>
+    <div class="search-box">
+        @Html.Partial("_SearchPartial")
+    </div>
     <div class="d-flex flex-row-reverse">
         <button class="btn btn-primary btn-add" onclick="Create()">Thêm mới</button>
     </div>
+
     <div class="container">
 
     </div>
@@ -86,6 +95,7 @@
 
 <script>
 
+
     // Các hàm xử lý bảng
     function GetTable() {
         $.ajax({
@@ -101,6 +111,23 @@
         })
     }
 
+    // Hàm tìm kiếm
+    function Search() {
+        var searchString = $('.input-search').val().trim();
+
+        $.ajax({
+            url: '/Home/SearchArena',
+            type: 'GET',
+            data: { searchString: searchString },
+            success: function (rs) {
+                $('.container').empty();
+                $('.container').html(rs);
+            },
+            error: function () {
+                toastr.error("Đã có lỗi xảy ra khi tìm kiếm", "Thông báo");
+            }
+        })
+    }
 
     // Các hàm xử lý thêm quyền
 
@@ -212,10 +239,7 @@
     document.getElementById('cancelBtn').addEventListener('click', handleCancel);
     document.getElementById('confirmBtn').addEventListener('click', handleConfirm);
 
-
-    $(document).ready(function () {
-        GetTable();
-    })
+    // Các hàm validation
 
     function validateArenaName() {
         var arenaName = document.getElementById('ArenaName').value;
@@ -238,7 +262,7 @@
             cateError.innerText = 'Vui lòng chọn loại khu vực';
             return false;
         } else {
-            cateError.innerText = ''; 
+            cateError.innerText = '';
             return true;
         }
     }
@@ -251,10 +275,44 @@
             sizeError.innerText = 'Vui lòng chọn loại phòng';
             return false;
         } else {
-            sizeError.innerText = ''; 
+            sizeError.innerText = '';
             return true;
         }
     }
+
+    function validateMaxPersons() {
+        var maxPersonsInput = document.getElementById('MaxPersons');
+        var maxPersonsValue = maxPersonsInput.value.trim();
+
+        if (maxPersonsValue === '') {
+            document.getElementById('maxpersonsError').innerText = 'Vui lòng nhập số người tối đa';
+            return false;
+        }
+
+        var maxPersonsNumber = parseInt(maxPersonsValue);
+        if (maxPersonsNumber <= 0) {
+            document.getElementById('maxpersonsError').innerText = 'Số người tối đa phải lớn hơn 0';
+            return false;
+        }
+
+        document.getElementById('maxpersonsError').innerText = '';
+        return true;
+    }
+
+
+    $(document).ready(function () {
+        GetTable();
+
+        $('.btn-search').on('click', function () {
+            Search();
+        })
+
+        $('.input-search').keypress(function (event) {
+            if (event.which == 13) {
+                Search();
+            }
+        })
+    })
 
 
 </script>

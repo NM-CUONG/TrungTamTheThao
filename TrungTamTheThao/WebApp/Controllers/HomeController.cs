@@ -16,6 +16,9 @@ using System.Web.WebPages;
 using System.Web.UI.WebControls;
 using WebApp.Constant;
 using System.ComponentModel;
+using System.IO;
+using UnidecodeSharpFork;
+
 
 namespace WebApp.Controllers
 {
@@ -823,6 +826,32 @@ namespace WebApp.Controllers
             return View();
         }
 
+        public ActionResult SearchRole(string searchString)
+        {
+            List<tb_Role> listRoleFill = db.tb_Role.ToList();
+            List<tb_Role> listRole = new List<tb_Role>();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.Unidecode().ToLower();
+                foreach (var item in listRoleFill)
+                {
+                    var RoleName = item.RoleName.Unidecode().ToLower();
+                    if (RoleName.Contains(searchString))
+                    {
+                        listRole.Add(item);
+                    }
+                }
+            } else
+            {
+                listRole = db.tb_Role.ToList();
+            }
+
+            ViewBag.listRole = listRole;
+
+            return PartialView("_TableRolePartial");
+        }
+
         public ActionResult GetTableRole()
         {
             List<tb_Role> listRole = db.tb_Role.ToList();
@@ -906,7 +935,38 @@ namespace WebApp.Controllers
 
             return View();
         }
+        public ActionResult SearchUser(string searchString)
+        {
+            List<tb_User> listUserFill = db.tb_User.ToList();
+            List<tb_User> listUser = new List<tb_User>();
 
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.Unidecode().ToLower();
+                foreach (var item in listUserFill)
+                {
+                    var UserName = item.UserName.Unidecode().ToLower();
+                    if (UserName.Contains(searchString))
+                    {
+                        listUser.Add(item);
+                    }
+                }
+            }
+            else
+            {
+                listUser = db.tb_User.ToList();
+            }
+
+            foreach (var item in listUser)
+            {
+                if (item.RoleID == null) continue;
+                item.RoleName = db.tb_Role.Where(x => x.RoleID == item.RoleID).FirstOrDefault().RoleName;
+            }
+
+            ViewBag.listUser = listUser;
+
+            return PartialView("_TableUserPartial");
+        }
         public ActionResult GetTableUser()
         {
             List<tb_User> listUser = db.tb_User.ToList();
@@ -1043,6 +1103,39 @@ namespace WebApp.Controllers
             return PartialView("_TableSizePartial");
         }
 
+        public ActionResult SearchSize(string searchString)
+        {
+            List<tb_Size> listSizeFill = db.tb_Size.ToList();
+            List<tb_Size> listSize = new List<tb_Size>();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.Unidecode().ToLower();
+                foreach (var item in listSizeFill)
+                {
+                    var SizeName = item.SizeName.Unidecode().ToLower();
+                    if (SizeName.Contains(searchString))
+                    {
+                        listSize.Add(item);
+                    }
+                }
+            }
+            else
+            {
+                listSize = db.tb_Size.ToList();
+            }
+
+            foreach (var item in listSize)
+            {
+                if (item.CateID == null) continue;
+                item.CateName = db.tb_Category.Where(x => x.CateID == item.CateID).FirstOrDefault().CateName;
+            }
+
+            ViewBag.listSize = listSize;
+
+            return PartialView("_TableSizePartial");
+        }
+
         public ActionResult CreateSize()
         {
             tb_Size size = new tb_Size();
@@ -1148,6 +1241,39 @@ namespace WebApp.Controllers
             return PartialView("_TableShiftPartial");
         }
 
+        public ActionResult SearchShift(string searchString)
+        {
+            List<tb_Shift> listShiftFill = db.tb_Shift.ToList();
+            List<tb_Shift> listShift = new List<tb_Shift>();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.Unidecode().ToLower();
+                foreach (var item in listShiftFill)
+                {
+                    var ShiftName = item.ShiftName.Unidecode().ToLower();
+                    if (ShiftName.Contains(searchString))
+                    {
+                        listShift.Add(item);
+                    }
+                }
+            }
+            else
+            {
+                listShift = db.tb_Shift.ToList();
+            }
+
+            foreach (var item in listShift)
+            {
+                if (item.CateID == null) continue;
+                item.CateName = db.tb_Category.Where(x => x.CateID == item.CateID).FirstOrDefault().CateName;
+            }
+
+            ViewBag.listShift = listShift;
+
+            return PartialView("_TableShiftPartial");
+        }
+
         public ActionResult CreateShift()
         {
             tb_Shift Shift = new tb_Shift();
@@ -1232,6 +1358,42 @@ namespace WebApp.Controllers
             return View();
         }
 
+        public ActionResult SearchArena(string searchString)
+        {
+            List<tb_Arena> listArenaFill = db.tb_Arena.ToList();
+            List<tb_Arena> listArena = new List<tb_Arena>();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.Unidecode().ToLower();
+                foreach (var item in listArenaFill)
+                {
+                    var ArenaName = item.ArenaName.Unidecode().ToLower();
+                    if (ArenaName.Contains(searchString)) {
+                        listArena.Add(item);
+                    }
+                }
+            } else
+            {
+                listArena = db.tb_Arena.ToList();
+            }
+
+            foreach (var item in listArena)
+            {
+                if (item.SizeID == null) continue;
+                item.SizeName = db.tb_Size.Where(x => x.SizeID == item.SizeID).FirstOrDefault().SizeName;
+            }
+
+            foreach (var item in listArena)
+            {
+                if (item.CateID == null) continue;
+                item.CateName = db.tb_Category.Where(x => x.CateID == item.CateID).FirstOrDefault().CateName;
+            }
+
+            ViewBag.listArena = listArena;
+
+            return PartialView("_TableArenaPartial");
+        }
         public ActionResult GetTableArena()
         {
             List<tb_Arena> listArena = db.tb_Arena.ToList();
@@ -1250,7 +1412,6 @@ namespace WebApp.Controllers
 
             ViewBag.listArena = listArena;
 
-
             return PartialView("_TableArenaPartial");
         }
 
@@ -1259,9 +1420,6 @@ namespace WebApp.Controllers
             tb_Arena Arena = new tb_Arena();
             tb_Arena lastArena = db.tb_Arena.OrderByDescending(x => x.ID).FirstOrDefault();
             Arena.ArenaID = "A" + (lastArena.ID + 1);
-
-            //var listSize = db.tb_Size.ToList();
-            //ViewBag.listSize = listSize.ToSelectList(r => r.SizeName, r => r.SizeID);
 
             var listCate = db.tb_Category.ToList();
             ViewBag.listCate = listCate.ToSelectList(r => r.CateName, r => r.CateID);
@@ -1274,6 +1432,30 @@ namespace WebApp.Controllers
         {
             try
             {
+
+                // Xử lý file ảnh
+                if (model.File != null && model.File.ContentLength > 0)
+                {
+                    string fileName = Path.GetFileName(model.File.FileName);
+                    string path = Path.Combine(Server.MapPath("/Uploads/UploadArena/"), fileName);
+
+                    if (System.IO.File.Exists(path))
+                    {
+                        int count = 1;
+                        string extension = Path.GetExtension(fileName);
+                        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+                        while (System.IO.File.Exists(path))
+                        {
+                            fileName = $"{fileNameWithoutExtension}_{count}{extension}";
+                            path = Path.Combine(Server.MapPath("~/Uploads/UploadArena/"), fileName);
+                            count++;
+                        }
+                    }
+
+                    model.File.SaveAs(path);
+                    model.Image = fileName;
+                }
+
                 db.tb_Arena.Add(model);
                 db.SaveChanges();
             }
@@ -1285,50 +1467,63 @@ namespace WebApp.Controllers
 
         }
 
-        //public ActionResult EditArena(long ID)
-        //{
-        //    var listSize = db.tb_Size.ToList();
-        //    ViewBag.listSize = listSize.ToSelectList(r => r.SizeName, r => r.SizeID);
-        //    ViewBag.listStatus = TrangThaiArenaConstant.GetSelectListItems(-1);
+        public ActionResult EditArena(long ID)
+        {
+            var listCate = db.tb_Category.ToList();
+            ViewBag.listCate = listCate.ToSelectList(r => r.CateName, r => r.CateID);
 
-        //    tb_Arena Arena = db.tb_Arena.FirstOrDefault(x => x.ID == ID);
-        //    return PartialView("_EditArenaPartial", Arena);
-        //}
+            var listSize = db.tb_Size.ToList();
+            ViewBag.listSize = listSize.ToSelectList(r => r.SizeName, r => r.SizeID);
 
-        //[HttpPost]
-        //public ActionResult EditArena(tb_Arena model)
-        //{
-        //    try
-        //    {
-        //        var Arena = db.tb_Arena.FirstOrDefault(x => x.ID == model.ID);
-        //        Arena.ArenaID = model.ArenaID;
+            tb_Arena Arena = db.tb_Arena.FirstOrDefault(x => x.ID == ID);
+            return PartialView("_EditArenaPartial", Arena);
+        }
 
-        //        if (db.tb_Arena.Where(x => x.ID == model.ID && model.ArenaName != Arena.ArenaName).Any())
-        //        {
-        //            return Json(new { success = false, message = "Tên tài khoản đã tồn tại!" }, JsonRequestBehavior.AllowGet);
-        //        }
+        [HttpPost]
+        public ActionResult EditArena(tb_Arena model)
+        {
+            try
+            {
+                var Arena = db.tb_Arena.FirstOrDefault(x => x.ID == model.ID);
+                Arena.ArenaID = model.ArenaID;
+                Arena.ArenaName = model.ArenaName;
+                Arena.CateID = model.CateID;
+                Arena.SizeID = model.SizeID;
+                Arena.Description = model.Description;
+                Arena.MaxPersons = model.MaxPersons;
 
-        //        Arena.ArenaName = model.ArenaName;
-        //        if (!PasswordManager.VerifyPassword(model.Password, Arena.Password))
-        //        {
-        //            Arena.Password = PasswordManager.HashPassword(model.Password);
-        //        }
-        //        Arena.FullName = model.FullName;
-        //        Arena.Email = model.Email;
-        //        Arena.Phone = model.Phone;
-        //        Arena.Address = model.Address;
-        //        Arena.Status = model.Status;
-        //        Arena.SizeID = model.SizeID;
+                //Xử lý file ảnh
+                if (model.File != null && model.File.ContentLength > 0)
+                {
+                    string fileName = Path.GetFileName(model.File.FileName);
+                    string path = Path.Combine(Server.MapPath("/Uploads/UploadArena/"), fileName);
 
-        //        db.SaveChanges();
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return Json(new { success = false, message = "Sửa bản ghi không thành công!" }, JsonRequestBehavior.AllowGet);
-        //    }
-        //    return Json(new { success = true, message = "Sửa bản ghi thành công!" }, JsonRequestBehavior.AllowGet);
+                    if (System.IO.File.Exists(path))
+                    {
+                        int count = 1;
+                        string extension = Path.GetExtension(fileName);
+                        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+                        while (System.IO.File.Exists(path))
+                        {
+                            fileName = $"{fileNameWithoutExtension}_{count}{extension}";
+                            path = Path.Combine(Server.MapPath("~/Uploads/UploadArena/"), fileName);
+                            count++;
+                        }
+                    }
 
-        //}
+                    model.File.SaveAs(path);
+                    Arena.Image = fileName;
+                }
+
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Sửa bản ghi không thành công!" }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { success = true, message = "Sửa bản ghi thành công!" }, JsonRequestBehavior.AllowGet);
+
+        }
 
         public ActionResult DeleteArena(long ID)
         {
@@ -1353,12 +1548,19 @@ namespace WebApp.Controllers
             var listSize = db.tb_Size.Where(x => x.CateID == cateID).ToList();
             if (listSize.Count > 0)
             {
-                var Sizes  = listSize.ToSelectList(r => r.SizeName, r => r.SizeID);
+                var Sizes = listSize.ToSelectList(r => r.SizeName, r => r.SizeID);
                 return Json(new { success = true, data = Sizes }, JsonRequestBehavior.AllowGet);
             }
             return Json(new { success = false });
         }
 
         #endregion
+    
+        
+        public ActionResult Statistical()
+        {
+            return View();
+        }
+
     }
 }

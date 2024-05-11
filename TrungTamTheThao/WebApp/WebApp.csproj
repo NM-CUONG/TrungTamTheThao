@@ -127,6 +127,9 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
+    <Reference Include="UnidecodeSharpFork, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\UnidecodeSharpFork.1.0.0\lib\UnidecodeSharpFork.dll</HintPath>
+    </Reference>
     <Reference Include="WebGrease">
       <Private>True</Private>
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
@@ -2250,6 +2253,8 @@
     <Content Include="Content\bootstrap-icons\font\fonts\bootstrap-icons.woff" />
     <Content Include="Content\bootstrap-icons\font\fonts\bootstrap-icons.woff2" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="Scripts\chart.js" />
+    <Content Include="Scripts\chart.min.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
@@ -2265,6 +2270,23 @@
     <Content Include="Scripts\toastr.js" />
     <Content Include="Scripts\toastr.min.js" />
     <Content Include="Uploads\background-dung-cu-the-thao.jpg" />
+    <Content Include="Uploads\Icon\admin.png" />
+    <Content Include="Uploads\Icon\calendar.png" />
+    <Content Include="Uploads\Icon\category.png" />
+    <Content Include="Uploads\Icon\dumbbell.png" />
+    <Content Include="Uploads\Icon\employee.png" />
+    <Content Include="Uploads\Icon\group.png" />
+    <Content Include="Uploads\Icon\history.png" />
+    <Content Include="Uploads\Icon\login.png" />
+    <Content Include="Uploads\Icon\management.png" />
+    <Content Include="Uploads\Icon\progress.png" />
+    <Content Include="Uploads\Icon\register.png" />
+    <Content Include="Uploads\Icon\room.png" />
+    <Content Include="Uploads\Icon\shift.png" />
+    <Content Include="Uploads\Icon\shuttlecock.png" />
+    <Content Include="Uploads\Icon\soccer-ball-variant.png" />
+    <Content Include="Uploads\Icon\swimming.png" />
+    <Content Include="Uploads\Icon\turn-off.png" />
     <Content Include="Uploads\mau-background-the-thao.jpg" />
     <Content Include="Uploads\regis_loginImage.jpg" />
     <Content Include="Web.config" />
@@ -2320,9 +2342,13 @@
     <Content Include="Views\Home\ManageArena.cshtml" />
     <Content Include="Views\Home\_TableArenaPartial.cshtml" />
     <Content Include="Views\Home\_CreateArenaPartial.cshtml" />
+    <Content Include="Views\Home\_EditArenaPartial.cshtml" />
+    <Content Include="Views\Home\_SearchPartial.cshtml" />
+    <Content Include="Views\Home\Statistical.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Uploads\UploadArena\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

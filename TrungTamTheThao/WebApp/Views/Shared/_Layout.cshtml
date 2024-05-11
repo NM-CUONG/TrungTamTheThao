@@ -12,6 +12,7 @@
     <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
     <link href="~/Content/toastr.css" rel="stylesheet" />
     <script src="~/Scripts/toastr.js"></script>
+    <script src="~/Scripts/chart.js"></script>
     <style>
         /* CSS để tùy chỉnh giao diện */
 
@@ -19,8 +20,8 @@
             position: fixed;
             top: 0;
             bottom: 0;
-            left: -200px; /* Ẩn sidebar ban đầu */
-            width: 200px;
+            left: -240px; /* Ẩn sidebar ban đầu */
+            width: 240px;
             padding: 0px 20px;
             background-color: #f8f9fa;
             transition: left 0.5s;
@@ -68,6 +69,13 @@
             .dropdown-menu.show {
                 display: block;
             }
+
+        .icon {
+            font-size: 20px;
+        }
+        .img-icon {
+            width: 20px;
+        }
     </style>
 
 </head>
@@ -76,30 +84,30 @@
     <div class="container-fluid">
         <div class="sidebar" id="sidebar">
             <ul class="nav flex-column">
-                <li><a class="nav-link" href="@Url.Action("Index","Home") "><i class="bi bi-house-door"></i> Trang chủ</a></li>
-                <li><a class="nav-link" href="@Url.Action("Regis","Home") "> Đăng ký</a></li>
-                <li><a class="nav-link" href="@Url.Action("Login","Home") "><i class="bi bi-box-arrow-in-right"></i> Đăng nhập</a></li>
-                <li><a class="nav-link" href="@Url.Action("Account","Home") "><i class="bi bi-person-circle"></i> Tài khoản</a></li>
+                <li><a class="nav-link" href="@Url.Action("Index","Home") "><i class="bi bi-house-door icon"></i> Trang chủ</a></li>
+                <li><a class="nav-link" href="@Url.Action("Regis","Home") "><i class="bi bi-person-fill-add icon"></i> Đăng ký</a></li>
+                <li><a class="nav-link" href="@Url.Action("Login","Home") "><i class="bi bi-person-fill-up icon"></i> Đăng nhập</a></li>
+                <li><a class="nav-link" href="@Url.Action("Account","Home") "><i class="bi bi-person-fill-gear icon"></i> Tài khoản</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        Đặt phòng
+                        <i class="bi bi-calendar-fill"></i> Đặt phòng
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="@Url.Action("BookingBadminton","Home")">Đặt sân cầu lông</a></li>
-                        <li><a class="dropdown-item" href="@Url.Action("BookingFootball","Home")">Đặt sân bóng</a></li>
-                        <li><a class="dropdown-item" href="@Url.Action("BookingGym","Home")">Đặt phòng gym</a></li>
-                        <li><a class="dropdown-item" href="@Url.Action("BookingSwimming","Home")">Đặt bể bơi</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("BookingBadminton","Home")"><img src="~/Uploads/Icon/shuttlecock.png" class="img-icon" /> Đặt sân cầu lông</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("BookingFootball","Home")"><img src="~/Uploads/Icon/soccer-ball-variant.png" class="img-icon" /> Đặt sân bóng</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("BookingGym","Home")"><img src="~/Uploads/Icon/dumbbell.png" class="img-icon" /> Đặt phòng gym</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("BookingSwimming","Home")"><img src="~/Uploads/Icon/swimming.png" class="img-icon" /> Đặt bể bơi</a></li>
                     </ul>
                 </li>
-                <li><a class="nav-link" href="@Url.Action("HistoriesBooking","Home") ">Lịch sử đặt phòng</a></li>
-                <li><a class="nav-link" href="@Url.Action("ManageRole","Home") ">Quản lý quyền</a></li>
-                <li><a class="nav-link" href="@Url.Action("ManageUser","Home") ">Quản lý người dùng</a></li>
-                <li><a class="nav-link" href="@Url.Action("ManageSize","Home") ">Quản lý loại phòng</a></li>
-                <li><a class="nav-link" href="@Url.Action("ManageShift","Home") ">Quản lý khung giờ</a></li>
-                <li><a class="nav-link" href="@Url.Action("ManageArena","Home") ">Quản lý phòng</a></li>
-                <li><a class="nav-link" href="@Url.Action("ManageBooking","Home") ">Quản lý đặt phòng</a></li>
-                <li><a class="nav-link" href="@Url.Action("Statistical","Home") ">Xem thông kê</a></li>
-                <li><a class="nav-link" href="@Url.Action("Logout","Home") ">Đăng xuất</a></li>
+                <li><a class="nav-link" href="@Url.Action("HistoriesBooking","Home") "><img src="~/Uploads/Icon/history.png" class="img-icon" /> Lịch sử đặt phòng</a></li>
+                <li><a class="nav-link" href="@Url.Action("ManageRole","Home") "><img src="~/Uploads/Icon/management.png" class="img-icon" /> Quản lý quyền</a></li>
+                <li><a class="nav-link" href="@Url.Action("ManageUser","Home") "><img src="~/Uploads/Icon/group.png" class="img-icon" /> Quản lý người dùng</a></li>
+                <li><a class="nav-link" href="@Url.Action("ManageSize","Home") "><img src="~/Uploads/Icon/category.png" class="img-icon" /> Quản lý loại phòng</a></li>
+                <li><a class="nav-link" href="@Url.Action("ManageShift","Home") "><img src="~/Uploads/Icon/shift.png" class="img-icon" /> Quản lý khung giờ</a></li>
+                <li><a class="nav-link" href="@Url.Action("ManageArena","Home") "><img src="~/Uploads/Icon/room.png" class="img-icon" /> Quản lý phòng</a></li>
+                <li><a class="nav-link" href="@Url.Action("ManageBooking","Home") "><img src="~/Uploads/Icon/calendar.png" class="img-icon" /> Quản lý đặt phòng</a></li>
+                <li><a class="nav-link" href="@Url.Action("Statistical","Home") "><img src="~/Uploads/Icon/progress.png" class="img-icon" /> Xem thông kê</a></li>
+                <li><a class="nav-link" href="@Url.Action("Logout","Home") "><img src="~/Uploads/Icon/turn-off.png" class="img-icon" /> Đăng xuất</a></li>
 
             </ul>
         </div>
@@ -132,7 +140,7 @@
                 var content = $("#content");
                 sidebar.css("left", "0px");
                 //sidebar.css("transition", "left 0.5s");
-                content.css("margin-left", "200px");
+                content.css("margin-left", "240px");
                 //content.css("transition", "margin-left 0.5s");
                 localStorage.setItem("keepToggle", "open");
             }
@@ -143,10 +151,10 @@
             var content = $("#content");
 
             //mở menu
-            if (sidebar.css("left") === "-200px") {
+            if (sidebar.css("left") === "-240px") {
                 sidebar.css("left", "0px");
                 sidebar.css("transition", "left 0.5s");
-                content.css("margin-left", "200px");
+                content.css("margin-left", "240px");
                 content.css("transition", "margin-left 0.5s");
                 localStorage.setItem("keepToggle", "open");
 
@@ -154,7 +162,7 @@
 
             //đóng menu
             else {
-                sidebar.css("left", "-200px");
+                sidebar.css("left", "-240px");
                 content.css("margin-left", "0px");
                 localStorage.setItem("keepToggle", "close");
             }

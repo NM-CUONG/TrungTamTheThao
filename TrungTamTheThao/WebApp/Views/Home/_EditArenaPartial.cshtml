@@ -1,0 +1,219 @@
+﻿
+@model WebApp.Models.tb_Arena
+
+@{
+    var listCate = ViewBag.listCate as List<SelectListItem>;
+    var listSize = ViewBag.listSize as List<SelectListItem>;
+}
+
+<style>
+    .col-sm-6 {
+        padding-bottom: 20px;
+    }
+
+    #fileInput {
+        display: none;
+    }
+
+    .upload-image {
+        display: flex;
+        justify-content: center;
+    }
+
+    .showAnh {
+        width: 50%;
+        height: 100px;
+        border: 3px dotted black;
+        overflow: hidden;
+    }
+
+        .showAnh img {
+            max-width: 100%;
+            height: auto;
+        }
+
+    .bi-cloud-arrow-up-fill {
+        font-size: 20px;
+    }
+
+    .icon-upload {
+        height: 100%;
+        width: 40%;
+        align-self: center;
+    }
+
+        .icon-upload:hover {
+            cursor: pointer;
+        }
+</style>
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header ">
+            <h1 class="modal-title w-100 text-center fs-5 text-uppercase" id="staticBackdropLabel">Sửa phòng</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        @using (Ajax.BeginForm("EditArena", "Home", new AjaxOptions()
+        {
+            HttpMethod = "POST",
+            OnSuccess = "Success",
+            OnFailure = "Failure",
+        }, new { enctype = "multipart/form-data" }))
+        {
+            <div class="modal-body">
+                <div class="row">
+                    @Html.HiddenFor(m => m.ID)
+                    <div class="col-sm-6">
+                        <label class="form-label" for="ArenaID">Mã phòng<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12">
+                            @Html.TextBoxFor(m => m.ArenaID, new { @class = "form-control mauxam ", @readonly = "readonly" })
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="form-label" for="ArenaName">Tên phòng<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.TextBoxFor(m => m.ArenaName, new { @class = "form-control" })
+                            <span id="arenaNameError" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="form-label" for="CateID">Loại khu vực<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.DropDownListFor(m => m.CateID, listCate, "--Chọn khu vực--", new { @class = "form-control" })
+                            <span id="cateError" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="form-label" for="SizeID">Loại phòng<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.DropDownListFor(m => m.SizeID, listSize, "--Chọn loại phòng--", new { @class = "form-control" })
+                            <span id="sizeError" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 box-maxperson">
+                        <label class="form-label" for="MaxPersons">Số người tối đa <span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.TextBoxFor(m => m.MaxPersons, new { @class = "form-control", type = "number" })
+                            <span id="maxpersonsError" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="Description">Mô tả</label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.TextAreaFor(m => m.Description, new { @class = "form-control" })
+                            <span id="descriptionError" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="fileInput">Ảnh</label>
+                        <div class="upload-image form-control">
+                            <label class="icon-upload" for="fileInput">
+                                <i class="bi bi-cloud-arrow-up-fill">Tải ảnh lên</i>
+                            </label>
+                            <div class="showAnh">
+                                @Html.TextBoxFor(m => m.File, new { type = "file", id = "fileInput" })
+                                <div id="imagePreview">
+                                    <img src="~/Uploads/UploadArena/@Model.Image" alt="Ảnh phòng" />
+                                </div>
+                            </div>
+                        </div>
+                        <span id="imageError" class="text-danger"></span>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn-submit btn btn-primary">Sửa</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+
+    $('#fileInput').on('change', function (event) {
+        validateAndPreviewImage(event);
+    })
+
+    function validateAndPreviewImage(event) {
+        var input = event.target;
+        if (input.files && input.files[0]) {
+            var fileType = input.files[0].type;
+            if (fileType !== 'image/jpeg' && fileType !== 'image/png') {
+                $('#imageError').text('Vui lòng chọn định dạng ảnh png hoặc jpeg');
+                input.value = '';
+                document.getElementById("imagePreview").innerHTML = "";
+                return;
+            }
+
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var imgElement = document.createElement("img");
+                imgElement.src = e.target.result;
+                document.getElementById("imagePreview").innerHTML = "";
+                document.getElementById("imagePreview").appendChild(imgElement);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+
+    $('#CateID').on('change', function () {
+        if ($('#CateID').val() === 'gym' || $('#CateID').val() == 'swimming') {
+            $('.box-maxperson').show();
+        } else {
+            $('.box-maxperson').hide();
+        }
+
+        var cateID = $('#CateID').val();
+        if (cateID != null && cateID != "") {
+            $.ajax({
+                url: '/Home/GetDropDownSise',
+                type: 'GET',
+                data: { cateID: cateID },
+                success: function (rs) {
+                    $('#SizeID').empty();
+                    if (rs.success) {
+                        $('#SizeID').append('<option value="">--Chọn loại phòng--</option>');
+                        rs.data.forEach(function (item) {
+                            $('#SizeID').append('<option value="' + item.Value + '">' + item.Text + '</option>');
+                        });
+                    }
+
+                },
+                error: function () {
+                    toastr.error("Đã có lỗi khi lấy loại phòng!", "Thông báo");
+                }
+            })
+        }
+
+    });
+
+    $('.btn-submit').on('click', function (event) {
+
+        var cate = $('#CateID').val();
+
+        if (cate == "gym" || cate == "swimming") {
+            if (!validateArenaName() || !validateCate() || !validateSize() || !validateMaxPersons()
+            ) {
+                event.preventDefault();
+            }
+        } else {
+            if (!validateArenaName() || !validateCate() || !validateSize()
+            ) {
+                event.preventDefault();
+            }
+        }
+
+    })
+
+    $(document).ready(function () {
+        $('.box-maxperson').hide();
+    })
+</script>

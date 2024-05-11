@@ -6,6 +6,7 @@ namespace WebApp.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
+    using System.Web;
 
     public partial class tb_Arena
     {
@@ -29,6 +30,7 @@ namespace WebApp.Models
         [StringLength(255)]
         public string Image { get; set; }
 
+        
         [StringLength(10)]
         public string CateID { get; set; }
 
@@ -43,6 +45,9 @@ namespace WebApp.Models
         public string Description { get; set; }
 
         public int? MaxPersons { get; set; }
+
+        [NotMapped]
+        public HttpPostedFileBase File { get; set; }
 
         public virtual tb_Category tb_Category { get; set; }
 

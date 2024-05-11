@@ -26,7 +26,9 @@
                     <td>@STT</td>
                     <td>@item.ArenaID</td>
                     <td>@item.ArenaName</td>
-                    <td>@item.Image</td>
+                    <td>
+                        <img src=@Url.Content("~/Uploads/UploadArena/" + @item.Image) alt="Ảnh phòng" style="width: 50px;" />
+                    </td>
                     <td>@item.CateName</td>
                     <td>@item.SizeName</td>
                     @if (item.CateID == "gym" || item.CateID == "swimming")
@@ -38,8 +40,8 @@
                         <td>Không áp dụng</td>
                     }
                     <td>
-                        <div style="font-size: 12px;" class="btn btn-warning btn-fix" onclick="Edit(@item.ID)"><i class="bi bi-tools"></i> Sửa</div>
-                        <div style="font-size: 12px;" data-id="@item.ID" onclick="openConfirmationDialog(this)" class="btn btn-danger btn-delete"><i class="bi bi-trash"></i> Xóa</div>
+                        <div style="font-size: 14px;" class="btn btn-warning btn-fix" onclick="Edit(@item.ID)"><i class="bi bi-tools"></i> Sửa</div>
+                        <div style="font-size: 14px;" data-id="@item.ID" onclick="openConfirmationDialog(this)" class="btn btn-danger btn-delete"><i class="bi bi-trash"></i> Xóa</div>
                     <td>
                 </tr>
                 STT++;

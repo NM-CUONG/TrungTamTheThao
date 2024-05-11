@@ -52,15 +52,23 @@
         margin: 0 10px;
         cursor: pointer;
     }
+    .search-box {
+        width: 40%;
+    }
+
 </style>
 
 
 <div>
+    <h1 class="text-uppercase">Quản lý quyền</h1>
+    <div class="search-box">
+        @Html.Partial("_SearchPartial")
+    </div>
     <div class="d-flex flex-row-reverse">
         <button class="btn btn-primary btn-add" onclick="Create()">Thêm mới</button>
     </div>
     <div class="container">
-        
+
     </div>
 
 </div>
@@ -86,7 +94,23 @@
 
 
 <script>
+    // Hàm tìm kiếm
+    function Search() {
+        var searchString = $('.input-search').val().trim();
 
+        $.ajax({
+            url: '/Home/SearchRole',
+            type: 'GET',
+            data: { searchString: searchString },
+            success: function (rs) {
+                $('.container').empty();
+                $('.container').html(rs);
+            },
+            error: function () {
+                toastr.error("Đã có lỗi xảy ra khi tìm kiếm", "Thông báo");
+            }
+        })
+    }
     // Các hàm xử lý bảng
     function GetTable() {
         $.ajax({
@@ -233,6 +257,16 @@
     
     $(document).ready(function () {
         GetTable();
+
+        $('.btn-search').on('click', function () {
+            Search();
+        })
+
+        $('.input-search').keypress(function (event) {
+            if (event.which == 13) {
+                Search();
+            }
+        })
     })
 
 

@@ -1,0 +1,49 @@
+﻿
+@{
+    ViewBag.Title = "Statistical";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Thống kê</h2>
+
+<canvas id="myChart" width="200" height="200"></canvas>
+
+<script>
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar', // Loại biểu đồ: 'bar' cho biểu đồ cột
+        data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'], // Nhãn của các cột
+            datasets: [{
+                label: '# of Votes', // Nhãn cho dữ liệu
+                data: [12, 19, 3, 5, 2, 3], // Dữ liệu của các cột
+                backgroundColor: [ // Màu nền cho từng cột
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [ // Màu viền cho từng cột
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1 // Độ rộng của đường viền của các cột
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true // Bắt đầu trục y từ giá trị 0
+                }
+            }
+        }
+    });
+
+</script>
+
