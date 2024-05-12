@@ -148,6 +148,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Areas\VNPayAPI\Util\PayLib.cs" />
     <Compile Include="Constant\TrangThaiUserConstant.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
@@ -2345,6 +2346,7 @@
     <Content Include="Views\Home\_EditArenaPartial.cshtml" />
     <Content Include="Views\Home\_SearchPartial.cshtml" />
     <Content Include="Views\Home\Statistical.cshtml" />
+    <Content Include="Views\Home\PaymentConfirm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
