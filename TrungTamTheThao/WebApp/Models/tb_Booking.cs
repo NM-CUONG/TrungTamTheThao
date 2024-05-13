@@ -44,6 +44,8 @@ namespace WebApp.Models
         [NotMapped]
         public int isCoDinh { get; set; }
 
+        public long? Money { get; set; }
+
         public virtual tb_Arena tb_Arena { get; set; }
 
         public virtual tb_Shift tb_Shift { get; set; }

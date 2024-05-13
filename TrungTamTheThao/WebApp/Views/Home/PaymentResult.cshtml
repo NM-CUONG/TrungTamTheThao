@@ -1,0 +1,58 @@
+﻿
+@{
+    ViewBag.Title = "PaymentResult";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model WebApp.Areas.VNPayAPI.Util.VNPay
+
+<style>
+    .bill {
+        width: 40%;
+        background-color: white;
+        border-radius: 20px;
+        position: relative;
+        margin: auto;
+        border: 5px solid #005aa9;
+    }
+
+    .rows {
+        padding: 10px 20px;
+    }
+    .result_booking {
+        
+    }
+    .amount {
+        color: #005aa9;
+    }
+    .right {
+        float: right;
+        font-size: 16px;
+        font-weight: bold;
+    }
+</style>
+
+<div class="bill">
+    <h2 class="text-center rows">Kết quả giao dịch</h2>
+    @if (Model.vnp_ResponseCode == "00" && Model.vnp_TransactionStatus == "00")
+    {
+        <div class=" rows alert alert-success text-center"><i class="bi bi-check-circle-fill"></i> Giao dịch thành công</div>
+    }
+    else
+    {
+        <div class=" rows alert alert-danger text-center"><i class="bi bi-x-circle-fill"></i> Giao dịch không thành công!</div>
+    }
+    <div class="h3 rows amount text-center">@Model.vnp_Amount VNĐ</div>
+    <div class="rows">Mã ngân hàng: <span class="right">@Model.vnp_BankCode</span> </div>
+    <div class="rows">Mã giao dịch: <span class="right">@Model.vnp_BankTranNo</span> </div>
+    <div class="rows">Nội dung: <span class="right">@Model.vnp_OrderInfo</span> </div>
+    <div class="rows">Ngày giao dịch: <span class="right">@Model.vnp_PayDate</span></div>
+    @if (Model.vnp_ResponseCode == "00" && Model.vnp_TransactionStatus == "00")
+    {
+        <div class=" rows alert alert-success text-center"><i class="bi bi-check-circle-fill"></i> Đặt phòng thành công!</div>
+    }
+    else
+    {
+        <div class="result_booking  rows alert alert-danger text-center"><i class="bi bi-x-circle-fill"></i> Đặt phòng không thành công!</div>
+    }
+</div>
+

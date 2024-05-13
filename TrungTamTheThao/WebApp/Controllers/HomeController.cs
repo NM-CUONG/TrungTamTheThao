@@ -23,6 +23,8 @@ using System.Configuration;
 using System.Security.Cryptography;
 using System.Text;
 using VNPAYAPI.Areas.VNPayAPI.Util;
+using System.Collections.Specialized;
+using WebApp.Areas.VNPayAPI.Util;
 
 namespace WebApp.Controllers
 {
@@ -71,7 +73,7 @@ namespace WebApp.Controllers
 
         //Cấu hình thanh toán online vnpay test
         public string url = "http://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        public string returnUrl = $"https://localhost:{44315}/vnpayAPI/PaymentConfirm";
+        public string returnUrl = $"https://localhost:{44315}/Home/PaymentResult";
         public string tmnCode = "5YMDVWOK";
         public string hashSecret = "38GCYMT92OXRPGTDFZ6JTA00MXIPU8BZ";
 
@@ -464,59 +466,53 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public JsonResult HandleBookingSwimming(tb_Booking model)
+        public JsonResult HandleBookingSwimming(tb_Booking model, FormCollection form)
         {
-            tb_Booking lastBooking = db.tb_Booking.OrderByDescending(b => b.ID).FirstOrDefault();
-
-            if (lastBooking != null)
-            {
-                model.BookingID = "B" + (lastBooking.ID + 1);
-            }
-            else
-            {
-                model.BookingID = "B0";
-            }
-
-            if (model.isCoDinh == 0)
-            {
-                model.StartTime = model.ngaySuDung;
-                model.EndTime = model.ngaySuDung;
-            }
-
-            tb_User shiftInfor = Session["UserInfor"] as tb_User;
-            if (shiftInfor != null)
-            {
-                model.UserID = shiftInfor.UserID;
-            }
-
-            model.Status = 0;
-
-            // lưu vào csdl
-
             try
             {
-                db.tb_Booking.Add(model);
-                db.SaveChanges();
+                tb_Booking lastBooking = db.tb_Booking.OrderByDescending(b => b.ID).FirstOrDefault();
+
+                if (lastBooking != null)
+                {
+                    model.BookingID = "B" + (lastBooking.ID + 1);
+                }
+                else
+                {
+                    model.BookingID = "B0";
+                }
+
+                if (model.isCoDinh == 0)
+                {
+                    model.StartTime = model.ngaySuDung;
+                    model.EndTime = model.ngaySuDung;
+                }
+
+                tb_User shiftInfor = Session["UserInfor"] as tb_User;
+                if (shiftInfor != null)
+                {
+                    model.UserID = shiftInfor.UserID;
+                }
+
+                model.Money = Convert.ToInt64(form["money"]) * 1000;
+                model.Status = 0;
             }
             catch (Exception ex)
             {
                 return Json(new { success = false, message = "Đặt bể bơi không thành công!, Có lỗi: " + ex.Message }, JsonRequestBehavior.AllowGet);
             }
 
+
+            // lưu vào session
+            Session["booking"] = model;
             return Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }
 
-        
-        public ActionResult Payment()
+        public ActionResult PaymentProcess()
         {
-            return View();
-        }
-
-        public ActionResult Process(FormCollection form)
-        {
-            string amount = form["amount"];
+            tb_Booking booking = Session["booking"] as tb_Booking;
+            string amount = (booking.Money * 100).ToString();
+            string orderinfor = booking.BookingID;
             string infor = "Trả tiền đặt sân";
-            string orderinfor = form["customerName"];
             string hostName = System.Net.Dns.GetHostName();
             string clientIPAddress = System.Net.Dns.GetHostAddresses(hostName).GetValue(0).ToString();
             PayLib pay = new PayLib();
@@ -546,11 +542,28 @@ namespace WebApp.Controllers
         }
 
         // GET: Payment/PaymentResult
-        public ActionResult PaymentConfirm()
+        public ActionResult PaymentResult()
         {
-            // Hiển thị kết quả thanh toán cho người dùng
-            return View();
+            // Lấy các tham số từ URL
+            VNPay vnpay = new VNPay();
+            //Số tiền
+            vnpay.vnp_Amount = Request.QueryString["vnp_Amount"];
+            //Mã ngân hàng = NCB
+            vnpay.vnp_BankCode = Request.QueryString["vnp_BankCode"];
+            //Mã giao dịch của ngân hàng
+            vnpay.vnp_BankTranNo = Request.QueryString["vnp_BankTranNo"];
+            //Nội dung giao dịch
+            vnpay.vnp_OrderInfo = Request.QueryString["vnp_OrderInfo"];
+            //Ngày giờ giao dịch
+            vnpay.vnp_PayDate = Request.QueryString["vnp_PayDate"];
+            //Kết quả giao dịch
+            vnpay.vnp_ResponseCode = Request.QueryString["vnp_ResponseCode"];
+            //Trạng thái giao dịch
+            vnpay.vnp_TransactionStatus = Request.QueryString["vnp_TransactionStatus"];
+            
+            return View(vnpay);
         }
+
 
         // Hàm xem lịch sử booking
         public ActionResult HistoriesBooking()
