@@ -493,7 +493,7 @@ namespace WebApp.Controllers
                     model.UserID = shiftInfor.UserID;
                 }
 
-                model.Money = Convert.ToInt64(form["money"]) * 1000;
+                model.Money = float.Parse(form["money"]) * 1000;
                 model.Status = 0;
             }
             catch (Exception ex)
@@ -512,7 +512,7 @@ namespace WebApp.Controllers
             tb_Booking booking = Session["booking"] as tb_Booking;
             string amount = (booking.Money * 100).ToString();
             string orderinfor = booking.BookingID;
-            string infor = "Trả tiền đặt sân";
+            string infor = "Trả tiền đặt phòng";
             string hostName = System.Net.Dns.GetHostName();
             string clientIPAddress = System.Net.Dns.GetHostAddresses(hostName).GetValue(0).ToString();
             PayLib pay = new PayLib();
@@ -555,12 +555,21 @@ namespace WebApp.Controllers
             //Nội dung giao dịch
             vnpay.vnp_OrderInfo = Request.QueryString["vnp_OrderInfo"];
             //Ngày giờ giao dịch
-            vnpay.vnp_PayDate = Request.QueryString["vnp_PayDate"];
+            string format = "yyyyMMddHHmmss";
+            string vnpaydate = Request.QueryString["vnp_PayDate"];
+            vnpay.vnp_PayDate = DateTime.ParseExact(vnpaydate, format, null);
             //Kết quả giao dịch
             vnpay.vnp_ResponseCode = Request.QueryString["vnp_ResponseCode"];
             //Trạng thái giao dịch
             vnpay.vnp_TransactionStatus = Request.QueryString["vnp_TransactionStatus"];
-            
+
+            tb_Booking booking = Session["booking"] as tb_Booking;
+            if (vnpay.vnp_ResponseCode == "00" && vnpay.vnp_TransactionStatus == "00")
+            {
+                booking.Status = 1;
+            }
+            db.tb_Booking.Add(booking);
+            db.SaveChanges();
             return View(vnpay);
         }
 

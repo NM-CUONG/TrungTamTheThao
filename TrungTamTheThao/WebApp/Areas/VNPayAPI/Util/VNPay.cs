@@ -11,7 +11,7 @@ namespace WebApp.Areas.VNPayAPI.Util
         public string vnp_BankCode { get; set; }
         public string vnp_BankTranNo { get; set; }
         public string vnp_OrderInfo { get; set; }
-        public string vnp_PayDate { get; set; }
+        public DateTime vnp_PayDate { get; set; }
         public string vnp_ResponseCode { get; set; }
         public string vnp_TransactionStatus { get; set; }
     }

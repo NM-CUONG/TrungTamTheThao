@@ -46,13 +46,6 @@
     <div class="rows">Mã giao dịch: <span class="right">@Model.vnp_BankTranNo</span> </div>
     <div class="rows">Nội dung: <span class="right">@Model.vnp_OrderInfo</span> </div>
     <div class="rows">Ngày giao dịch: <span class="right">@Model.vnp_PayDate</span></div>
-    @if (Model.vnp_ResponseCode == "00" && Model.vnp_TransactionStatus == "00")
-    {
-        <div class=" rows alert alert-success text-center"><i class="bi bi-check-circle-fill"></i> Đặt phòng thành công!</div>
-    }
-    else
-    {
-        <div class="result_booking  rows alert alert-danger text-center"><i class="bi bi-x-circle-fill"></i> Đặt phòng không thành công!</div>
-    }
+
 </div>
 
