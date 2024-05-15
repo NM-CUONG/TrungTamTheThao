@@ -1,9 +1,8 @@
 ﻿
 @{
-    ViewBag.Title = "ManageRole";
+    ViewBag.Title = "ManageBooking";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 
 <style>
     .btn-add {
@@ -52,15 +51,15 @@
         margin: 0 10px;
         cursor: pointer;
     }
+
     .search-box {
         width: 40%;
     }
-
 </style>
 
 
-<div class="">
-    <h1 class="text-uppercase">Quản lý quyền</h1>
+<div>
+    <h1 class="text-uppercase">Quản lý đặt phòng</h1>
     <div class="search-box">
         @Html.Partial("_SearchPartial")
     </div>
@@ -99,7 +98,7 @@
         var searchString = $('.input-search').val().trim();
 
         $.ajax({
-            url: '/Home/SearchRole',
+            url: '/Home/SearchBooking',
             type: 'GET',
             data: { searchString: searchString },
             success: function (rs) {
@@ -114,7 +113,7 @@
     // Các hàm xử lý bảng
     function GetTable() {
         $.ajax({
-            url: '/Home/GetTableRole',
+            url: '/Home/GetTableBooking',
             type: 'GET',
             success: function (rs) {
                 $('.container').empty();
@@ -131,7 +130,7 @@
 
     function Create() {
         $.ajax({
-            url: '/Home/CreateRole',
+            url: '/Home/CreateBooking',
             type: 'GET',
             success: function (rs) {
                 if (!rs) {
@@ -156,7 +155,7 @@
             return;
         }
         $.ajax({
-            url: '/Home/EditRole',
+            url: '/Home/EditBooking',
             type: 'GET',
             data: { ID: ID },
             success: function (rs) {
@@ -200,7 +199,7 @@
 
     function closeConfirmationDialog() {
         document.getElementById('confirmationDialog').style.display = 'none';
-        $('#roleNameError').html('');
+        $('#BookingNameError').html('');
 
     }
 
@@ -218,7 +217,7 @@
         }
 
         $.ajax({
-            url: '/Home/DeleteRole',
+            url: '/Home/DeleteBooking',
             type: 'GET',
             data: { ID: ID },
             success: function (rs) {
@@ -240,21 +239,8 @@
 
 
     // Các hàm xử lý validate
-    function validateRoleName() {
-        var roleNameValue = $('#RoleName').val().trim();
-        var errorElement = $('#roleNameError');
 
-        if (roleNameValue === "") {
-            errorElement.html("Vui lòng nhập trường thông tin này");
-            $('#RoleName').focus();
-            return false;
-        } else {
-            errorElement.html("");
-            return true;
-        }
-    }
-    
-    
+
     $(document).ready(function () {
         GetTable();
 

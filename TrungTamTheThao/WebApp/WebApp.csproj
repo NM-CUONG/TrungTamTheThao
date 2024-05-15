@@ -150,7 +150,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\VNPayAPI\Util\PayLib.cs" />
     <Compile Include="Areas\VNPayAPI\Util\VNPay.cs" />
-    <Compile Include="Constant\TrangThaiUserConstant.cs" />
+    <Compile Include="Constant\TrangThaiConstant.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -2347,6 +2347,9 @@
     <Content Include="Views\Home\_SearchPartial.cshtml" />
     <Content Include="Views\Home\Statistical.cshtml" />
     <Content Include="Views\Home\PaymentResult.cshtml" />
+    <Content Include="Views\Home\ManageBooking.cshtml" />
+    <Content Include="Views\Home\_TableBookingPartial.cshtml" />
+    <Content Include="Views\Home\_CreateBookingPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -547,7 +547,7 @@ namespace WebApp.Controllers
             // Lấy các tham số từ URL
             VNPay vnpay = new VNPay();
             //Số tiền
-            vnpay.vnp_Amount = Request.QueryString["vnp_Amount"];
+            vnpay.vnp_Amount =  (float.Parse(Request.QueryString["vnp_Amount"]) / 100).ToString();
             //Mã ngân hàng = NCB
             vnpay.vnp_BankCode = Request.QueryString["vnp_BankCode"];
             //Mã giao dịch của ngân hàng
@@ -570,6 +570,8 @@ namespace WebApp.Controllers
             }
             db.tb_Booking.Add(booking);
             db.SaveChanges();
+
+            Session.Remove("booking");
             return View(vnpay);
         }
 
@@ -608,7 +610,7 @@ namespace WebApp.Controllers
                 return View("HistoriesBooking");
             }
 
-            db.tb_Booking.Where(x => x.ID.ToString() == BookingID).FirstOrDefault().Status = 2;
+            db.tb_Booking.Where(x => x.ID.ToString() == BookingID).FirstOrDefault().Status = 4;
             db.SaveChanges();
 
             tb_User Account = Session["UserInfor"] as tb_User;
@@ -1064,7 +1066,7 @@ namespace WebApp.Controllers
 
             var listRole = db.tb_Role.ToList();
             ViewBag.listRole = listRole.ToSelectList(r => r.RoleName, r => r.RoleID);
-            ViewBag.listStatus = TrangThaiUserConstant.GetSelectListItems(-1);
+            ViewBag.listStatus = TrangThaiConstant.GetSelectListItems(-1);
 
             return PartialView("_CreateUserPartial", User);
         }
@@ -1090,7 +1092,7 @@ namespace WebApp.Controllers
         {
             var listRole = db.tb_Role.ToList();
             ViewBag.listRole = listRole.ToSelectList(r => r.RoleName, r => r.RoleID);
-            ViewBag.listStatus = TrangThaiUserConstant.GetSelectListItems(-1);
+            ViewBag.listStatus = TrangThaiConstant.GetSelectListItems(-1);
 
             tb_User User = db.tb_User.FirstOrDefault(x => x.ID == ID);
             return PartialView("_EditUserPartial", User);
@@ -1632,7 +1634,176 @@ namespace WebApp.Controllers
 
         #endregion
 
+        #region Các hàm xử lý Booking
+        public ActionResult ManageBooking()
+        {
+            List<tb_Booking> listBooking = db.tb_Booking.ToList();
 
+            DateTime nowday = DateTime.Now;
+
+            foreach(var item in listBooking)
+            {
+                if (item.StartTime <= nowday && item.EndTime >= nowday && item.Status != 4 && item.Status != 1 && item.Status != 0)
+                {
+                    item.Status = 2;
+                }
+                if (item.EndTime < nowday && item.Status != 4 && item.Status != 1 && item.Status != 0)
+                {
+                    item.Status = 3;
+                }
+            }
+
+            db.SaveChanges();
+
+            ViewBag.listBooking = listBooking;
+            return View();
+        }
+
+        public ActionResult SearchBooking(string searchString)
+        {
+            List<tb_Booking> listBookingFill = db.tb_Booking.ToList();
+            List<tb_Booking> listBooking = new List<tb_Booking>();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.Unidecode().ToLower();
+                foreach (var item in listBookingFill)
+                {
+                    var BookingID = item.BookingID.Unidecode().ToLower();
+                    if (BookingID.Contains(searchString))
+                    {
+                        listBooking.Add(item);
+                    }
+                }
+            }
+            else
+            {
+                listBooking = db.tb_Booking.ToList();
+            }
+
+            ViewBag.listBooking = listBooking;
+
+            return PartialView("_TableBookingPartial");
+        }
+        public ActionResult GetTableBooking()
+        {
+            List<tb_Booking> listBooking = db.tb_Booking.ToList();
+
+            foreach (var item in listBooking)
+            {
+                if (item.UserID == null) continue;
+                item.UserName = db.tb_User.Where(x => x.UserID == item.UserID).FirstOrDefault().FullName;
+            }
+
+            foreach (var item in listBooking)
+            {
+                if (item.ArenaID == null) continue;
+                item.ArenaName = db.tb_Arena.Where(x => x.ArenaID == item.ArenaID).FirstOrDefault().ArenaName;
+            }
+
+            foreach (var item in listBooking)
+            {
+                if (item.ShiftID== null) continue;
+                item.ShiftName = db.tb_Shift.Where(x => x.ShiftID == item.ShiftID).FirstOrDefault().ShiftName;
+            }
+
+            ViewBag.listBooking = listBooking;
+
+            return PartialView("_TableBookingPartial");
+        }
+
+        public ActionResult CreateBooking()
+        {
+            tb_Booking Booking = new tb_Booking();
+            tb_Booking lastBooking = db.tb_Booking.OrderByDescending(x => x.ID).FirstOrDefault();
+            Booking.BookingID = "S" + (lastBooking.ID + 1);
+
+            if (lastBooking != null)
+            {
+                Booking.BookingID = "B" + (lastBooking.ID + 1);
+            }
+            else
+            {
+                Booking.BookingID = "B0";
+            }
+
+            var listUser = db.tb_User.ToList();
+            ViewBag.listUser = listUser.ToSelectList(r => r.UserName, r => r.UserID);
+
+            var listArena = db.tb_Arena.ToList();
+            ViewBag.listArena = listArena.ToSelectList(r => r.ArenaName, r => r.ArenaID);
+
+            var listShift = db.tb_Shift.ToList();
+            ViewBag.listShift = listShift.ToSelectList(r => r.ShiftName, r => r.ShiftID);
+
+            ViewBag.listStatus = TrangThaiConstant.GetSelectListItems(-1);
+
+            return PartialView("_CreateBookingPartial", Booking);
+        }
+
+        [HttpPost]
+        public ActionResult CreateBooking(tb_Booking model)
+        {
+            try
+            {
+                db.tb_Booking.Add(model);
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Thêm mới không thành công, lỗi: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { success = true, message = "Thêm mới thành công" }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        public ActionResult EditBooking(long ID)
+        {
+            var listCategory = db.tb_Category.ToList();
+            ViewBag.listCategory = listCategory.ToSelectList(r => r.CateName, r => r.CateID);
+
+            tb_Booking Booking = db.tb_Booking.FirstOrDefault(x => x.ID == ID);
+            return PartialView("_EditBookingPartial", Booking);
+        }
+
+        [HttpPost]
+        public ActionResult EditBooking(tb_Booking model)
+        {
+            try
+            {
+                //var Booking = db.tb_Booking.FirstOrDefault(x => x.ID == model.ID);
+                //Booking.BookingID = model.BookingID;
+                //Booking.BookingName = model.BookingName;
+                //Booking.CateID = model.CateID;
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Sửa bản ghi không thành công!" }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { success = true, message = "Sửa bản ghi thành công!" }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        public ActionResult DeleteBooking(long ID)
+        {
+            try
+            {
+                tb_Booking model = db.tb_Booking.Where(x => x.ID == ID).FirstOrDefault();
+                db.tb_Booking.Remove(model);
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Không thể xóa bản ghi này!!" }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { success = true, message = "Xóa bản ghi thành công" }, JsonRequestBehavior.AllowGet);
+
+        }
+
+
+        #endregion
         public ActionResult Statistical()
         {
             return View();

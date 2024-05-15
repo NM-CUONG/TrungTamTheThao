@@ -1,0 +1,114 @@
+﻿
+
+@model WebApp.Models.tb_Booking
+
+@{
+    var listUser = ViewBag.listUser as List<SelectListItem>;
+    var listArena = ViewBag.listArena as List<SelectListItem>;
+    var listShift = ViewBag.listShift as List<SelectListItem>;
+    var listStatus = ViewBag.listStatus as List<SelectListItem>;
+}
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header ">
+            <h1 class="modal-title w-100 text-center fs-5 text-uppercase" id="staticBackdropLabel">Thêm mới lịch đặt phòng</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        @using (Ajax.BeginForm("CreateBooking", "Home", new AjaxOptions()
+        {
+            HttpMethod = "POST",
+            OnSuccess = "Success",
+            OnFailure = "Failure",
+        }))
+        {
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label class="form-label" for="BookingID">Mã <span class="text-danger"> *</span></label>
+                        <div class="col-sm-12">
+                            @Html.TextBoxFor(m => m.BookingID, new { @class = "form-control mauxam ", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="UserID">Người đặt<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.DropDownList("UserID", listUser, "--Chọn người đặt--", new { @class = "form-control" })
+                            <span id="UserIDError" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="ArenaID">Phòng<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.DropDownList("ArenaID", listArena, "--Chọn phòng--", new { @class = "form-control" })
+                            <span id="ArenaIDError" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="StartTime">Ngày bắt đầu<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.TextBoxFor(m => m.StartTime, new { @class = "form-control ", type="datetime" })
+                            <span id="StartTimeError" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="EndTime">Ngày kết thúc<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.TextBoxFor(m => m.EndTime, new { @class = "form-control ", type = "datetime" })
+                            <span id="EndTimeError" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="ShiftID">Khung giờ<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.DropDownList("ShiftID", listShift, "--Chọn khung giờ--", new { @class = "form-control" })
+                            <span id="ShiftIDError" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="PhoneNumber">SĐT liên hệ<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+                            <span id="PhoneNumberError" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="ContactName">Người liên hệ<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.TextBoxFor(m => m.ContactName, new { @class = "form-control" })
+                            <span id="ContactNameError" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="Money">Tiền<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.TextBoxFor(m => m.Money, new { @class = "form-control" })
+                            <span id="MoneyError" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="StatusError">Trạng thái<span class="text-danger"> *</span></label>
+                        <div class="col-sm-12 col-lg-12">
+                            @Html.DropDownList("Status", listStatus, "--Chọn trạng thái--", new { @class = "form-control" })
+                            <span id="StatusError" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn-submit btn btn-primary">Thêm</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+
+    $('.btn-submit').on('click', function (event) {
+        //if (!validateBookingName() || !validatePrice() || !validateBookinggory())
+        //{
+        //    event.preventDefault();
+        //}
+    })
+</script>

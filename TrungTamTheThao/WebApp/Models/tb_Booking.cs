@@ -5,6 +5,7 @@ namespace WebApp.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
+    using WebApp.Constant;
 
     public partial class tb_Booking
     {
@@ -18,8 +19,14 @@ namespace WebApp.Models
         [StringLength(10)]
         public string UserID { get; set; }
 
+        [NotMapped]
+        public string UserName{ get; set; }
+
         [StringLength(10)]
         public string ArenaID { get; set; }
+
+        [NotMapped]
+        public string ArenaName{ get; set; }
 
         public DateTime StartTime { get; set; }
 
@@ -27,10 +34,15 @@ namespace WebApp.Models
 
         [StringLength(10)]
         public string ShiftID { get; set; }
+        [NotMapped]
+        public string ShiftName { get; set; }
 
         public string Note { get; set; }
 
-        public int? Status { get; set; }
+        public int Status { get; set; }
+
+        [NotMapped]
+        public string StatusName => TrangThaiBookingConstant.GetDisplayName(Status);
 
         [StringLength(20)]
         public string PhoneNumber { get; set; }

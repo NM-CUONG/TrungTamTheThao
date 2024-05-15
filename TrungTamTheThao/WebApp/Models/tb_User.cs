@@ -61,7 +61,7 @@
         public string RoleID { get; set; }
 
         [NotMapped]
-        public string StatusName => TrangThaiUserConstant.GetDisplayName(Status);
+        public string StatusName => TrangThaiConstant.GetDisplayName(Status);
 
         [NotMapped]
         public string RoleName { get; set; }
