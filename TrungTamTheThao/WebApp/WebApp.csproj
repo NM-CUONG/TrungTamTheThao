@@ -2350,6 +2350,7 @@
     <Content Include="Views\Home\ManageBooking.cshtml" />
     <Content Include="Views\Home\_TableBookingPartial.cshtml" />
     <Content Include="Views\Home\_CreateBookingPartial.cshtml" />
+    <Content Include="Views\Home\_EditBookingPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

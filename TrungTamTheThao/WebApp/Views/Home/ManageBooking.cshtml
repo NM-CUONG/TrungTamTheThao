@@ -239,6 +239,174 @@
 
 
     // Các hàm xử lý validate
+    // Hàm validate người đặt
+    function validateUserID() {
+        var userIDInput = $('#UserID');
+
+        // Lấy giá trị của người đặt
+        var userID = userIDInput.val();
+
+        // Kiểm tra nếu không có người đặt được chọn
+        if (!userID || userID === "--Chọn người đặt--") {
+            $('#userIDError').text('Vui lòng chọn một người đặt.');
+            return false;
+        } else {
+            $('#userIDError').text('');
+            return true;
+        }
+    }
+
+    // Hàm đổ ngày hiện tại vào datetimepicker
+    function GetNowDaySetDateTimePiker(ClassNameDateTimePicker) {
+        var datetimepicker = document.getElementsByClassName(ClassNameDateTimePicker);
+        // Lấy ngày hiện tại
+        var currentDate = new Date();
+        var year = currentDate.getFullYear();
+        var month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+        var day = currentDate.getDate().toString().padStart(2, "0");
+        var today = year + "-" + month + "-" + day;
+
+        // Đặt giá trị ngày hiện tại cho datetimepicker
+        datetimepicker[0].value = today;
+
+    }
+
+    
+
+    //Hàm check ngày bắt đầu
+    function validateNgayBatDau() {
+        var ngaySuDungInput = $('.datetimepicker-ngaybatdau');
+        var ngaySuDung = new Date(ngaySuDungInput.val());
+        var currentDate = new Date();
+        var diffTime = ngaySuDung.getTime() - currentDate.getTime();
+        var diffDays = diffTime / (1000 * 3600 * 24);
+        if (ngaySuDung.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0) || diffDays > 5) {
+            $('#startTimeError').text('Ngày sử dụng sân phải là ngày hiện tại hoặc trong vòng 5 ngày kể từ ngày hiện tại.');
+            return false;
+        } else {
+            $('#startTimeError').text('');
+            return true;
+        }
+    }
+
+    //Hàm check ngày kết thúc
+    function validateNgayKetThuc() {
+        var ngayBatDauInput = $('.datetimepicker-ngaybatdau');
+        var ngayKetThucInput = $('.datetimepicker-ngayketthuc');
+
+        var ngayBatDau = new Date(ngayBatDauInput.val());
+        var ngayKetThuc = new Date(ngayKetThucInput.val());
+
+        // Kiểm tra nếu ngày kết thúc sau ngày bắt đầu
+        if (ngayKetThuc < ngayBatDau) {
+            $('#endTimeError').text('Ngày kết thúc phải sau ngày bắt đầu.');
+            return false;
+        } else {
+            $('#endTimeError').text('');
+            return true;
+        }
+    }
+    // Hàm validate phòng
+    function validateArenaID() {
+        var arenaIDInput = $('#ArenaID');
+
+        // Lấy giá trị của phòng
+        var arenaID = arenaIDInput.val();
+
+        // Kiểm tra nếu không có phòng được chọn
+        if (!arenaID || arenaID === "--Chọn phòng--") {
+            $('#arenaIDError').text('Vui lòng chọn một phòng.');
+            return false;
+        } else {
+            $('#arenaIDError').text('');
+            return true;
+        }
+    }
+
+    // Hàm validate khung giờ
+    function validateShiftID() {
+        var shiftIDInput = $('#ShiftID');
+
+        // Lấy giá trị của khung giờ
+        var shiftID = shiftIDInput.val();
+
+        // Kiểm tra nếu không có khung giờ được chọn
+        if (!shiftID || shiftID === "--Chọn khung giờ--") {
+            $('#shiftIDError').text('Vui lòng chọn một khung giờ.');
+            return false;
+        } else {
+            $('#shiftIDError').text('');
+            return true;
+        }
+    }
+
+    // Hàm validate người liên hệ
+    function validateContactName() {
+        var contactNameInput = $('#ContactName');
+
+        // Lấy giá trị của người liên hệ
+        var contactName = contactNameInput.val();
+
+        // Kiểm tra nếu không có người liên hệ được nhập
+        if (!contactName.trim()) {
+            $('#contactNameError').text('Vui lòng nhập tên người liên hệ.');
+            return false;
+        } else {
+            $('#contactNameError').text('');
+            return true;
+        }
+    }
+
+    // Hàm validate trạng thái
+    function validateStatus() {
+        var statusInput = $('#Status');
+
+        // Lấy giá trị của trạng thái
+        var status = statusInput.val();
+
+        // Kiểm tra nếu không có trạng thái được chọn
+        if (!status || status === "--Chọn trạng thái--") {
+            $('#statusError').text('Vui lòng chọn một trạng thái.');
+            return false;
+        } else {
+            $('#statusError').text('');
+            return true;
+        }
+    }
+
+    // Hàm validate tiền
+    function validateMoney() {
+        var moneyInput = $('#Money');
+
+        // Lấy giá trị của tiền
+        var money = moneyInput.val();
+
+        // Kiểm tra nếu trường tiền bị bỏ trống hoặc không phải là số
+        if (!money.trim() || isNaN(parseFloat(money))) {
+            $('#moneyError').text('Vui lòng nhập số tiền hợp lệ.');
+            return false;
+        } else {
+            $('#moneyError').text('');
+            return true;
+        }
+    }
+
+    // Hàm validate số điện thoại
+    function validatePhoneNumber() {
+        var phoneNumberInput = $('#PhoneNumber');
+
+        // Lấy giá trị của số điện thoại
+        var phoneNumber = phoneNumberInput.val();
+
+        // Kiểm tra nếu số điện thoại không rỗng và không đúng định dạng
+        if (phoneNumber.trim() && !/^\d{10}$/.test(phoneNumber)) {
+            $('#phoneNumberError').text('Số điện thoại phải có 10 chữ số.');
+            return false;
+        } else {
+            $('#phoneNumberError').text('');
+            return true;
+        }
+    }
 
 
     $(document).ready(function () {

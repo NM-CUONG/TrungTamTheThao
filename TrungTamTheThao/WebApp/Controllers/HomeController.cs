@@ -25,6 +25,8 @@ using System.Text;
 using VNPAYAPI.Areas.VNPayAPI.Util;
 using System.Collections.Specialized;
 using WebApp.Areas.VNPayAPI.Util;
+using System.Management.Instrumentation;
+using Microsoft.Ajax.Utilities;
 
 namespace WebApp.Controllers
 {
@@ -221,8 +223,8 @@ namespace WebApp.Controllers
         [HttpGet]
         public JsonResult getEmptyShift(string arenaId, string cateId, DateTime ngayBatDau, DateTime ngayKetThuc)
         {
-            // Lấy ra tất cả sân cầu lông chưa được xác nhận đặt
-            var listBooked = db.tb_Booking.Where(x => x.ArenaID == arenaId && x.Status == 0).ToList();
+            // Lấy ra tất cả lịch sân chưa được xác nhận đặt
+            var listBooked = db.tb_Booking.Where(x => x.ArenaID == arenaId && (x.Status == 1 || x.Status == 2)).ToList();
             //Lấy ra tất cả khung giờ của sân cầu lông
             var listShift = db.tb_Shift.Where(x => x.CateID == cateId).ToList();
             //Tạo list sân rỗng chưa đặt
@@ -245,9 +247,9 @@ namespace WebApp.Controllers
             .Select(x => new tb_Shift { ShiftID = x.ShiftID, ShiftName = x.ShiftName, Price = x.Price })
             .ToList();
 
-            return Json(new { listEmptyShift }, JsonRequestBehavior.AllowGet);
+            return Json(new { success = true, data = listEmptyShift }, JsonRequestBehavior.AllowGet);
         }
-
+            
         public JsonResult getEmptyShift2(string arenaId, DateTime ngayBatDau, DateTime ngayKetThuc)
         {
             int? maxPerson = db.tb_Arena.Where(x => x.ArenaID == arenaId).FirstOrDefault().MaxPersons;
@@ -270,7 +272,6 @@ namespace WebApp.Controllers
                 else
                 {
                     continue;
-
                 }
             }
 
@@ -337,136 +338,101 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public JsonResult HandleBookingBadminton(tb_Booking model)
+        public JsonResult HandleBookingBadminton(tb_Booking model, FormCollection form)
         {
-            tb_Booking lastBooking = db.tb_Booking.OrderByDescending(b => b.ID).FirstOrDefault();
-
-            if (lastBooking != null)
-            {
-                model.BookingID = "B" + (lastBooking.ID + 1);
-            }
-            else
-            {
-                model.BookingID = "B0";
-            }
-
-            if (model.isCoDinh == 0)
-            {
-                model.StartTime = model.ngaySuDung;
-                model.EndTime = model.ngaySuDung;
-            }
-
-            tb_User shiftInfor = Session["UserInfor"] as tb_User;
-            if (shiftInfor != null)
-            {
-                model.UserID = shiftInfor.UserID;
-            }
-
-            model.Status = 0;
-
-            // lưu vào csdl
 
             try
             {
+                tb_Booking lastBooking = db.tb_Booking.OrderByDescending(b => b.ID).FirstOrDefault();
+
+                if (lastBooking != null)
+                {
+                    model.BookingID = "B" + (lastBooking.ID + 1);
+                }
+                else
+                {
+                    model.BookingID = "B0";
+                }
+
+                if (model.isCoDinh == 0)
+                {
+                    model.StartTime = model.ngaySuDung;
+                    model.EndTime = model.ngaySuDung;
+                }
+
+                tb_User UserInfor = Session["UserInfor"] as tb_User;
+                if (UserInfor != null)
+                {
+                    model.UserID = UserInfor.UserID;
+                }
+
+                model.Status = 0;
+                model.Money = float.Parse(form["money"]) * 1000;
+
                 db.tb_Booking.Add(model);
                 db.SaveChanges();
+
             }
             catch (Exception ex)
             {
                 return Json(new { success = false, message = "Đặt sân không thành công!, Có lỗi: " + ex.Message }, JsonRequestBehavior.AllowGet);
+
             }
 
+            // lưu vào session
+            Session["booking"] = model;
             return Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
-        public JsonResult HandleBookingFootball(tb_Booking model)
+        public JsonResult HandleBookingFootball(tb_Booking model, FormCollection form)
         {
-            tb_Booking lastBooking = db.tb_Booking.OrderByDescending(b => b.ID).FirstOrDefault();
-
-            if (lastBooking != null)
-            {
-                model.BookingID = "B" + (lastBooking.ID + 1);
-            }
-            else
-            {
-                model.BookingID = "B0";
-            }
-
-            if (model.isCoDinh == 0)
-            {
-                model.StartTime = model.ngaySuDung;
-                model.EndTime = model.ngaySuDung;
-            }
-
-            tb_User shiftInfor = Session["UserInfor"] as tb_User;
-            if (shiftInfor != null)
-            {
-                model.UserID = shiftInfor.UserID;
-            }
-
-            model.Status = 0;
-
-            // lưu vào csdl
 
             try
             {
+                tb_Booking lastBooking = db.tb_Booking.OrderByDescending(b => b.ID).FirstOrDefault();
+
+                if (lastBooking != null)
+                {
+                    model.BookingID = "B" + (lastBooking.ID + 1);
+                }
+                else
+                {
+                    model.BookingID = "B0";
+                }
+
+                if (model.isCoDinh == 0)
+                {
+                    model.StartTime = model.ngaySuDung;
+                    model.EndTime = model.ngaySuDung;
+                }
+
+                tb_User shiftInfor = Session["UserInfor"] as tb_User;
+                if (shiftInfor != null)
+                {
+                    model.UserID = shiftInfor.UserID;
+                }
+
+                model.Status = 0;
+                model.Money = float.Parse(form["money"]) * 1000;
+
                 db.tb_Booking.Add(model);
                 db.SaveChanges();
+
             }
             catch (Exception ex)
             {
                 return Json(new { success = false, message = "Đặt sân không thành công!, Có lỗi: " + ex.Message }, JsonRequestBehavior.AllowGet);
+
             }
 
+            // lưu vào session
+            Session["booking"] = model;
             return Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
-        public JsonResult HandleBookingGym(tb_Booking model)
-        {
-            tb_Booking lastBooking = db.tb_Booking.OrderByDescending(b => b.ID).FirstOrDefault();
-
-            if (lastBooking != null)
-            {
-                model.BookingID = "B" + (lastBooking.ID + 1);
-            }
-            else
-            {
-                model.BookingID = "B0";
-            }
-
-            if (model.isCoDinh == 0)
-            {
-                model.StartTime = model.ngaySuDung;
-                model.EndTime = model.ngaySuDung;
-            }
-
-            tb_User shiftInfor = Session["UserInfor"] as tb_User;
-            if (shiftInfor != null)
-            {
-                model.UserID = shiftInfor.UserID;
-            }
-
-            model.Status = 0;
-
-            // lưu vào csdl
-
-            try
-            {
-                db.tb_Booking.Add(model);
-                db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Đặt sân không thành công!, Có lỗi: " + ex.Message }, JsonRequestBehavior.AllowGet);
-            }
-
-            return Json(new { success = true }, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpPost]
-        public JsonResult HandleBookingSwimming(tb_Booking model, FormCollection form)
+        public JsonResult HandleBookingGym(tb_Booking model, FormCollection form)
         {
             try
             {
@@ -495,6 +461,54 @@ namespace WebApp.Controllers
 
                 model.Money = float.Parse(form["money"]) * 1000;
                 model.Status = 0;
+
+                db.tb_Booking.Add(model);
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Đặt sân không thành công!, Có lỗi: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+
+
+            // lưu vào session
+            Session["booking"] = model;
+            return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult HandleBookingSwimming(tb_Booking model, FormCollection form)
+        {
+            try
+            {
+                tb_Booking lastBooking = db.tb_Booking.OrderByDescending(b => b.ID).FirstOrDefault();
+
+                if (lastBooking != null)
+                {
+                    model.BookingID = "B" + (lastBooking.ID + 1);
+                }
+                else
+                {
+                    model.BookingID = "B0";
+                }
+
+                if (model.isCoDinh == 0)
+                {
+                    model.StartTime = model.ngaySuDung;
+                    model.EndTime = model.ngaySuDung;
+                }
+
+                tb_User UserInfor = Session["UserInfor"] as tb_User;
+                if (UserInfor != null)
+                {
+                    model.UserID = UserInfor.UserID;
+                }
+
+                model.Money = float.Parse(form["money"]) * 1000;
+                model.Status = 0;
+
+                db.tb_Booking.Add(model);
+                db.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -511,7 +525,7 @@ namespace WebApp.Controllers
         {
             tb_Booking booking = Session["booking"] as tb_Booking;
             string amount = (booking.Money * 100).ToString();
-            string orderinfor = booking.BookingID;
+            string orderinfor = booking.BookingID + new Random().Next(1, 99999);
             string infor = "Trả tiền đặt phòng";
             string hostName = System.Net.Dns.GetHostName();
             string clientIPAddress = System.Net.Dns.GetHostAddresses(hostName).GetValue(0).ToString();
@@ -547,7 +561,7 @@ namespace WebApp.Controllers
             // Lấy các tham số từ URL
             VNPay vnpay = new VNPay();
             //Số tiền
-            vnpay.vnp_Amount =  (float.Parse(Request.QueryString["vnp_Amount"]) / 100).ToString();
+            vnpay.vnp_Amount = (float.Parse(Request.QueryString["vnp_Amount"]) / 100).ToString();
             //Mã ngân hàng = NCB
             vnpay.vnp_BankCode = Request.QueryString["vnp_BankCode"];
             //Mã giao dịch của ngân hàng
@@ -568,7 +582,7 @@ namespace WebApp.Controllers
             {
                 booking.Status = 1;
             }
-            db.tb_Booking.Add(booking);
+            db.tb_Booking.AddOrUpdate(booking);
             db.SaveChanges();
 
             Session.Remove("booking");
@@ -1641,7 +1655,7 @@ namespace WebApp.Controllers
 
             DateTime nowday = DateTime.Now;
 
-            foreach(var item in listBooking)
+            foreach (var item in listBooking)
             {
                 if (item.StartTime <= nowday && item.EndTime >= nowday && item.Status != 4 && item.Status != 1 && item.Status != 0)
                 {
@@ -1703,7 +1717,7 @@ namespace WebApp.Controllers
 
             foreach (var item in listBooking)
             {
-                if (item.ShiftID== null) continue;
+                if (item.ShiftID == null) continue;
                 item.ShiftName = db.tb_Shift.Where(x => x.ShiftID == item.ShiftID).FirstOrDefault().ShiftName;
             }
 
@@ -1728,7 +1742,7 @@ namespace WebApp.Controllers
             }
 
             var listUser = db.tb_User.ToList();
-            ViewBag.listUser = listUser.ToSelectList(r => r.UserName, r => r.UserID);
+            ViewBag.listUser = listUser.ToSelectList(r => r.FullName, r => r.UserID);
 
             var listArena = db.tb_Arena.ToList();
             ViewBag.listArena = listArena.ToSelectList(r => r.ArenaName, r => r.ArenaID);
@@ -1759,8 +1773,17 @@ namespace WebApp.Controllers
 
         public ActionResult EditBooking(long ID)
         {
-            var listCategory = db.tb_Category.ToList();
-            ViewBag.listCategory = listCategory.ToSelectList(r => r.CateName, r => r.CateID);
+
+            var listUser = db.tb_User.ToList();
+            ViewBag.listUser = listUser.ToSelectList(r => r.FullName, r => r.UserID);
+
+            var listArena = db.tb_Arena.ToList();
+            ViewBag.listArena = listArena.ToSelectList(r => r.ArenaName, r => r.ArenaID);
+
+            var listShift = db.tb_Shift.ToList();
+            ViewBag.listShift = listShift.ToSelectList(r => r.ShiftName, r => r.ShiftID);
+
+            ViewBag.listStatus = TrangThaiConstant.GetSelectListItems(-1);
 
             tb_Booking Booking = db.tb_Booking.FirstOrDefault(x => x.ID == ID);
             return PartialView("_EditBookingPartial", Booking);
@@ -1771,10 +1794,18 @@ namespace WebApp.Controllers
         {
             try
             {
-                //var Booking = db.tb_Booking.FirstOrDefault(x => x.ID == model.ID);
-                //Booking.BookingID = model.BookingID;
-                //Booking.BookingName = model.BookingName;
-                //Booking.CateID = model.CateID;
+                var Booking = db.tb_Booking.FirstOrDefault(x => x.ID == model.ID);
+                Booking.BookingID = model.BookingID;
+                Booking.UserID = model.UserID;
+                Booking.ArenaID = model.ArenaID;
+                Booking.StartTime = model.StartTime;
+                Booking.EndTime = model.EndTime;
+                Booking.ShiftID = model.ShiftID;
+                Booking.Note = model.Note;
+                Booking.Status = model.Status;
+                Booking.PhoneNumber = model.PhoneNumber;
+                Booking.ContactName = model.ContactName;
+                Booking.Money = model.Money;
                 db.SaveChanges();
             }
             catch (Exception)
