@@ -4,46 +4,313 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Thống kê</h2>
 
-<canvas id="myChart" width="200" height="200"></canvas>
+
+<style>
+    .selectTime {
+        width: fit-content;
+        margin: auto;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+</style>
+
+<h2 class="text-uppercase text-center">Thống kê</h2>
+
+<select class="selectTime form-control">
+    <option value=0>Ngày hôm nay</option>
+    <option value=1>Tháng này</option>
+    <option value=2>Năm nay</option>
+</select>
+
+<div class="ChartBar row">
+    <div class="col-sm-12 col-md-12 col-lg-6">
+        <canvas id="ChartRevenue"></canvas>
+    </div>
+    <div class="col-sm-12 col-md-12 col-lg-6">
+        <canvas id="ChartSale"></canvas>
+    </div>
+</div>
+
+<div class="ChartPie row">
+    <div class="col-lg-6 col-md-12 col-sm-12">
+        <canvas id="ChartPieRevenue"></canvas>
+    </div>
+    <div class="col-lg-6 col-md-12 col-sm-12">
+        <canvas id="ChartPieSale"></canvas>
+    </div>
+</div>
 
 <script>
-    var ctx = document.getElementById('myChart').getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'bar', // Loại biểu đồ: 'bar' cho biểu đồ cột
-        data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'], // Nhãn của các cột
-            datasets: [{
-                label: '# of Votes', // Nhãn cho dữ liệu
-                data: [12, 19, 3, 5, 2, 3], // Dữ liệu của các cột
-                backgroundColor: [ // Màu nền cho từng cột
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [ // Màu viền cho từng cột
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1 // Độ rộng của đường viền của các cột
-            }]
-        },
+
+    const Utils = {
+        months: function (options) {
+            const months = ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
+                "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"];
+            const count = options.count || 12;
+            return months.slice(0, count);
+        }
+    };
+    const labels = Utils.months({ count: 12 });
+
+    const dataRevenue = {
+        labels: labels,
+        datasets: [
+            {
+                label: 'Cầu lông',
+                data: [100, 120, 0, 0, 0, 0, 0],
+                backgroundColor: 'rgba(108 ,126, 225, 1.0)',
+            },
+            {
+                label: 'Bóng đá',
+                data: [200, 200, 0, 0, 0, 0, 0],
+                backgroundColor: 'rgba(146, 185, 227, 1.0)',
+            },
+            {
+                label: 'Phòng gym',
+                data: [200, 200, 0, 0, 0, 0, 0],
+                backgroundColor: 'rgba(255, 196, 164, 1.0)',
+            },
+            {
+                label: 'Bể bơi',
+                data: [200, 200, 0, 0, 0, 0, 0],
+                backgroundColor: 'rgba(251, 162, 208, 1.0)',
+            }
+        ]
+    };
+    const dataSale = {
+        labels: labels,
+        datasets: [
+            {
+                label: 'Cầu lông',
+                data: [100, 120, 0, 0, 0, 0, 0],
+                backgroundColor: 'rgba(108 ,126, 225, 1.0)',
+            },
+            {
+                label: 'Bóng đá',
+                data: [200, 200, 0, 0, 0, 0, 0],
+                backgroundColor: 'rgba(146, 185, 227, 1.0)',
+            },
+            {
+                label: 'Phòng gym',
+                data: [200, 200, 0, 0, 0, 0, 0],
+                backgroundColor: 'rgba(255, 196, 164, 1.0)',
+            },
+            {
+                label: 'Bể bơi',
+                data: [200, 200, 0, 0, 0, 0, 0],
+                backgroundColor: 'rgba(251, 162, 208, 1.0)',
+            }
+        ]
+    };
+
+    const dataPieRevenu = {
+        labels: [
+            'Cầu lông',
+            'Bóng đá',
+            'Phòng gym',
+            'Bể bơi'
+        ],
+        datasets: [{
+            label: 'Biểu đồ doanh thu',
+            data: [300, 50, 100, 200],
+            backgroundColor: [
+                'rgba(108 ,126, 225, 1.0)',
+                'rgba(146, 185, 227, 1.0)',
+                'rgba(255, 196, 164, 1.0)',
+                'rgba(251, 162, 208, 1.0)'
+            ],
+            hoverOffset: 4
+        }]
+    };
+    const dataPieSale = {
+        labels: [
+            'Cầu lông',
+            'Bóng đá',
+            'Phòng gym',
+            'Bể bơi'
+        ],
+        datasets: [{
+            label: 'Biểu đồ doanh số',
+            data: [300, 50, 100, 200],
+            backgroundColor: [
+                'rgba(108 ,126, 225, 1.0)',
+                'rgba(146, 185, 227, 1.0)',
+                'rgba(255, 196, 164, 1.0)',
+                'rgba(251, 162, 208, 1.0)'
+            ],
+            hoverOffset: 4
+        }]
+    };
+
+    const configRevenue = {
+        type: 'bar',
+        data: dataRevenue,
         options: {
             scales: {
                 y: {
-                    beginAtZero: true // Bắt đầu trục y từ giá trị 0
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Biểu đồ doanh thu',
+                    font: {
+                        size: 24
+                    }
                 }
             }
+        },
+    };
+
+    const configSale = {
+        type: 'bar',
+        data: dataSale,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Biểu đồ doanh số',
+                    font: {
+                        size: 24
+                    }
+                }
+            }
+        },
+    };
+
+    var configPieRevenue = {
+        type: 'pie',
+        data: dataPieRevenu,
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Biểu đồ doanh thu',
+                    font: {
+                        size: 24
+                    }
+                }
+            }
+        },
+    };
+
+    var configPieSale = {
+        type: 'pie',
+        data: dataPieSale,
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Biểu đồ doanh số',
+                    font: {
+                        size: 24
+                    }
+                }
+            }
+        },
+    };
+
+    var ChartRevenue = new Chart(
+        document.getElementById('ChartRevenue'),
+        configRevenue
+    );
+
+    var ChartSale = new Chart(
+        document.getElementById('ChartSale'),
+        configSale
+    );
+
+    var ChartPieRevenue = new Chart(
+        document.getElementById('ChartPieRevenue'),
+        configPieRevenue
+    );
+
+    var ChartPieSale = new Chart(
+        document.getElementById('ChartPieSale'),
+        configPieSale
+    );
+
+    // Hàm vẽ biểu đồ
+    var UpdateChart = function (option, data) {
+        if (option == 2) {
+            ChartRevenue.data.datasets[0].data = data.dataRevenue.badminton;
+            ChartRevenue.data.datasets[1].data = data.dataRevenue.football;
+            ChartRevenue.data.datasets[2].data = data.dataRevenue.gym;
+            ChartRevenue.data.datasets[3].data = data.dataRevenue.swimming;
+
+            ChartSale.data.datasets[0].data = data.dataSale.badminton;
+            ChartSale.data.datasets[1].data = data.dataSale.football;
+            ChartSale.data.datasets[2].data = data.dataSale.gym;
+            ChartSale.data.datasets[3].data = data.dataSale.swimming;
+
+            ChartRevenue.update();
+            ChartSale.update();
         }
-    });
+
+        if (option == 1 || option == 0) {
+            debugger
+            if (data.dataSale[0] == 0 && data.dataSale[1] == 0 && data.dataSale[2] == 0 && data.dataSale[3] == 0) {
+                toastr.warning("Chưa có dữ liệu", "Thông báo");
+                $('.ChartPie').hide();
+                $('.ChartBar').hide();
+            }
+            else {
+                ChartPieRevenue.data.datasets[0].data = data.dataRevenue;
+                ChartPieSale.data.datasets[0].data = data.dataSale;
+                ChartPieRevenue.update();
+                ChartPieSale.update();
+            }
+        }
+    }
+
+    //Hàm lấy dữ liệu
+    function fetchData(option, callback) {
+        $.ajax({
+            url: '/Home/fectchDataChart',
+            type: 'GET',
+            dataType: 'json',
+            data: { option: option },
+            success: function (rs) {
+                if (!rs.success) {
+                    toastr.error("Đã có lỗi xảy ra trong quá trình lấy dữ liệu thống kê!", "Thông báo");
+                    return;
+                }
+                callback(option, rs.data);
+            },
+            error: function (xhr, status, error) {
+                toastr.error("Đã có lỗi xảy ra khi thống kê!", "Thông báo");
+            }
+        });
+    }
+
+    $('.selectTime').on('change', function () {
+        var option = $(this).val();
+        if (option != null && option != undefined) {
+            fetchData(option, UpdateChart);
+            if (option == 2) {
+                $('.ChartBar').show();
+                $('.ChartPie').hide();
+            }
+            else if (option == 1 || option == 0) {
+                $('.ChartBar').hide();
+                $('.ChartPie').show();
+            }
+        }
+    })
+
+    $(document).ready(function () {
+        $('.ChartBar').hide();
+        fetchData(0, UpdateChart);
+    })
+
+
 
 </script>
 

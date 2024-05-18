@@ -27,6 +27,7 @@ using System.Collections.Specialized;
 using WebApp.Areas.VNPayAPI.Util;
 using System.Management.Instrumentation;
 using Microsoft.Ajax.Utilities;
+using System.Drawing;
 
 namespace WebApp.Controllers
 {
@@ -78,6 +79,13 @@ namespace WebApp.Controllers
         public string returnUrl = $"https://localhost:{44315}/Home/PaymentResult";
         public string tmnCode = "5YMDVWOK";
         public string hashSecret = "38GCYMT92OXRPGTDFZ6JTA00MXIPU8BZ";
+
+        //Các loại cate
+        public static string BadmintonCateID = "badminton";
+        public static string FootballCateID = "football";
+        public static string GymCateID = "gym";
+        public static string SwimmingCateID = "swimming";
+
 
         public ActionResult Index()
         {
@@ -249,7 +257,7 @@ namespace WebApp.Controllers
 
             return Json(new { success = true, data = listEmptyShift }, JsonRequestBehavior.AllowGet);
         }
-            
+
         public JsonResult getEmptyShift2(string arenaId, DateTime ngayBatDau, DateTime ngayKetThuc)
         {
             int? maxPerson = db.tb_Arena.Where(x => x.ArenaID == arenaId).FirstOrDefault().MaxPersons;
@@ -582,6 +590,8 @@ namespace WebApp.Controllers
             {
                 booking.Status = 1;
             }
+
+            booking.PayDate = DateTime.Today;
             db.tb_Booking.AddOrUpdate(booking);
             db.SaveChanges();
 
@@ -1760,6 +1770,7 @@ namespace WebApp.Controllers
         {
             try
             {
+                model.PayDate = DateTime.Today;
                 db.tb_Booking.Add(model);
                 db.SaveChanges();
             }
@@ -1840,5 +1851,277 @@ namespace WebApp.Controllers
             return View();
         }
 
+        [HttpGet]
+        public ActionResult fectchDataChart(int option)
+        {
+            // lấy dữ liệu trong năm
+            if (option == 2)
+            {
+                try
+                {
+                    //lấy ra ngày đầu tiên trong tháng
+                    int currentYear = DateTime.Now.Year;
+                    DateTime[] firstDaysOfMonth = new DateTime[13];
+                    for (int month = 1; month <= 12; month++)
+                    {
+                        DateTime firstDayOfMonth = new DateTime(currentYear, month, 1);
+                        firstDaysOfMonth[month - 1] = firstDayOfMonth;
+                    }
+                    firstDaysOfMonth[12] = new DateTime(currentYear + 1, 1, 1);
+
+                    // lấy dữ liệu của badminton
+                    double?[] revenueBmt = new double?[12];
+                    int[] saleBmt = new int[12];
+                    var listArenaBmt = db.tb_Arena.Where(x => x.CateID == BadmintonCateID).Select(x => x.ArenaID).ToList();
+                    for (var i = 0; i < 12; i++)
+                    {
+                        DateTime startIndex = firstDaysOfMonth[i].Date;
+                        DateTime endIndex = firstDaysOfMonth[i + 1].Date;
+                        int index = i;
+
+                        revenueBmt[index] = db.tb_Booking
+                            .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Sum(x => x.Money);
+
+                        saleBmt[index] = db.tb_Booking
+                            .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Count();
+
+                    }
+
+                    // lấy dữ liệu của football
+                    double?[] revenueFb = new double?[12];
+                    int[] saleFb = new int[12];
+                    var listArenaFb = db.tb_Arena.Where(x => x.CateID == FootballCateID).Select(x => x.ArenaID).ToList();
+                    for (var i = 0; i < 12; i++)
+                    {
+                        DateTime startIndex = firstDaysOfMonth[i].Date;
+                        DateTime endIndex = firstDaysOfMonth[i + 1].Date;
+                        int index = i;
+
+                        revenueFb[i] = db.tb_Booking
+                            .Where(x => listArenaFb.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Sum(x => x.Money);
+
+                        saleFb[index] = db.tb_Booking
+                            .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Count();
+                    }
+
+                    // lấy dữ liệu của gym
+                    double?[] revenueGym = new double?[12];
+                    int[] saleGym = new int[12];
+
+                    var listArenaGym = db.tb_Arena.Where(x => x.CateID == GymCateID).Select(x => x.ArenaID).ToList();
+                    for (var i = 0; i < 12; i++)
+                    {
+                        DateTime startIndex = firstDaysOfMonth[i].Date;
+                        DateTime endIndex = firstDaysOfMonth[i + 1].Date;
+                        int index = i;
+                        revenueGym[i] = db.tb_Booking
+                            .Where(x => listArenaGym.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Sum(x => x.Money);
+
+                        saleGym[index] = db.tb_Booking
+                            .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Count();
+                    }
+
+                    // lấy dữ liệu của swwimng
+                    double?[] revenueSwim = new double?[12];
+                    int[] saleSwim = new int[12];
+                    var listArenaSwim = db.tb_Arena.Where(x => x.CateID == SwimmingCateID).Select(x => x.ArenaID).ToList();
+                    for (var i = 0; i < 12; i++)
+                    {
+                        DateTime startIndex = firstDaysOfMonth[i].Date;
+                        DateTime endIndex = firstDaysOfMonth[i + 1].Date;
+                        int index = i;
+                        revenueSwim[i] = db.tb_Booking
+                            .Where(x => listArenaSwim.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Sum(x => x.Money);
+
+                        saleSwim[index] = db.tb_Booking
+                            .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Count();
+                    }
+
+                    return Json(new
+                    {
+                        success = true,
+                        data = new
+                        {
+                            dataRevenue = new { badminton = revenueBmt, football = revenueFb, swimming = revenueSwim, gym = revenueGym, },
+                            dataSale = new { badminton = saleBmt, football = saleFb, swimming = saleSwim, gym = saleGym, }
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+
+                }
+                catch (Exception)
+                {
+                    return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            // lấy dữ liệu trong tháng
+            if (option == 1)
+            {
+                try
+                {
+                    // lấy ngày đầu tháng
+                    int currentYear = DateTime.Now.Year;
+                    int currentMonth = DateTime.Now.Month;
+                    DateTime firstDayOfMonth = new DateTime(currentYear, currentMonth, 1);
+                    DateTime currentDayOfMonth = DateTime.Today;
+
+                    // lấy số liệu của cầu lông
+                    double? revenueBmt = new double?();
+                    int saleBmt = new int();
+                    var listArenaBmt = db.tb_Arena.Where(x => x.CateID == BadmintonCateID).Select(x => x.ArenaID).ToList();
+
+                    revenueBmt = db.tb_Booking
+                        .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
+                        .Sum(x => x.Money);
+
+                    saleBmt = db.tb_Booking
+                        .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
+                        .Count();
+
+                    // lấy số liệu của bóng đá
+                    double? revenueFb = new double?();
+                    int saleFb = new int();
+                    var listArenaFb = db.tb_Arena.Where(x => x.CateID == FootballCateID).Select(x => x.ArenaID).ToList();
+
+                    revenueFb = db.tb_Booking
+                        .Where(x => listArenaFb.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= firstDayOfMonth.Date  && x.PayDate <= currentDayOfMonth.Date)
+                        .Sum(x => x.Money);
+
+                    saleFb = db.tb_Booking
+                        .Where(x => listArenaFb.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
+                        .Count();
+
+                    // lấy số liệu của phòng gym
+                    double? revenueGym = new double?();
+                    int saleGym = new int();
+                    var listArenaGym = db.tb_Arena.Where(x => x.CateID == GymCateID).Select(x => x.ArenaID).ToList();
+
+                    revenueGym = db.tb_Booking
+                        .Where(x => listArenaGym.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
+                        .Sum(x => x.Money);
+
+                    saleGym = db.tb_Booking
+                        .Where(x => listArenaGym.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
+                        .Count();
+
+
+                    // lấy số liệu của bể bơi
+                    double? revenueSwim = new double?();
+                    int saleSwim = new int();
+                    var listArenaSwim = db.tb_Arena.Where(x => x.CateID == SwimmingCateID).Select(x => x.ArenaID).ToList();
+
+                    revenueSwim = db.tb_Booking
+                        .Where(x => listArenaSwim.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
+                        .Sum(x => x.Money);
+
+                    saleSwim = db.tb_Booking
+                        .Where(x => listArenaSwim.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
+                        .Count();
+
+                    return Json(new
+                    {
+                        success = true,
+                        data = new
+                        {
+                            dataRevenue = new double?[] { revenueBmt, revenueFb, revenueGym, revenueSwim },
+                            dataSale = new int[] { saleBmt, saleFb, saleGym, saleSwim }
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+
+                }
+                catch (Exception)
+                {
+                    return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            // lấy dữ liệu trong ngày
+            if (option == 0)
+            {
+                try
+                {
+                    // lấy ngày đầu tháng
+                    DateTime currentDay = DateTime.Now;
+
+                    // lấy số liệu của cầu lông
+                    double? revenueBmt = new double?();
+                    int saleBmt = new int();
+                    var listArenaBmt = db.tb_Arena.Where(x => x.CateID == BadmintonCateID).Select(x => x.ArenaID).ToList();
+
+                    revenueBmt = db.tb_Booking
+                        .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate == currentDay.Date)
+                        .Sum(x => x.Money);
+
+                    saleBmt = db.tb_Booking
+                        .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate == currentDay.Date)
+                        .Count();
+
+                    // lấy số liệu của bóng đá
+                    double? revenueFb = new double?();
+                    int saleFb = new int();
+                    var listArenaFb = db.tb_Arena.Where(x => x.CateID == FootballCateID).Select(x => x.ArenaID).ToList();
+
+                    revenueFb = db.tb_Booking
+                        .Where(x => listArenaFb.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate == currentDay.Date)
+                        .Sum(x => x.Money);
+
+                    saleFb = db.tb_Booking
+                        .Where(x => listArenaFb.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate == currentDay.Date)
+                        .Count();
+
+                    // lấy số liệu của phòng gym
+                    double? revenueGym = new double?();
+                    int saleGym = new int();
+                    var listArenaGym = db.tb_Arena.Where(x => x.CateID == GymCateID).Select(x => x.ArenaID).ToList();
+
+                    revenueGym = db.tb_Booking
+                        .Where(x => listArenaGym.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate == currentDay.Date)
+                        .Sum(x => x.Money);
+
+                    saleGym = db.tb_Booking
+                        .Where(x => listArenaGym.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate == currentDay.Date)
+                        .Count();
+
+
+                    // lấy số liệu của bể bơi
+                    double? revenueSwim = new double?();
+                    int saleSwim = new int();
+                    var listArenaSwim = db.tb_Arena.Where(x => x.CateID == SwimmingCateID).Select(x => x.ArenaID).ToList();
+
+                    revenueSwim = db.tb_Booking
+                        .Where(x => listArenaSwim.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate == currentDay.Date)
+                        .Sum(x => x.Money);
+
+                    saleSwim = db.tb_Booking
+                        .Where(x => listArenaSwim.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate == currentDay.Date)
+                        .Count();
+
+                    return Json(new
+                    {
+                        success = true,
+                        data = new
+                        {
+                            dataRevenue = new double?[] { revenueBmt, revenueFb, revenueGym, revenueSwim },
+                            dataSale = new int[] { saleBmt, saleFb, saleGym, saleSwim }
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+
+                }
+                catch (Exception)
+                {
+                    return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            
+            return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+        }
     }
 }

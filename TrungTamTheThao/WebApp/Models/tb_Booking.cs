@@ -58,6 +58,8 @@ namespace WebApp.Models
 
         public double? Money { get; set; }
 
+        public DateTime? PayDate{ get; set; }
+
         public virtual tb_Arena tb_Arena { get; set; }
 
         public virtual tb_Shift tb_Shift { get; set; }
