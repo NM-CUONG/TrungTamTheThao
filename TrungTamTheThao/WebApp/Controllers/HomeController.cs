@@ -814,9 +814,9 @@ namespace WebApp.Controllers
             return Json(new { success = true, message = "Vui lòng kiểm tra email để lấy mã xác nhận!" }, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult ForgotPassword(string shiftname)
+        public ActionResult ForgotPassword(string UserName)
         {
-            var model = db.tb_User.Where(x => x.UserName == shiftname).FirstOrDefault();
+            var model = db.tb_User.Where(x => x.UserName == UserName).FirstOrDefault();
             if (model == null)
             {
                 ViewBag.Error = "Không tìm thấy thông tin tài khoản!";
