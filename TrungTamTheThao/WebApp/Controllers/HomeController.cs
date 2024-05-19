@@ -292,35 +292,35 @@ namespace WebApp.Controllers
 
         public ActionResult BookingSwimming()
         {
-            List<tb_Arena> Swimmings = db.tb_Arena.Where(x => x.CateID == "swimming").ToList();
+            List<tb_Arena> Swimmings = db.tb_Arena.Where(x => x.CateID == SwimmingCateID).ToList();
             ViewBag.Swimmings = Swimmings;
             return View();
         }
 
         public ActionResult BookingGym()
         {
-            List<tb_Arena> Gyms = db.tb_Arena.Where(x => x.CateID == "gym").ToList();
+            List<tb_Arena> Gyms = db.tb_Arena.Where(x => x.CateID == GymCateID).ToList();
             ViewBag.Gyms = Gyms;
             return View();
         }
 
         public ActionResult BookingFootball()
         {
-            List<tb_Arena> Footballs = db.tb_Arena.Where(x => x.CateID == "football").ToList();
+            List<tb_Arena> Footballs = db.tb_Arena.Where(x => x.CateID == FootballCateID).ToList();
             ViewBag.Footballs = Footballs;
             return View();
         }
         public ActionResult BookingBadminton()
         {
 
-            List<tb_Arena> Badmintons = db.tb_Arena.Where(x => x.CateID == "badminton").ToList();
+            List<tb_Arena> Badmintons = db.tb_Arena.Where(x => x.CateID == BadmintonCateID).ToList();
             ViewBag.Badmintons = Badmintons;
             return View();
         }
         public ActionResult GetFormBookingSwimming(string arenaID)
         {
             tb_Arena swimming = db.tb_Arena.Where(x => x.ArenaID == arenaID).FirstOrDefault();
-            tb_Shift khungGioSwimming = db.tb_Shift.Where(x => x.CateID == "swimming").FirstOrDefault();
+            tb_Shift khungGioSwimming = db.tb_Shift.Where(x => x.CateID == SwimmingCateID).FirstOrDefault();
 
             ViewBag.khungGioSwimming = khungGioSwimming;
             return PartialView("_BookingSwimmingPartial", swimming);
@@ -328,7 +328,7 @@ namespace WebApp.Controllers
         public ActionResult GetFormBookingGym(string arenaID)
         {
             tb_Arena Gym = db.tb_Arena.Where(x => x.ArenaID == arenaID).FirstOrDefault();
-            tb_Shift khungGioGym = db.tb_Shift.Where(x => x.CateID == "gym").FirstOrDefault();
+            tb_Shift khungGioGym = db.tb_Shift.Where(x => x.CateID == GymCateID).FirstOrDefault();
 
             ViewBag.khungGioGym = khungGioGym;
             return PartialView("_BookingGymPartial", Gym);
@@ -603,26 +603,50 @@ namespace WebApp.Controllers
         // Hàm xem lịch sử booking
         public ActionResult HistoriesBooking()
         {
+            return View();
+        }
+
+        public ActionResult GetTableHistoryBooking(string searchString)
+        {
             tb_User Account = Session["UserInfor"] as tb_User;
 
             if (Account == null)
             {
-                ViewBag.Error = "Xảy ra lỗi trong quá trình truy vấn!";
-                return View();
+                ViewBag.Error = "Bạn chưa đăng nhập!";
+                return PartialView("_GetTableHistoryBooking");
             }
 
-            try
+            List<tb_Booking> listBookingFill = db.tb_Booking.Where(x => x.UserID  == Account.UserID).ToList();
+
+            if (listBookingFill == null)
             {
-                List<tb_Booking> historiesBooking = db.tb_Booking.Where(x => x.UserID == Account.UserID).ToList();
-                ViewBag.historiesBooking = historiesBooking;
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Error = "Xảy ra lỗi trong quá trình truy vấn!" + ex.Message;
-                return View();
+                ViewBag.historiesBooking = listBookingFill;
+                return PartialView("_GetTableHistoryBooking");
             }
 
-            return View();
+            List<tb_Booking> listBooking = new List<tb_Booking>();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.Unidecode().ToLower();
+                foreach (var item in listBookingFill)
+                {
+                    var ArenaName = item.tb_Arena.ArenaName.Unidecode().ToLower();
+                    var BookingID = item.BookingID.Unidecode().ToLower();
+
+                    if (ArenaName.Contains(searchString) || BookingID.Contains(searchString))
+                    {
+                        listBooking.Add(item);
+                    }
+                }
+            }
+            else
+            {
+                ViewBag.historiesBooking = listBookingFill;
+                return PartialView("_GetTableHistoryBooking");
+            }
+            ViewBag.historiesBooking = listBooking;
+            return PartialView("_GetTableHistoryBooking");
         }
 
         public ActionResult CanCelBooking(string BookingID)
@@ -630,7 +654,7 @@ namespace WebApp.Controllers
 
             if (BookingID == null)
             {
-                ViewBag.Error = "Đã có lỗi xảy ra trong quá trình truy vấn";
+                ViewBag.Error = "Không tìm thấy thông tin đặt phòng cần xóa!";
                 return View("HistoriesBooking");
             }
 
@@ -641,7 +665,7 @@ namespace WebApp.Controllers
 
             if (Account == null)
             {
-                ViewBag.Error = "Xảy ra lỗi trong quá trình truy vấn!";
+                ViewBag.Error = "Không tin thấy thông tin tài khoản!";
                 return View();
             }
 
@@ -664,7 +688,7 @@ namespace WebApp.Controllers
             tb_User Account = Session["UserInfor"] as tb_User;
             if (Account == null)
             {
-                ViewBag.Error = "Không thể truy vấn thông tin tài khoản!";
+                ViewBag.Error = "Bạn chưa đăng nhập!";
                 return View();
             }
 
@@ -1880,11 +1904,11 @@ namespace WebApp.Controllers
                         int index = i;
 
                         revenueBmt[index] = db.tb_Booking
-                            .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= startIndex && x.PayDate < endIndex)
                             .Sum(x => x.Money);
 
                         saleBmt[index] = db.tb_Booking
-                            .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= startIndex && x.PayDate < endIndex)
                             .Count();
 
                     }
@@ -1900,11 +1924,11 @@ namespace WebApp.Controllers
                         int index = i;
 
                         revenueFb[i] = db.tb_Booking
-                            .Where(x => listArenaFb.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Where(x => listArenaFb.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= startIndex && x.PayDate < endIndex)
                             .Sum(x => x.Money);
 
                         saleFb[index] = db.tb_Booking
-                            .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= startIndex && x.PayDate < endIndex)
                             .Count();
                     }
 
@@ -1919,11 +1943,11 @@ namespace WebApp.Controllers
                         DateTime endIndex = firstDaysOfMonth[i + 1].Date;
                         int index = i;
                         revenueGym[i] = db.tb_Booking
-                            .Where(x => listArenaGym.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Where(x => listArenaGym.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= startIndex && x.PayDate < endIndex)
                             .Sum(x => x.Money);
 
                         saleGym[index] = db.tb_Booking
-                            .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= startIndex && x.PayDate < endIndex)
                             .Count();
                     }
 
@@ -1937,11 +1961,11 @@ namespace WebApp.Controllers
                         DateTime endIndex = firstDaysOfMonth[i + 1].Date;
                         int index = i;
                         revenueSwim[i] = db.tb_Booking
-                            .Where(x => listArenaSwim.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Where(x => listArenaSwim.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= startIndex && x.PayDate < endIndex)
                             .Sum(x => x.Money);
 
                         saleSwim[index] = db.tb_Booking
-                            .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= startIndex && x.PayDate < endIndex)
                             .Count();
                     }
 
@@ -1979,11 +2003,11 @@ namespace WebApp.Controllers
                     var listArenaBmt = db.tb_Arena.Where(x => x.CateID == BadmintonCateID).Select(x => x.ArenaID).ToList();
 
                     revenueBmt = db.tb_Booking
-                        .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
+                        .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
                         .Sum(x => x.Money);
 
                     saleBmt = db.tb_Booking
-                        .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
+                        .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
                         .Count();
 
                     // lấy số liệu của bóng đá
@@ -1992,11 +2016,11 @@ namespace WebApp.Controllers
                     var listArenaFb = db.tb_Arena.Where(x => x.CateID == FootballCateID).Select(x => x.ArenaID).ToList();
 
                     revenueFb = db.tb_Booking
-                        .Where(x => listArenaFb.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= firstDayOfMonth.Date  && x.PayDate <= currentDayOfMonth.Date)
+                        .Where(x => listArenaFb.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= firstDayOfMonth.Date  && x.PayDate <= currentDayOfMonth.Date)
                         .Sum(x => x.Money);
 
                     saleFb = db.tb_Booking
-                        .Where(x => listArenaFb.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
+                        .Where(x => listArenaFb.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
                         .Count();
 
                     // lấy số liệu của phòng gym
@@ -2005,11 +2029,11 @@ namespace WebApp.Controllers
                     var listArenaGym = db.tb_Arena.Where(x => x.CateID == GymCateID).Select(x => x.ArenaID).ToList();
 
                     revenueGym = db.tb_Booking
-                        .Where(x => listArenaGym.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
+                        .Where(x => listArenaGym.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
                         .Sum(x => x.Money);
 
                     saleGym = db.tb_Booking
-                        .Where(x => listArenaGym.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
+                        .Where(x => listArenaGym.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
                         .Count();
 
 
@@ -2019,11 +2043,11 @@ namespace WebApp.Controllers
                     var listArenaSwim = db.tb_Arena.Where(x => x.CateID == SwimmingCateID).Select(x => x.ArenaID).ToList();
 
                     revenueSwim = db.tb_Booking
-                        .Where(x => listArenaSwim.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
+                        .Where(x => listArenaSwim.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
                         .Sum(x => x.Money);
 
                     saleSwim = db.tb_Booking
-                        .Where(x => listArenaSwim.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
+                        .Where(x => listArenaSwim.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
                         .Count();
 
                     return Json(new
@@ -2057,11 +2081,11 @@ namespace WebApp.Controllers
                     var listArenaBmt = db.tb_Arena.Where(x => x.CateID == BadmintonCateID).Select(x => x.ArenaID).ToList();
 
                     revenueBmt = db.tb_Booking
-                        .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate == currentDay.Date)
+                        .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate == currentDay.Date)
                         .Sum(x => x.Money);
 
                     saleBmt = db.tb_Booking
-                        .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate == currentDay.Date)
+                        .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate == currentDay.Date)
                         .Count();
 
                     // lấy số liệu của bóng đá
@@ -2070,11 +2094,11 @@ namespace WebApp.Controllers
                     var listArenaFb = db.tb_Arena.Where(x => x.CateID == FootballCateID).Select(x => x.ArenaID).ToList();
 
                     revenueFb = db.tb_Booking
-                        .Where(x => listArenaFb.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate == currentDay.Date)
+                        .Where(x => listArenaFb.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate == currentDay.Date)
                         .Sum(x => x.Money);
 
                     saleFb = db.tb_Booking
-                        .Where(x => listArenaFb.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate == currentDay.Date)
+                        .Where(x => listArenaFb.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate == currentDay.Date)
                         .Count();
 
                     // lấy số liệu của phòng gym
@@ -2083,11 +2107,11 @@ namespace WebApp.Controllers
                     var listArenaGym = db.tb_Arena.Where(x => x.CateID == GymCateID).Select(x => x.ArenaID).ToList();
 
                     revenueGym = db.tb_Booking
-                        .Where(x => listArenaGym.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate == currentDay.Date)
+                        .Where(x => listArenaGym.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate == currentDay.Date)
                         .Sum(x => x.Money);
 
                     saleGym = db.tb_Booking
-                        .Where(x => listArenaGym.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate == currentDay.Date)
+                        .Where(x => listArenaGym.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate == currentDay.Date)
                         .Count();
 
 
@@ -2097,11 +2121,11 @@ namespace WebApp.Controllers
                     var listArenaSwim = db.tb_Arena.Where(x => x.CateID == SwimmingCateID).Select(x => x.ArenaID).ToList();
 
                     revenueSwim = db.tb_Booking
-                        .Where(x => listArenaSwim.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate == currentDay.Date)
+                        .Where(x => listArenaSwim.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate == currentDay.Date)
                         .Sum(x => x.Money);
 
                     saleSwim = db.tb_Booking
-                        .Where(x => listArenaSwim.Contains(x.ArenaID) && x.Status != 0 && x.Status != 3 && x.PayDate == currentDay.Date)
+                        .Where(x => listArenaSwim.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate == currentDay.Date)
                         .Count();
 
                     return Json(new

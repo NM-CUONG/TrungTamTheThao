@@ -7,12 +7,22 @@
 
 
 <style>
+
+    #body-content {
+        padding: 30px;
+    }
+
     .selectTime {
         width: fit-content;
         margin: auto;
         text-align: center;
         margin-bottom: 20px;
     }
+
+    .selectTime option :hover{
+        background-color: #808080;
+    }
+    
 </style>
 
 <h2 class="text-uppercase text-center">Thống kê</h2>
@@ -255,7 +265,6 @@
         }
 
         if (option == 1 || option == 0) {
-            debugger
             if (data.dataSale[0] == 0 && data.dataSale[1] == 0 && data.dataSale[2] == 0 && data.dataSale[3] == 0) {
                 toastr.warning("Chưa có dữ liệu", "Thông báo");
                 $('.ChartPie').hide();

@@ -4,10 +4,15 @@
     var listBooking = ViewBag.listBooking;
 }
 
+<style>
+    table {
+        margin-top: 20px;
+    }
+</style>
 
 <table class="table table-striped table-hover" style="font-size: 13px;">
     <thead>
-        <tr>
+        <tr class="table-secondary">
             <th scope="col">STT</th>
             <th scope="col">Mã đặt phòng</th>
             <th scope="col">Người đặt</th>
@@ -42,7 +47,7 @@
                     <td>
                         <div style="font-size: 12px;" class="btn btn-warning btn-fix" onclick="Edit(@item.ID)"><i class="bi bi-tools"></i> Sửa</div>
                         <div style="font-size: 12px;" data-id="@item.ID" onclick="openConfirmationDialog(this)" class="btn btn-danger btn-delete"><i class="bi bi-trash"></i> Xóa</div>
-                    <td>
+                    </td>
                 </tr>
                 STT++;
             }

@@ -2272,13 +2272,19 @@
     <Content Include="Scripts\toastr.js" />
     <Content Include="Scripts\toastr.min.js" />
     <Content Include="Uploads\background-dung-cu-the-thao.jpg" />
+    <Content Include="Uploads\background\badminton.jpg" />
+    <Content Include="Uploads\background\football.jpg" />
+    <Content Include="Uploads\background\gym.jpg" />
+    <Content Include="Uploads\background\swimming.jpg" />
     <Content Include="Uploads\Icon\admin.png" />
+    <Content Include="Uploads\Icon\basketball.png" />
     <Content Include="Uploads\Icon\calendar.png" />
     <Content Include="Uploads\Icon\category.png" />
     <Content Include="Uploads\Icon\dumbbell.png" />
     <Content Include="Uploads\Icon\employee.png" />
     <Content Include="Uploads\Icon\group.png" />
     <Content Include="Uploads\Icon\history.png" />
+    <Content Include="Uploads\Icon\location.png" />
     <Content Include="Uploads\Icon\login.png" />
     <Content Include="Uploads\Icon\management.png" />
     <Content Include="Uploads\Icon\progress.png" />
@@ -2351,6 +2357,8 @@
     <Content Include="Views\Home\_TableBookingPartial.cshtml" />
     <Content Include="Views\Home\_CreateBookingPartial.cshtml" />
     <Content Include="Views\Home\_EditBookingPartial.cshtml" />
+    <Content Include="Views\Home\_GetTableHistoryBooking.cshtml" />
+    <Content Include="Views\Home\_Footer.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

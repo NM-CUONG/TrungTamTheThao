@@ -4,9 +4,15 @@
     var listArena = ViewBag.listArena;
 }
 
+<style>
+    table {
+        margin-top: 20px;
+    }
+</style>
+
 <table class="table table-striped table-hover">
     <thead>
-        <tr>
+        <tr class="table-secondary">
             <th scope="col">STT</th>
             <th scope="col">Mã phòng</th>
             <th scope="col">Tên phòng</th>
@@ -42,7 +48,7 @@
                     <td>
                         <div style="font-size: 14px;" class="btn btn-warning btn-fix" onclick="Edit(@item.ID)"><i class="bi bi-tools"></i> Sửa</div>
                         <div style="font-size: 14px;" data-id="@item.ID" onclick="openConfirmationDialog(this)" class="btn btn-danger btn-delete"><i class="bi bi-trash"></i> Xóa</div>
-                    <td>
+                    </td>
                 </tr>
                 STT++;
             }

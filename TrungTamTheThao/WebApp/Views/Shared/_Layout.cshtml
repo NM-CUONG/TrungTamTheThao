@@ -22,7 +22,7 @@
             bottom: 0;
             left: -240px; /* Ẩn sidebar ban đầu */
             width: 240px;
-            padding: 0px 20px;
+            padding: 0px 12px;
             background-color: #f8f9fa;
             transition: left 0.5s;
             padding-top: 50px;
@@ -31,18 +31,35 @@
         #content {
             margin-left: 0;
             transition: margin-left 0.5s;
-            margin-top: 60px;
         }
 
         .menu-toggle {
             cursor: pointer;
             padding: 0px 6px;
-            border-radius: 50%;
         }
 
-            .menu-toggle:hover {
+        .icon-menu {
+            border-radius: 50%;
+            padding: 0px 5px;
+        }
+
+            .icon-menu:hover {
                 background: #CCCCCC;
             }
+
+        .footer {
+            border-top: 2px solid #CCCCCC;
+        }
+
+        .container-fluid {
+            padding: 0px !important;
+        }
+
+
+        #body-content {
+            min-height: 100vh;
+        }
+
     </style>
 
     <style>
@@ -73,24 +90,54 @@
         .icon {
             font-size: 20px;
         }
+
         .img-icon {
-            width: 20px;
+            width: 18px;
+            margin-right: 10px;
+        }
+
+        .sidebar ul li {
+            border-radius: 10px;
+        }
+
+            .sidebar ul li:hover {
+                background: #CCCCCC;
+            }
+
+            .sidebar ul li a {
+                color: black;
+            }
+
+        i {
+            padding-right: 10px;
         }
     </style>
 
 </head>
 <body>
+    @{
+        var Account = Session["UserInfor"] as WebApp.Models.tb_User;
+    }
 
     <div class="container-fluid">
         <div class="sidebar" id="sidebar">
             <ul class="nav flex-column">
                 <li><a class="nav-link" href="@Url.Action("Index","Home") "><i class="bi bi-house-door icon"></i> Trang chủ</a></li>
-                <li><a class="nav-link" href="@Url.Action("Regis","Home") "><i class="bi bi-person-fill-add icon"></i> Đăng ký</a></li>
-                <li><a class="nav-link" href="@Url.Action("Login","Home") "><i class="bi bi-person-fill-up icon"></i> Đăng nhập</a></li>
-                <li><a class="nav-link" href="@Url.Action("Account","Home") "><i class="bi bi-person-fill-gear icon"></i> Tài khoản</a></li>
+
+                @if (Account != null)
+                {
+                    <li><a class="nav-link" href="@Url.Action("Account","Home") "><i class="bi bi-person-fill-gear icon"></i> Tài khoản</a></li>
+                }
+
+                @if (Account == null)
+                {
+                    <li><a class="nav-link" href="@Url.Action("Regis","Home") "><i class="bi bi-person-fill-add icon"></i> Đăng ký</a></li>
+                    <li><a class="nav-link" href="@Url.Action("Login","Home") "><i class="bi bi-person-fill-up icon"></i> Đăng nhập</a></li>
+                }
+
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        <i class="bi bi-calendar-fill"></i> Đặt phòng
+                        <i class="bi bi-calendar-fill" style="color: black;"></i> Đặt phòng
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="@Url.Action("BookingBadminton","Home")"><img src="~/Uploads/Icon/shuttlecock.png" class="img-icon" /> Đặt sân cầu lông</a></li>
@@ -99,27 +146,45 @@
                         <li><a class="dropdown-item" href="@Url.Action("BookingSwimming","Home")"><img src="~/Uploads/Icon/swimming.png" class="img-icon" /> Đặt bể bơi</a></li>
                     </ul>
                 </li>
-                <li><a class="nav-link" href="@Url.Action("HistoriesBooking","Home") "><img src="~/Uploads/Icon/history.png" class="img-icon" /> Lịch sử đặt phòng</a></li>
-                <li><a class="nav-link" href="@Url.Action("ManageRole","Home") "><img src="~/Uploads/Icon/management.png" class="img-icon" /> Quản lý quyền</a></li>
-                <li><a class="nav-link" href="@Url.Action("ManageUser","Home") "><img src="~/Uploads/Icon/group.png" class="img-icon" /> Quản lý người dùng</a></li>
-                <li><a class="nav-link" href="@Url.Action("ManageSize","Home") "><img src="~/Uploads/Icon/category.png" class="img-icon" /> Quản lý loại phòng</a></li>
-                <li><a class="nav-link" href="@Url.Action("ManageShift","Home") "><img src="~/Uploads/Icon/shift.png" class="img-icon" /> Quản lý khung giờ</a></li>
-                <li><a class="nav-link" href="@Url.Action("ManageArena","Home") "><img src="~/Uploads/Icon/room.png" class="img-icon" /> Quản lý phòng</a></li>
-                <li><a class="nav-link" href="@Url.Action("ManageBooking","Home") "><img src="~/Uploads/Icon/calendar.png" class="img-icon" /> Quản lý đặt phòng</a></li>
-                <li><a class="nav-link" href="@Url.Action("Statistical","Home") "><img src="~/Uploads/Icon/progress.png" class="img-icon" /> Xem thông kê</a></li>
-                <li><a class="nav-link" href="@Url.Action("Logout","Home") "><img src="~/Uploads/Icon/turn-off.png" class="img-icon" /> Đăng xuất</a></li>
+
+                @if (Account != null)
+                {
+                    <li><a class="nav-link" href="@Url.Action("HistoriesBooking","Home") "><img src="~/Uploads/Icon/history.png" class="img-icon" /> Lịch sử đặt phòng</a></li>
+                }
+                @if (Account != null && Account.UserName == "admin")
+                {
+                    <li><a class="nav-link" href="@Url.Action("ManageRole","Home") "><img src="~/Uploads/Icon/management.png" class="img-icon" /> Quản lý quyền</a></li>
+                    <li><a class="nav-link" href="@Url.Action("ManageUser","Home") "><img src="~/Uploads/Icon/group.png" class="img-icon" /> Quản lý người dùng</a></li>
+                    <li><a class="nav-link" href="@Url.Action("ManageSize","Home") "><img src="~/Uploads/Icon/category.png" class="img-icon" /> Quản lý loại phòng</a></li>
+                    <li><a class="nav-link" href="@Url.Action("ManageShift","Home") "><img src="~/Uploads/Icon/shift.png" class="img-icon" /> Quản lý khung giờ</a></li>
+                    <li><a class="nav-link" href="@Url.Action("ManageArena","Home") "><img src="~/Uploads/Icon/room.png" class="img-icon" /> Quản lý phòng</a></li>
+                    <li><a class="nav-link" href="@Url.Action("ManageBooking","Home") "><img src="~/Uploads/Icon/calendar.png" class="img-icon" /> Quản lý đặt phòng</a></li>
+                    <li><a class="nav-link" href="@Url.Action("Statistical","Home") "><img src="~/Uploads/Icon/progress.png" class="img-icon" /> Xem thông kê</a></li>
+                }
+
+                @if (Account != null)
+                {
+                    <li><a class="nav-link" href="@Url.Action("Logout","Home") "><img src="~/Uploads/Icon/turn-off.png" class="img-icon" /> Đăng xuất</a></li>
+                }
 
             </ul>
         </div>
 
         <!-- Main content -->
         <div id="content">
-            @RenderBody()
+            <div id="body-content">
+                @RenderBody()
+
+            </div>
+            <!-- Footer -->
+            <div id="footer">
+                @Html.Partial("_Footer")
+            </div>
         </div>
 
         <!-- Menu toggle -->
         <div class="menu-toggle" style="position: fixed; top: 5px; left: 20px; font-size: 25px;">
-            <div><i onclick="toggleSidebar()" class="bi bi-list"></i></div>
+            <div><i onclick="toggleSidebar()" class="bi bi-list icon-menu"></i> <span class="text-uppercase fw-bold">MC SPORT</span></div>
         </div>
     </div>
 
