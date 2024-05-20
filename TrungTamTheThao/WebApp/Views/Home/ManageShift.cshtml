@@ -4,6 +4,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@model PagedList.IPagedList<WebApp.Models.tb_Shift>
+
 
 <style>
 
@@ -15,13 +17,16 @@
     .btn-add {
         margin-right: 30px;
     }
+
     .modal-header {
         background-color: #2a86bb;
         color: white;
     }
+
     .mauxam {
         background-color: gainsboro;
     }
+
     .confirmation-dialog {
         display: none;
         position: fixed;
@@ -32,6 +37,7 @@
         background-color: rgba(0, 0, 0, 0.5);
         z-index: 9999;
     }
+
     .confirmation-content {
         position: absolute;
         top: 50%;
@@ -41,22 +47,63 @@
         padding: 20px;
         border-radius: 5px;
     }
+
     .buttons {
         text-align: center;
         margin-top: 20px;
     }
+
     .confirm-btn,
     .cancel-btn {
         min-width: 80px;
         margin: 0 10px;
         cursor: pointer;
     }
+
     .search-box {
         width: 40%;
         margin-top: 20px;
         margin-bottom: 20px;
     }
 
+    .pagination {
+        display: flex;
+        justify-content: center;
+        padding: 10px 0;
+        list-style-type: none;
+        margin: 20px 0;
+    }
+
+        .pagination li {
+            margin: 0 5px;
+        }
+
+            .pagination li a, .pagination li span {
+                display: block;
+                padding: 5px 12px;
+                color: #007bff;
+                text-decoration: none;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                transition: background-color 0.3s, color 0.3s;
+            }
+
+                .pagination li a:hover, .pagination li span:hover {
+                    background-color: #007bff;
+                    color: #fff;
+                    cursor: pointer;
+                }
+
+            .pagination li.active span, .pagination li.active a {
+                background-color: #007bff;
+                color: #fff;
+                border: 1px solid #007bff;
+            }
+
+            .pagination li.disabled span, .pagination li.disabled a {
+                color: #999;
+                cursor: not-allowed;
+            }
 </style>
 
 
@@ -69,8 +116,8 @@
     <div class="d-flex flex-row-reverse">
         <button class="btn btn-primary btn-add" onclick="Create()">Thêm mới</button>
     </div>
-    <div class="container">
-
+    <div id="container">
+        @Html.Partial("_TableShiftPartial", Model)
     </div>
 </div>
 
@@ -96,42 +143,29 @@
 
 <script>
 
-    // Các hàm xử lý bảng
-    function GetTable() {
-        $.ajax({
-            url: '/Home/GetTableShift',
-            type: 'GET',
-            success: function (rs) {
-                $('.container').empty();
-                $('.container').html(rs);
-            },
-            error: function () {
-                toastr.error("Đã có lỗi xảy ra khi lấy bảng", "Thông báo");
-            }
-        })
+    var currentUrl = "";
+
+    // Hàm load lại table
+    function reloadTable() {
+        var url = '@Url.Action("Home", "ManageShift")';
+
+        if (currentUrl != null || currentUrl != "") {
+            url = currentUrl;
+        }
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $('#container').html(data);
+                },
+                error: function () {
+                    toastr.error("Đã xảy ra lỗi khi lấy dữ liệu!", "Thông báo");
+                }
+            });
     }
-
-    // Hàm tìm kiếm
-    function Search() {
-        var searchString = $('.input-search').val().trim();
-
-        $.ajax({
-            url: '/Home/SearchShift',
-            type: 'GET',
-            data: { searchString: searchString },
-            success: function (rs) {
-                $('.container').empty();
-                $('.container').html(rs);
-            },
-            error: function () {
-                toastr.error("Đã có lỗi xảy ra khi tìm kiếm", "Thông báo");
-            }
-        })
-    }
-
 
     // Các hàm xử lý thêm khung giờ
-
     function Create() {
         $.ajax({
             url: '/Home/CreateShift',
@@ -178,6 +212,7 @@
         })
     }
 
+    // Hàm được gọi khi thêm, sửa thành công
     function Success(rs) {
         if (!rs.success) {
             toastr.error(rs.message, "Thông báo")
@@ -185,7 +220,7 @@
         }
 
         $('#popup').modal('hide');
-        GetTable();
+        reloadTable();
         toastr.success(rs.message, "Thông báo")
 
     }
@@ -230,7 +265,7 @@
                     return;
                 }
                 toastr.success(rs.message, "Thông báo");
-                GetTable();
+                reloadTable();
             },
             error: function () {
                 toastr.error("Đã có lỗi xảy ra khi xóa", "Thông báo");
@@ -293,19 +328,47 @@
         return true;
     }
 
-
     $(document).ready(function () {
-        GetTable();
 
-        $('.btn-search').on('click', function () {
-            Search();
-        })
+        //Lấy bảng dữ liệu khi tìm kiếm
+        $('#searchForm').submit(function (event) {
+            event.preventDefault();
+            var url = $(this).attr('action');
+            var query = $(this).serialize();
 
-        $('.input-search').keypress(function (event) {
-            if (event.which == 13) {
-                Search();
-            }
-        })
+            currentUrl = url + '?' + query;
+
+            $.ajax({
+                url: url + '?' + query,
+                type: 'GET',
+                success: function (data) {
+                    $('#container').html(data);
+                }, 
+                error: function () {
+                    toastr.error("Đã xảy ra lỗi khi lấy dữ liệu!", "Thông báo");
+                }
+            });
+        });
+
+        //Lấy bảng dữ liệu khi kích nút chuyển trang
+        $(document).on('click', '.pagination a', function (event) {
+            event.preventDefault();
+            var url = $(this).attr('href');
+
+            currentUrl = url;
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $('#container').html(data);
+                },
+                error: function () {
+                    toastr.error("Đã xảy ra lỗi khi lấy dữ liệu!", "Thông báo");
+                }
+            });
+        });
+
     })
 
 

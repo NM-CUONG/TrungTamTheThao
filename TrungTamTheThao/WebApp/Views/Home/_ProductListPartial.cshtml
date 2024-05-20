@@ -1,0 +1,27 @@
+﻿@model PagedList.IPagedList<WebApp.Models.tb_Booking>
+@using PagedList.Mvc;
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <!-- Thêm các cột khác nếu cần -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.BookingID</td>
+                <td>@item.Money</td>
+                <!-- Thêm các giá trị khác nếu cần -->
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="pagination-container">
+    @Html.PagedListPager(Model, page => Url.Action("testPageList", new { page = page }))
+</div>
+

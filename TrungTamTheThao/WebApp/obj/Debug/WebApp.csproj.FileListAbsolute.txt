@@ -93,3 +93,7 @@ D:\DATN\Source Code\TrungTamTheThao\WebApp\obj\Debug\WebApp.dll
 D:\DATN\Source Code\TrungTamTheThao\WebApp\obj\Debug\WebApp.pdb
 D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\UnidecodeSharpFork.dll
 D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\UnidecodeSharpFork.pdb
+D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\PagedList.dll
+D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\PagedList.Mvc.dll
+D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\PagedList.xml
+D:\DATN\Source Code\TrungTamTheThao\WebApp\bin\PagedList.Mvc.xml

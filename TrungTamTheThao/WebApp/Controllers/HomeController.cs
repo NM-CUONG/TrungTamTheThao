@@ -28,6 +28,8 @@ using WebApp.Areas.VNPayAPI.Util;
 using System.Management.Instrumentation;
 using Microsoft.Ajax.Utilities;
 using System.Drawing;
+using PagedList;
+using System.Web.UI;
 
 namespace WebApp.Controllers
 {
@@ -616,7 +618,7 @@ namespace WebApp.Controllers
                 return PartialView("_GetTableHistoryBooking");
             }
 
-            List<tb_Booking> listBookingFill = db.tb_Booking.Where(x => x.UserID  == Account.UserID).ToList();
+            List<tb_Booking> listBookingFill = db.tb_Booking.Where(x => x.UserID == Account.UserID).ToList();
 
             if (listBookingFill == null)
             {
@@ -1336,20 +1338,23 @@ namespace WebApp.Controllers
         #endregion
 
         #region Các hàm xử lý Shift
-        public ActionResult ManageShift()
+        public ActionResult ManageShift(string searchString, int? page)
         {
-            List<tb_Shift> listShift = db.tb_Shift.ToList();
-            ViewBag.listShift = listShift;
+            int pageSize = 8;
+            int pageNumber = (page ?? 1);
+            var shifts = from s in db.tb_Shift select s;
 
-            return View();
-        }
-
-        public ActionResult GetTableShift()
-        {
-            List<tb_Shift> listShift = db.tb_Shift.ToList();
             try
             {
-                foreach (var item in listShift)
+
+                if (!String.IsNullOrEmpty(searchString))
+                {
+                    shifts = shifts.Where(x => x.ShiftName.Contains(searchString));
+                }
+
+                shifts = shifts.OrderBy(P => P.ShiftID);
+
+                foreach (var item in shifts)
                 {
                     if (item.CateID == null) continue;
                     item.CateName = db.tb_Category.Where(x => x.CateID == item.CateID).FirstOrDefault().CateName;
@@ -1360,9 +1365,12 @@ namespace WebApp.Controllers
                 return Json(new { success = false, message = "Đã xảy ra lỗi trong quá trình lấy dữ liệu!" }, JsonRequestBehavior.AllowGet);
             }
 
-            ViewBag.listShift = listShift;
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_TableShiftPartial", shifts.ToPagedList(pageNumber, pageSize));
+            }
 
-            return PartialView("_TableShiftPartial");
+            return View(shifts.ToPagedList(pageNumber, pageSize));
         }
 
         public ActionResult SearchShift(string searchString)
@@ -2016,7 +2024,7 @@ namespace WebApp.Controllers
                     var listArenaFb = db.tb_Arena.Where(x => x.CateID == FootballCateID).Select(x => x.ArenaID).ToList();
 
                     revenueFb = db.tb_Booking
-                        .Where(x => listArenaFb.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= firstDayOfMonth.Date  && x.PayDate <= currentDayOfMonth.Date)
+                        .Where(x => listArenaFb.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= firstDayOfMonth.Date && x.PayDate <= currentDayOfMonth.Date)
                         .Sum(x => x.Money);
 
                     saleFb = db.tb_Booking
@@ -2144,8 +2152,22 @@ namespace WebApp.Controllers
                     return Json(new { success = false }, JsonRequestBehavior.AllowGet);
                 }
             }
-            
+
             return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult testPageList(int? page)
+        {
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+
+            var products = db.tb_Booking.OrderBy(p => p.BookingID).ToPagedList(pageNumber, pageSize);
+
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_ProductListPartial", products);
+            }
+            return View(products);
         }
     }
 }
