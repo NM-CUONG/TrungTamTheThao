@@ -1342,23 +1342,41 @@ namespace WebApp.Controllers
         {
             int pageSize = 8;
             int pageNumber = (page ?? 1);
-            var shifts = from s in db.tb_Shift select s;
-
+            List<tb_Shift> shifts = db.tb_Shift.ToList();
+            List<tb_Shift> listShift = new List<tb_Shift>();
             try
             {
 
                 if (!String.IsNullOrEmpty(searchString))
                 {
-                    shifts = shifts.Where(x => x.ShiftName.Contains(searchString));
+                    searchString = searchString.Trim().Unidecode().ToLower();
+                    foreach (var item in shifts)
+                    {
+                        var ShiftName = item.ShiftName.Unidecode().ToLower();
+                        var CateName = item.tb_Category.CateName.Unidecode().ToLower();
+                        var ShiftID = item.ShiftID.Unidecode().ToLower();
+                        var Price = item.Price.ToString();
+
+                        if (ShiftName.Contains(searchString)
+                            || CateName.Contains(searchString)
+                            || ShiftID.Contains(searchString)
+                            || Price.Contains(searchString))
+                        {
+                            listShift.Add(item);
+                        }
+                    }
+                    shifts = listShift;
                 }
 
-                shifts = shifts.OrderBy(P => P.ShiftID);
+                shifts = shifts.OrderBy(x => x.CateID).ToList();
 
                 foreach (var item in shifts)
                 {
                     if (item.CateID == null) continue;
                     item.CateName = db.tb_Category.Where(x => x.CateID == item.CateID).FirstOrDefault().CateName;
                 }
+
+
             }
             catch (Exception)
             {
