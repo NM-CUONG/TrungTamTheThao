@@ -944,45 +944,46 @@ namespace WebApp.Controllers
         // Phần của admin
 
         #region Các hàm xử lý Role
-        public ActionResult ManageRole()
+        public ActionResult ManageRole(string searchString, int? page)
         {
-            List<tb_Role> listRole = db.tb_Role.ToList();
-            ViewBag.listRole = listRole;
-            return View();
-        }
-
-        public ActionResult SearchRole(string searchString)
-        {
-            List<tb_Role> listRoleFill = db.tb_Role.ToList();
+            int pageSize = 8;
+            int pageNumber = (page ?? 1);
+            List<tb_Role> roles = db.tb_Role.ToList();
             List<tb_Role> listRole = new List<tb_Role>();
-
-            if (!string.IsNullOrEmpty(searchString))
+            try
             {
-                searchString = searchString.Unidecode().ToLower();
-                foreach (var item in listRoleFill)
+
+                if (!String.IsNullOrEmpty(searchString))
                 {
-                    var RoleName = item.RoleName.Unidecode().ToLower();
-                    if (RoleName.Contains(searchString))
+                    searchString = searchString.Trim().Unidecode().ToLower();
+                    foreach (var item in roles)
                     {
-                        listRole.Add(item);
+                        var RoleName = item.RoleName.Unidecode().ToLower();
+                        var RoleID = item.RoleID.Unidecode().ToLower();
+
+                        if (RoleName.Contains(searchString)
+                            || RoleID.Contains(searchString)
+                            || RoleName.Contains(searchString))
+                        {
+                            listRole.Add(item);
+                        }
                     }
+                    roles = listRole;
                 }
+
+                roles = roles.OrderBy(x => x.RoleID).ToList();
             }
-            else
+            catch (Exception)
             {
-                listRole = db.tb_Role.ToList();
+                return Json(new { success = false, message = "Đã xảy ra lỗi trong quá trình lấy dữ liệu!" }, JsonRequestBehavior.AllowGet);
             }
 
-            ViewBag.listRole = listRole;
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_TableRolePartial", roles.ToPagedList(pageNumber, pageSize));
+            }
 
-            return PartialView("_TableRolePartial");
-        }
-
-        public ActionResult GetTableRole()
-        {
-            List<tb_Role> listRole = db.tb_Role.ToList();
-            ViewBag.listRole = listRole;
-            return PartialView("_TableRolePartial");
+            return View(roles.ToPagedList(pageNumber, pageSize));
         }
 
         public ActionResult CreateRole()
@@ -1391,38 +1392,6 @@ namespace WebApp.Controllers
             return View(shifts.ToPagedList(pageNumber, pageSize));
         }
 
-        public ActionResult SearchShift(string searchString)
-        {
-            List<tb_Shift> listShiftFill = db.tb_Shift.ToList();
-            List<tb_Shift> listShift = new List<tb_Shift>();
-
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                searchString = searchString.Unidecode().ToLower();
-                foreach (var item in listShiftFill)
-                {
-                    var ShiftName = item.ShiftName.Unidecode().ToLower();
-                    if (ShiftName.Contains(searchString))
-                    {
-                        listShift.Add(item);
-                    }
-                }
-            }
-            else
-            {
-                listShift = db.tb_Shift.ToList();
-            }
-
-            foreach (var item in listShift)
-            {
-                if (item.CateID == null) continue;
-                item.CateName = db.tb_Category.Where(x => x.CateID == item.CateID).FirstOrDefault().CateName;
-            }
-
-            ViewBag.listShift = listShift;
-
-            return PartialView("_TableShiftPartial");
-        }
 
         public ActionResult CreateShift()
         {

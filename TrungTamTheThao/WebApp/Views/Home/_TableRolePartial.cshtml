@@ -1,6 +1,7 @@
-﻿@{
-    var listRole = ViewBag.listRole;
-}
+﻿
+@model PagedList.IPagedList<WebApp.Models.tb_Role>
+@using PagedList.Mvc;
+
 
 <style>
     table {
@@ -20,7 +21,7 @@
     <tbody class="table-content">
         @{
             var STT = 1;
-            foreach (var item in listRole)
+            foreach (var item in Model)
             {
                 <tr>
                     <td>@STT</td>
@@ -35,7 +36,9 @@
             }
         }
     </tbody>
-
 </table>
 
+<div class="pagination-container">
+    @Html.PagedListPager(Model, page => Url.Action("ManageRole", new { page = page, searchString = Request.QueryString["searchString"] }))
+</div>
 
