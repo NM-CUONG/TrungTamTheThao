@@ -109,7 +109,9 @@
 <div class="">
     <h3 class="text-uppercase">Quản lý vai trò</h3>
     <div class="search-box">
-        @Html.Partial("_SearchPartial")
+        <form id="searchForm" method="get" action="@Url.Action("ManageRole")">
+            @Html.Partial("_SearchPartial")
+        </form>
     </div>
     <div class="d-flex flex-row-reverse">
         <button class="btn btn-primary btn-add" onclick="Create()">Thêm mới</button>
