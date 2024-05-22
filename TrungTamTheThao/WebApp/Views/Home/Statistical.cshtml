@@ -4,8 +4,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
-
 <style>
 
     #body-content {
@@ -259,7 +257,7 @@
             ChartSale.data.datasets[1].data = data.dataSale.football;
             ChartSale.data.datasets[2].data = data.dataSale.gym;
             ChartSale.data.datasets[3].data = data.dataSale.swimming;
-
+            debugger
             ChartRevenue.update();
             ChartSale.update();
         }

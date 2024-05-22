@@ -1923,7 +1923,7 @@ namespace WebApp.Controllers
                             .Sum(x => x.Money);
 
                         saleFb[index] = db.tb_Booking
-                            .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Where(x => listArenaFb.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= startIndex && x.PayDate < endIndex)
                             .Count();
                     }
 
@@ -1942,7 +1942,7 @@ namespace WebApp.Controllers
                             .Sum(x => x.Money);
 
                         saleGym[index] = db.tb_Booking
-                            .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Where(x => listArenaGym.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= startIndex && x.PayDate < endIndex)
                             .Count();
                     }
 
@@ -1960,7 +1960,7 @@ namespace WebApp.Controllers
                             .Sum(x => x.Money);
 
                         saleSwim[index] = db.tb_Booking
-                            .Where(x => listArenaBmt.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= startIndex && x.PayDate < endIndex)
+                            .Where(x => listArenaSwim.Contains(x.ArenaID) && x.Status != 0 && x.Status != 4 && x.PayDate >= startIndex && x.PayDate < endIndex)
                             .Count();
                     }
 
