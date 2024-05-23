@@ -1,8 +1,7 @@
 ﻿
+@model PagedList.IPagedList<WebApp.Models.tb_Booking>
+@using PagedList.Mvc;
 
-@{
-    var listBooking = ViewBag.listBooking;
-}
 
 <style>
     table {
@@ -30,7 +29,7 @@
     <tbody class="table-content">
         @{
             var STT = 1;
-            foreach (var item in listBooking)
+            foreach (var item in Model)
             {
                 <tr>
                     <td>@STT</td>
@@ -55,3 +54,7 @@
     </tbody>
 
 </table>
+
+<div class="pagination-container">
+    @Html.PagedListPager(Model, page => Url.Action("ManageBooking", new { page = page, searchString = Request.QueryString["searchString"] }))
+</div>

@@ -1,8 +1,7 @@
 ﻿
+@model PagedList.IPagedList<WebApp.Models.tb_Arena>
+@using PagedList.Mvc;
 
-@{
-    var listArena = ViewBag.listArena;
-}
 
 <style>
     table {
@@ -26,7 +25,7 @@
     <tbody class="table-content">
         @{
             var STT = 1;
-            foreach (var item in listArena)
+            foreach (var item in Model)
             {
                 <tr>
                     <td>@STT</td>
@@ -54,5 +53,9 @@
             }
         }
     </tbody>
-
 </table>
+
+<div class="pagination-container">
+    @Html.PagedListPager(Model, page => Url.Action("ManageArena", new { page = page, searchString = Request.QueryString["searchString"] }))
+</div>
+

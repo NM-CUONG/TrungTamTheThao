@@ -3,7 +3,7 @@
     ViewBag.Title = "ManageSize";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+@model PagedList.IPagedList<WebApp.Models.tb_Size>
 
 <style>
 
@@ -58,26 +58,66 @@
         margin: 0 10px;
         cursor: pointer;
     }
+
     .search-box {
         width: 40%;
         margin-top: 20px;
         margin-bottom: 20px;
     }
 
+    .pagination {
+        display: flex;
+        justify-content: center;
+        padding: 10px 0;
+        list-style-type: none;
+        margin: 20px 0;
+    }
+
+        .pagination li {
+            margin: 0 5px;
+        }
+
+            .pagination li a, .pagination li span {
+                display: block;
+                padding: 5px 12px;
+                color: #007bff;
+                text-decoration: none;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                transition: background-color 0.3s, color 0.3s;
+            }
+
+                .pagination li a:hover, .pagination li span:hover {
+                    background-color: #007bff;
+                    color: #fff;
+                    cursor: pointer;
+                }
+
+            .pagination li.active span, .pagination li.active a {
+                background-color: #007bff;
+                color: #fff;
+                border: 1px solid #007bff;
+            }
+
+            .pagination li.disabled span, .pagination li.disabled a {
+                color: #999;
+                cursor: not-allowed;
+            }
 </style>
 
 
-<div>
+<div class="">
     <h3 class="text-uppercase">Quản lý loại phòng</h3>
     <div class="search-box">
-        @Html.Partial("_SearchPartial")
+        <form id="searchForm" method="get" action="@Url.Action("ManageSize")">
+            @Html.Partial("_SearchPartial")
+        </form>
     </div>
-
     <div class="d-flex flex-row-reverse">
         <button class="btn btn-primary btn-add" onclick="Create()">Thêm mới</button>
     </div>
-    <div class="container">
-
+    <div id="container">
+        @Html.Partial("_TableSizePartial", Model)
     </div>
 
 </div>
@@ -104,40 +144,29 @@
 
 <script>
 
-    // Các hàm xử lý bảng
-    function GetTable() {
-        $.ajax({
-            url: '/Home/GetTableSize',
-            type: 'GET',
-            success: function (rs) {
-                $('.container').empty();
-                $('.container').html(rs);
-            },
-            error: function () {
-                toastr.error("Đã có lỗi xảy ra khi lấy bảng", "Thông báo");
-            }
-        })
-    }
+    var currentUrl = "";
 
-    // Hàm tìm kiếm
-    function Search() {
-        var searchString = $('.input-search').val().trim();
+    // Hàm load lại table
+    function reloadTable() {
+        var url = '@Url.Action("Home", "ManageSize")';
 
-        $.ajax({
-            url: '/Home/SearchSize',
-            type: 'GET',
-            data: { searchString: searchString },
-            success: function (rs) {
-                $('.container').empty();
-                $('.container').html(rs);
-            },
-            error: function () {
-                toastr.error("Đã có lỗi xảy ra khi tìm kiếm", "Thông báo");
-            }
-        })
-    }
+        if (currentUrl != null || currentUrl != "") {
+            url = currentUrl;
+        }
 
-    // Các hàm xử lý thêm quyền
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $('#container').html(data);
+                },
+                error: function () {
+                    toastr.error("Đã xảy ra lỗi khi lấy dữ liệu!", "Thông báo");
+                }
+            });
+        }
+
+    // Các hàm xử lý thêm vai trò
 
     function Create() {
         $.ajax({
@@ -159,7 +188,7 @@
         })
     }
 
-    // Các hàm xử lý sửa quyền
+    // Các hàm xử lý sửa vai trò
     function Edit(ID) {
         if (!ID) {
             toastr.error("Không thể sửa, đã xảy ra lỗi!", "Thông báo");
@@ -192,7 +221,8 @@
         }
 
         $('#popup').modal('hide');
-        GetTable();
+        reloadTable();
+
         toastr.success(rs.message, "Thông báo")
 
     }
@@ -201,7 +231,7 @@
         toastr.error("Đã xảy ra lỗi", "Thông báo")
     }
 
-    // Các hàm xử lý xóa quyền
+    // Các hàm xử lý xóa vai trò
     function openConfirmationDialog(button) {
         document.getElementById('confirmationDialog').style.display = 'block';
         var dataId = button.getAttribute('data-id');
@@ -210,6 +240,8 @@
 
     function closeConfirmationDialog() {
         document.getElementById('confirmationDialog').style.display = 'none';
+        $('#sizeNameError').html('');
+
     }
 
     function handleCancel() {
@@ -235,7 +267,8 @@
                     return;
                 }
                 toastr.success(rs.message, "Thông báo");
-                GetTable();
+                reloadTable();
+
             },
             error: function () {
                 toastr.error("Đã có lỗi xảy ra khi xóa", "Thông báo");
@@ -262,35 +295,48 @@
         }
     }
 
-    function validateCategory() {
-        var categoryInput = document.getElementById('CateID');
-        var categoryError = document.getElementById('cateError');
-
-        // Kiểm tra xem đã chọn một loại khu vực hay chưa
-        if (categoryInput.value === '') {
-            categoryError.textContent = 'Vui lòng chọn một loại khu vực';
-            return false;
-        }
-
-        // Xóa thông báo lỗi nếu không có lỗi
-        categoryError.textContent = '';
-        return true;
-    }
 
     $(document).ready(function () {
-        GetTable();
+        //Lấy bảng dữ liệu khi tìm kiếm
+        $('#searchForm').submit(function (event) {
+            event.preventDefault();
+            var url = $(this).attr('action');
+            var query = $(this).serialize();
 
-        $('.btn-search').on('click', function () {
-            Search();
-        })
+            currentUrl = url + '?' + query;
 
-        $('.input-search').keypress(function (event) {
-            if (event.which == 13) {
-                Search();
-            }
-        })
+            $.ajax({
+                url: url + '?' + query,
+                type: 'GET',
+                success: function (data) {
+                    $('#container').html(data);
+                },
+                error: function () {
+                    toastr.error("Đã xảy ra lỗi khi lấy dữ liệu!", "Thông báo");
+                }
+            });
+        });
+
+        //Lấy bảng dữ liệu khi kích nút chuyển trang
+        $(document).on('click', '.pagination a', function (event) {
+            event.preventDefault();
+            var url = $(this).attr('href');
+
+            currentUrl = url;
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $('#container').html(data);
+                },
+                error: function () {
+                    toastr.error("Đã xảy ra lỗi khi lấy dữ liệu!", "Thông báo");
+                }
+            });
+        });
+
     })
 
 
 </script>
-

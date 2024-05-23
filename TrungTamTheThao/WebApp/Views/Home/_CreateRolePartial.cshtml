@@ -3,7 +3,7 @@
 <div class="modal-dialog">
     <div class="modal-content">
         <div class="modal-header ">
-            <h1 class="modal-title w-100 text-center fs-5 text-uppercase" id="staticBackdropLabel">Thêm quyền</h1>
+            <h1 class="modal-title w-100 text-center fs-5 text-uppercase" id="staticBackdropLabel">Thêm vai trò</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         @using (Ajax.BeginForm("CreateRole", "Home", new AjaxOptions()
@@ -17,14 +17,14 @@
                 <div class="row">
 
                     <div class="col-sm-6">
-                        <label class="form-label" for="UserID">Mã quyền<span class="text-danger"> *</span></label>
+                        <label class="form-label" for="UserID">Mã vai trò<span class="text-danger"> *</span></label>
                         <div class="col-sm-12">
                             @Html.TextBoxFor(m => m.RoleID, new { @class = "form-control mauxam ", @readonly = "readonly" })
                         </div>
                     </div>
 
                     <div class="col-sm-6">
-                        <label class="form-label" for="RoleName">Tên quyền<span class="text-danger"> *</span></label>
+                        <label class="form-label" for="RoleName">Tên vai trò<span class="text-danger"> *</span></label>
                         <div class="col-sm-12 col-lg-12">
                             @Html.TextBoxFor(m => m.RoleName, new { @class = "form-control" })
                             <span id="roleNameError" class="text-danger"></span>

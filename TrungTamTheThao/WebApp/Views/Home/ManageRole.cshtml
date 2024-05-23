@@ -166,7 +166,7 @@
             });
         }
 
-    // Các hàm xử lý thêm quyền
+    // Các hàm xử lý thêm vai trò
 
     function Create() {
         $.ajax({
@@ -188,7 +188,7 @@
         })
     }
 
-    // Các hàm xử lý sửa quyền
+    // Các hàm xử lý sửa vai trò
     function Edit(ID) {
         if (!ID) {
             toastr.error("Không thể sửa, đã xảy ra lỗi!", "Thông báo");
@@ -231,7 +231,7 @@
         toastr.error("Đã xảy ra lỗi", "Thông báo")
     }
 
-    // Các hàm xử lý xóa quyền
+    // Các hàm xử lý xóa vai trò
     function openConfirmationDialog(button) {
         document.getElementById('confirmationDialog').style.display = 'block';
         var dataId = button.getAttribute('data-id');

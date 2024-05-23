@@ -2320,7 +2320,6 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Home\Test.cshtml" />
     <Content Include="Views\Home\Regis.cshtml" />
     <Content Include="Views\Home\SendMail.cshtml" />
     <Content Include="Views\Home\ConfirmEmailRegis.cshtml" />
@@ -2368,7 +2367,6 @@
     <Content Include="Views\Home\_EditBookingPartial.cshtml" />
     <Content Include="Views\Home\_GetTableHistoryBooking.cshtml" />
     <Content Include="Views\Home\_Footer.cshtml" />
-    <Content Include="Views\Home\testPageList.cshtml" />
     <Content Include="Views\Home\_ProductListPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>

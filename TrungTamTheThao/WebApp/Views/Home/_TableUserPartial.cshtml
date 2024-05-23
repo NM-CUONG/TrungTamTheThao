@@ -1,8 +1,6 @@
 ﻿
-@{
-    var listUser = ViewBag.listUser;
-}
-
+@model PagedList.IPagedList<WebApp.Models.tb_User>
+@using PagedList.Mvc;
 <style>
     table {
         margin-top: 20px;
@@ -19,18 +17,17 @@
             <th scope="col">SĐT</th>
             <th scope="col">Địa chỉ</th>
             <th scope="col">Trạng thái</th>
-            <th scope="col">Quyền</th>
+            <th scope="col">Vai trò</th>
             <th scope="col">Thao tác</th>
         </tr>
     </thead>
     <tbody class="table-content">
         @{
             var STT = 1;
-            foreach (var item in listUser)
+            foreach (var item in Model)
             {
                 <tr>
                     <td>@STT</td>
-                    @*<td>@item.UserID</td>*@
                     <td>@item.UserName</td>
                     <td>@item.FullName</td>
                     <td>@item.Email</td>
@@ -49,3 +46,7 @@
     </tbody>
 
 </table>
+
+<div class="pagination-container">
+    @Html.PagedListPager(Model, page => Url.Action("ManageUser", new { page = page, searchString = Request.QueryString["searchString"] }))
+</div>

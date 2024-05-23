@@ -1055,58 +1055,64 @@ namespace WebApp.Controllers
         #endregion
 
         #region Các hàm xử lý User
-        public ActionResult ManageUser()
+        public ActionResult ManageUser(string searchString, int? page)
         {
-            List<tb_User> listUser = db.tb_User.ToList();
-            ViewBag.listUser = listUser;
-
-            return View();
-        }
-        public ActionResult SearchUser(string searchString)
-        {
-            List<tb_User> listUserFill = db.tb_User.ToList();
+            int pageSize = 8;
+            int pageNumber = (page ?? 1);
+            List<tb_User> users = db.tb_User.ToList();
             List<tb_User> listUser = new List<tb_User>();
-
-            if (!string.IsNullOrEmpty(searchString))
+            try
             {
-                searchString = searchString.Unidecode().ToLower();
-                foreach (var item in listUserFill)
+
+                if (!String.IsNullOrEmpty(searchString))
                 {
-                    var UserName = item.UserName.Unidecode().ToLower();
-                    if (UserName.Contains(searchString))
+                    searchString = searchString.Trim().Unidecode().ToLower();
+                    foreach (var item in users)
                     {
-                        listUser.Add(item);
+                        var UserName = item.UserName.Unidecode().ToLower();
+                        var UserID = item.UserID.Unidecode().ToLower();
+                        var Email = item.Email.Unidecode().ToLower();
+                        var SDT = item.Phone.Unidecode().ToLower();
+                        var Address = item.Address.Unidecode().ToLower();
+                        var StatusName = item.StatusName.Unidecode().ToLower();
+                        var RoleName = item.RoleName.Unidecode().ToLower();
+                        var FullName = item.FullName.Unidecode().ToLower();
+
+                        if (UserName.Contains(searchString)
+                            || UserID.Contains(searchString)
+                            || Email.Contains(searchString)
+                            || SDT.Contains(searchString)
+                            || Address.Contains(searchString)
+                            || StatusName.Contains(searchString)
+                            || FullName.Contains(searchString)
+                            || RoleName.Contains(searchString)
+                            || UserName.Contains(searchString))
+                        {
+                            listUser.Add(item);
+                        }
                     }
+                    users = listUser;
                 }
+
+                foreach (var item in users)
+                {
+                    if (item.RoleID == null) continue;
+                    item.RoleName = db.tb_Role.Where(x => x.RoleID == item.RoleID).FirstOrDefault().RoleName;
+                }
+
+                users = users.OrderBy(x => x.UserID).ToList();
             }
-            else
+            catch (Exception)
             {
-                listUser = db.tb_User.ToList();
+                return Json(new { success = false, message = "Đã xảy ra lỗi trong quá trình lấy dữ liệu!" }, JsonRequestBehavior.AllowGet);
             }
 
-            foreach (var item in listUser)
+            if (Request.IsAjaxRequest())
             {
-                if (item.RoleID == null) continue;
-                item.RoleName = db.tb_Role.Where(x => x.RoleID == item.RoleID).FirstOrDefault().RoleName;
+                return PartialView("_TableUserPartial", users.ToPagedList(pageNumber, pageSize));
             }
 
-            ViewBag.listUser = listUser;
-
-            return PartialView("_TableUserPartial");
-        }
-        public ActionResult GetTableUser()
-        {
-            List<tb_User> listUser = db.tb_User.ToList();
-
-            foreach (var item in listUser)
-            {
-                if (item.RoleID == null) continue;
-                item.RoleName = db.tb_Role.Where(x => x.RoleID == item.RoleID).FirstOrDefault().RoleName;
-            }
-            ViewBag.listUser = listUser;
-
-
-            return PartialView("_TableUserPartial");
+            return View(users.ToPagedList(pageNumber, pageSize));
         }
 
         public ActionResult CreateUser()
@@ -1204,63 +1210,46 @@ namespace WebApp.Controllers
         #endregion
 
         #region Các hàm xử lý Size
-        public ActionResult ManageSize()
+        public ActionResult ManageSize(string searchString, int? page)
         {
-            List<tb_Size> listSize = db.tb_Size.ToList();
-            ViewBag.listSize = listSize;
-            return View();
-        }
-
-        public ActionResult GetTableSize()
-        {
-            List<tb_Size> listSize = db.tb_Size.ToList();
-            ViewBag.listSize = listSize;
+            int pageSize = 8;
+            int pageNumber = (page ?? 1);
+            List<tb_Size> Sizes = db.tb_Size.ToList();
+            List<tb_Size> listSize = new List<tb_Size>();
             try
             {
-                foreach (var item in listSize)
+
+                if (!String.IsNullOrEmpty(searchString))
                 {
-                    if (item.CateID == null) continue;
-                    item.CateName = db.tb_Category.Where(x => x.CateID == item.CateID).FirstOrDefault().CateName;
+                    searchString = searchString.Trim().Unidecode().ToLower();
+                    foreach (var item in Sizes)
+                    {
+                        var SizeName = item.SizeName.Unidecode().ToLower();
+                        var SizeID = item.SizeID.Unidecode().ToLower();
+
+                        if (SizeName.Contains(searchString)
+                            || SizeID.Contains(searchString)
+                            || SizeName.Contains(searchString))
+                        {
+                            listSize.Add(item);
+                        }
+                    }
+                    Sizes = listSize;
                 }
+
+                Sizes = Sizes.OrderBy(x => x.SizeID).ToList();
             }
             catch (Exception)
             {
                 return Json(new { success = false, message = "Đã xảy ra lỗi trong quá trình lấy dữ liệu!" }, JsonRequestBehavior.AllowGet);
             }
-            return PartialView("_TableSizePartial");
-        }
 
-        public ActionResult SearchSize(string searchString)
-        {
-            List<tb_Size> listSizeFill = db.tb_Size.ToList();
-            List<tb_Size> listSize = new List<tb_Size>();
-
-            if (!string.IsNullOrEmpty(searchString))
+            if (Request.IsAjaxRequest())
             {
-                searchString = searchString.Unidecode().ToLower();
-                foreach (var item in listSizeFill)
-                {
-                    var SizeName = item.SizeName.Unidecode().ToLower();
-                    if (SizeName.Contains(searchString))
-                    {
-                        listSize.Add(item);
-                    }
-                }
-            }
-            else
-            {
-                listSize = db.tb_Size.ToList();
+                return PartialView("_TableSizePartial", Sizes.ToPagedList(pageNumber, pageSize));
             }
 
-            foreach (var item in listSize)
-            {
-                if (item.CateID == null) continue;
-                item.CateName = db.tb_Category.Where(x => x.CateID == item.CateID).FirstOrDefault().CateName;
-            }
-
-            ViewBag.listSize = listSize;
-
-            return PartialView("_TableSizePartial");
+            return View(Sizes.ToPagedList(pageNumber, pageSize));
         }
 
         public ActionResult CreateSize()
@@ -1470,71 +1459,66 @@ namespace WebApp.Controllers
         #endregion
 
         #region Các hàm xử lý Arena
-        public ActionResult ManageArena()
-        {
-            List<tb_Arena> listArena = db.tb_Arena.ToList();
-            ViewBag.listArena = listArena;
-            return View();
-        }
 
-        public ActionResult SearchArena(string searchString)
+        public ActionResult ManageArena(string searchString, int? page)
         {
-            List<tb_Arena> listArenaFill = db.tb_Arena.ToList();
+            int pageSize = 8;
+            int pageNumber = (page ?? 1);
+            List<tb_Arena> arenas = db.tb_Arena.ToList();
             List<tb_Arena> listArena = new List<tb_Arena>();
-
-            if (!string.IsNullOrEmpty(searchString))
+            try
             {
-                searchString = searchString.Unidecode().ToLower();
-                foreach (var item in listArenaFill)
+
+                if (!String.IsNullOrEmpty(searchString))
                 {
-                    var ArenaName = item.ArenaName.Unidecode().ToLower();
-                    if (ArenaName.Contains(searchString))
+                    searchString = searchString.Trim().Unidecode().ToLower();
+                    foreach (var item in arenas)
                     {
-                        listArena.Add(item);
+                        var ArenaName = item.ArenaName.Unidecode().ToLower();
+                        var ArenaID = item.ArenaID.Unidecode().ToLower();
+                        var CateName = item.tb_Category.CateName.Unidecode().ToLower();
+                        var SizeName = item.tb_Size.SizeName.Unidecode().ToLower();
+                        var MaxPersons = item.MaxPersons.ToString();
+
+                        if (ArenaName.Contains(searchString)
+                            || CateName.Contains(searchString)
+                            || ArenaID.Contains(searchString)
+                            || SizeName.Contains(searchString)
+                            || MaxPersons.Contains(searchString))
+                        {
+                            listArena.Add(item);
+                        }
                     }
+                    arenas = listArena;
+                }
+
+                arenas = arenas.OrderBy(x => x.ArenaID).ToList();
+
+                foreach (var item in arenas)
+                {
+                    if (item.SizeID == null) continue;
+                    item.SizeName = db.tb_Size.Where(x => x.SizeID == item.SizeID).FirstOrDefault().SizeName;
+                }
+
+                foreach (var item in arenas)
+                {
+                    if (item.CateID == null) continue;
+                    item.CateName = db.tb_Category.Where(x => x.CateID == item.CateID).FirstOrDefault().CateName;
                 }
             }
-            else
+            catch (Exception)
             {
-                listArena = db.tb_Arena.ToList();
+                return Json(new { success = false, message = "Đã xảy ra lỗi trong quá trình lấy dữ liệu!" }, JsonRequestBehavior.AllowGet);
             }
 
-            foreach (var item in listArena)
+            if (Request.IsAjaxRequest())
             {
-                if (item.SizeID == null) continue;
-                item.SizeName = db.tb_Size.Where(x => x.SizeID == item.SizeID).FirstOrDefault().SizeName;
+                return PartialView("_TableArenaPartial", arenas.ToPagedList(pageNumber, pageSize));
             }
 
-            foreach (var item in listArena)
-            {
-                if (item.CateID == null) continue;
-                item.CateName = db.tb_Category.Where(x => x.CateID == item.CateID).FirstOrDefault().CateName;
-            }
-
-            ViewBag.listArena = listArena;
-
-            return PartialView("_TableArenaPartial");
+            return View(arenas.ToPagedList(pageNumber, pageSize));
         }
-        public ActionResult GetTableArena()
-        {
-            List<tb_Arena> listArena = db.tb_Arena.ToList();
 
-            foreach (var item in listArena)
-            {
-                if (item.SizeID == null) continue;
-                item.SizeName = db.tb_Size.Where(x => x.SizeID == item.SizeID).FirstOrDefault().SizeName;
-            }
-
-            foreach (var item in listArena)
-            {
-                if (item.CateID == null) continue;
-                item.CateName = db.tb_Category.Where(x => x.CateID == item.CateID).FirstOrDefault().CateName;
-            }
-
-            ViewBag.listArena = listArena;
-
-            return PartialView("_TableArenaPartial");
-        }
 
         public ActionResult CreateArena()
         {
@@ -1678,82 +1662,98 @@ namespace WebApp.Controllers
         #endregion
 
         #region Các hàm xử lý Booking
-        public ActionResult ManageBooking()
+
+        public ActionResult ManageBooking(string searchString, int? page)
         {
-            List<tb_Booking> listBooking = db.tb_Booking.ToList();
-
-            DateTime nowday = DateTime.Now;
-
-            foreach (var item in listBooking)
-            {
-                if (item.StartTime <= nowday && item.EndTime >= nowday && item.Status != 4 && item.Status != 1 && item.Status != 0)
-                {
-                    item.Status = 2;
-                }
-                if (item.EndTime < nowday && item.Status != 4 && item.Status != 1 && item.Status != 0)
-                {
-                    item.Status = 3;
-                }
-            }
-
-            db.SaveChanges();
-
-            ViewBag.listBooking = listBooking;
-            return View();
-        }
-
-        public ActionResult SearchBooking(string searchString)
-        {
-            List<tb_Booking> listBookingFill = db.tb_Booking.ToList();
+            int pageSize = 8;
+            int pageNumber = (page ?? 1);
+            List<tb_Booking> bookings = db.tb_Booking.ToList();
             List<tb_Booking> listBooking = new List<tb_Booking>();
-
-            if (!string.IsNullOrEmpty(searchString))
+            try
             {
-                searchString = searchString.Unidecode().ToLower();
-                foreach (var item in listBookingFill)
+
+                DateTime nowday = DateTime.Now;
+
+                foreach (var item in bookings)
                 {
-                    var BookingID = item.BookingID.Unidecode().ToLower();
-                    if (BookingID.Contains(searchString))
+                    if (item.StartTime <= nowday && item.EndTime >= nowday && item.Status != 4 && item.Status != 1 && item.Status != 0)
                     {
-                        listBooking.Add(item);
+                        item.Status = 2;
+                    }
+                    if (item.EndTime < nowday && item.Status != 4 && item.Status != 0)
+                    {
+                        item.Status = 3;
                     }
                 }
+
+                db.SaveChanges();
+
+                if (!String.IsNullOrEmpty(searchString))
+                {
+                    searchString = searchString.Trim().Unidecode().ToLower();
+                    foreach (var item in bookings)
+                    {
+                        var ContactName = item.ContactName.Unidecode().ToLower();
+                        var BookingID = item.BookingID.Unidecode().ToLower();
+                        var PhoneNumber = item.PhoneNumber.Unidecode().ToLower();
+                        var ArenaName = item.tb_Arena.ArenaName.Unidecode().ToLower();
+                        var Note = item.Note.Unidecode().ToLower();
+                        var StartTime = item.StartTime.ToString("dd/mm/yyyy");
+                        var EndTime = item.EndTime.ToString("dd/mm/yyyy");
+                        var ShiftName = item.ShiftName.Unidecode().ToString();
+                        var Money = item.Money.ToString();
+                        var StatusName = item.StatusName.Unidecode().ToLower();
+
+                        if (ContactName.Contains(searchString)
+                            || BookingID.Contains(searchString)
+                            || PhoneNumber.Contains(searchString)
+                            || ArenaName.Contains(searchString)
+                            || StartTime.Contains(searchString)
+                            || EndTime.Contains(searchString)
+                            || ShiftName.Contains(searchString)
+                            || Money.Contains(searchString)
+                            || StatusName.Contains(searchString)
+                            || Note.Contains(searchString))
+                        {
+                            listBooking.Add(item);
+                        }
+                    }
+                    bookings = listBooking;
+                }
+
+                bookings = bookings.OrderBy(x => x.BookingID).ToList();
+
+                foreach (var item in bookings)
+                {
+                    if (item.UserID == null) continue;
+                    item.UserName = db.tb_User.Where(x => x.UserID == item.UserID).FirstOrDefault().FullName;
+                }
+
+                foreach (var item in bookings)
+                {
+                    if (item.ArenaID == null) continue;
+                    item.ArenaName = db.tb_Arena.Where(x => x.ArenaID == item.ArenaID).FirstOrDefault().ArenaName;
+                }
+
+                foreach (var item in bookings)
+                {
+                    if (item.ShiftID == null) continue;
+                    item.ShiftName = db.tb_Shift.Where(x => x.ShiftID == item.ShiftID).FirstOrDefault().ShiftName;
+                }
             }
-            else
+            catch (Exception)
             {
-                listBooking = db.tb_Booking.ToList();
+                return Json(new { success = false, message = "Đã xảy ra lỗi trong quá trình lấy dữ liệu!" }, JsonRequestBehavior.AllowGet);
             }
 
-            ViewBag.listBooking = listBooking;
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_TableBookingPartial", bookings.ToPagedList(pageNumber, pageSize));
+            }
 
-            return PartialView("_TableBookingPartial");
+            return View(bookings.ToPagedList(pageNumber, pageSize));
         }
-        public ActionResult GetTableBooking()
-        {
-            List<tb_Booking> listBooking = db.tb_Booking.ToList();
 
-            foreach (var item in listBooking)
-            {
-                if (item.UserID == null) continue;
-                item.UserName = db.tb_User.Where(x => x.UserID == item.UserID).FirstOrDefault().FullName;
-            }
-
-            foreach (var item in listBooking)
-            {
-                if (item.ArenaID == null) continue;
-                item.ArenaName = db.tb_Arena.Where(x => x.ArenaID == item.ArenaID).FirstOrDefault().ArenaName;
-            }
-
-            foreach (var item in listBooking)
-            {
-                if (item.ShiftID == null) continue;
-                item.ShiftName = db.tb_Shift.Where(x => x.ShiftID == item.ShiftID).FirstOrDefault().ShiftName;
-            }
-
-            ViewBag.listBooking = listBooking;
-
-            return PartialView("_TableBookingPartial");
-        }
 
         public ActionResult CreateBooking()
         {
@@ -2143,18 +2143,5 @@ namespace WebApp.Controllers
             return Json(new { success = false }, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult testPageList(int? page)
-        {
-            int pageSize = 10;
-            int pageNumber = (page ?? 1);
-
-            var products = db.tb_Booking.OrderBy(p => p.BookingID).ToPagedList(pageNumber, pageSize);
-
-            if (Request.IsAjaxRequest())
-            {
-                return PartialView("_ProductListPartial", products);
-            }
-            return View(products);
-        }
     }
 }
