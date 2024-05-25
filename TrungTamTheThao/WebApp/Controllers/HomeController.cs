@@ -90,7 +90,6 @@ namespace WebApp.Controllers
         public static string GymCateID = "gym";
         public static string SwimmingCateID = "swimming";
 
-
         public ActionResult Index()
         {
             return View();
