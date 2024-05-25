@@ -159,9 +159,43 @@
         }
     }
 
+    $('#ArenaID').on('change', function () {
+        debugger    
+
+        var ArenaID = $('#ArenaID').val();
+        if (ArenaID != null && ArenaID != "") {
+            $.ajax({
+                url: '/Home/GetDropDownShift',
+                type: 'GET',
+                data: { ArenaID: ArenaID },
+                success: function (rs) {
+                    $('#ShiftID').empty();
+                    if (rs.success) {
+                        $('#ShiftID').append('<option value="">--Chọn khung giờ--</option>');
+                        rs.data.forEach(function (item) {
+                            $('#ShiftID').append('<option value="' + item.Value + '">' + item.Text + '</option>');
+                        });
+                    }
+
+                },
+                error: function () {
+                    toastr.error("Đã có lỗi khi lấy khung giờ!", "Thông báo");
+                }
+            })
+        } else
+            if (ArenaID == "" ) {
+                $('#ShiftID').empty();
+                $('#ShiftID').append('<option value="">--Chọn khung giờ--</option>');
+            }
+
+    });
+    
+
 
     $(document).ready(function () {
         setDatePicker('datetimepicker-ngaybatdau');
         setDatePicker('datetimepicker-ngayketthuc');
     })
+
+
 </script>

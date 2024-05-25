@@ -646,8 +646,8 @@ namespace WebApp.Controllers
                     {
                         var BookingID = item.BookingID.Unidecode().ToLower();
                         var ArenaName = item.tb_Arena.ArenaName.Unidecode().ToLower();
-                        var StartTime = item.StartTime.ToString("dd/mm/yyyy");
-                        var EndTime = item.EndTime.ToString("dd/mm/yyyy");
+                        var StartTime = item.StartTime.ToString("dd/MM/yyyy");
+                        var EndTime = item.EndTime.ToString("dd/MM/yyyy");
                         var ShiftName = item.ShiftName.Unidecode().ToString();
                         var Money = item.Money.ToString();
                         var StatusName = item.StatusName.Unidecode().ToLower();
@@ -1706,6 +1706,31 @@ namespace WebApp.Controllers
 
         #region Các hàm xử lý Booking
 
+
+        [HttpGet]
+        public ActionResult GetDropDownShift(string ArenaID)
+        {
+            if (ArenaID == null || ArenaID == "")
+            {
+                return Json(new { success = false, message = "Không tìm thấy các khung giờ!" }, JsonRequestBehavior.AllowGet);
+            }
+
+            try
+            {
+                var cateID = db.tb_Arena.FirstOrDefault(x => x.ArenaID == ArenaID).CateID;
+                var listShift = db.tb_Shift.Where(x => x.CateID == cateID);
+                var shifts = listShift.ToSelectList(r => r.ShiftName, r => r.ShiftID);
+                return Json(new { success = true, data = shifts }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false });
+
+            }
+
+         
+        }
         public ActionResult ManageBooking(string searchString, int? page)
         {
             int pageSize = 8;
@@ -1741,9 +1766,9 @@ namespace WebApp.Controllers
                         var PhoneNumber = item.PhoneNumber.Unidecode().ToLower();
                         var ArenaName = item.tb_Arena.ArenaName.Unidecode().ToLower();
                         var Note = item.Note.Unidecode().ToLower();
-                        var StartTime = item.StartTime.ToString("dd/mm/yyyy");
-                        var EndTime = item.EndTime.ToString("dd/mm/yyyy");
-                        var ShiftName = item.ShiftName.Unidecode().ToString();
+                        var StartTime = item.StartTime.ToString("dd/MM/yyyy");
+                        var EndTime = item.EndTime.ToString("dd/MM/yyyy");
+                        var ShiftName = item.tb_Shift.ShiftName.Unidecode().ToString();
                         var Money = item.Money.ToString();
                         var StatusName = item.StatusName.Unidecode().ToLower();
 
@@ -1798,54 +1823,55 @@ namespace WebApp.Controllers
         }
 
 
-        public ActionResult CreateBooking()
-        {
-            tb_Booking Booking = new tb_Booking();
-            tb_Booking lastBooking = db.tb_Booking.OrderByDescending(x => x.ID).FirstOrDefault();
-            Booking.BookingID = "S" + (lastBooking.ID + 1);
+        //public ActionResult CreateBooking()
+        //{
+        //    tb_Booking Booking = new tb_Booking();
+        //    tb_Booking lastBooking = db.tb_Booking.OrderByDescending(x => x.ID).FirstOrDefault();
+        //    Booking.BookingID = "S" + (lastBooking.ID + 1);
 
-            if (lastBooking != null)
-            {
-                Booking.BookingID = "B" + (lastBooking.ID + 1);
-            }
-            else
-            {
-                Booking.BookingID = "B0";
-            }
+        //    if (lastBooking != null)
+        //    {
+        //        Booking.BookingID = "B" + (lastBooking.ID + 1);
+        //    }
+        //    else
+        //    {
+        //        Booking.BookingID = "B0";
+        //    }
 
-            var listUser = db.tb_User.ToList();
-            ViewBag.listUser = listUser.ToSelectList(r => r.FullName, r => r.UserID);
+        //    var listUser = db.tb_User.ToList();
+        //    ViewBag.listUser = listUser.ToSelectList(r => r.FullName, r => r.UserID);
 
-            var listArena = db.tb_Arena.ToList();
-            ViewBag.listArena = listArena.ToSelectList(r => r.ArenaName, r => r.ArenaID);
+        //    var listArena = db.tb_Arena.ToList();
+        //    ViewBag.listArena = listArena.ToSelectList(r => r.ArenaName, r => r.ArenaID);
 
-            var listShift = db.tb_Shift.ToList();
-            ViewBag.listShift = listShift.ToSelectList(r => r.ShiftName, r => r.ShiftID);
+        //    var listShift = db.tb_Shift.ToList();
+        //    ViewBag.listShift = listShift.ToSelectList(r => r.ShiftName, r => r.ShiftID);
 
-            ViewBag.listStatus = TrangThaiConstant.GetSelectListItems(-1);
+        //    ViewBag.listStatus = TrangThaiConstant.GetSelectListItems(-1);
 
-            return PartialView("_CreateBookingPartial", Booking);
-        }
+        //    return PartialView("_CreateBookingPartial", Booking);
+        //}
 
-        [HttpPost]
-        public ActionResult CreateBooking(tb_Booking model)
-        {
-            try
-            {
-                model.PayDate = DateTime.Today;
-                db.tb_Booking.Add(model);
-                db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Thêm mới không thành công, lỗi: " + ex.Message }, JsonRequestBehavior.AllowGet);
-            }
-            return Json(new { success = true, message = "Thêm mới thành công" }, JsonRequestBehavior.AllowGet);
+        //[HttpPost]
+        //public ActionResult CreateBooking(tb_Booking model)
+        //{
+        //    try
+        //    {
+        //        model.PayDate = DateTime.Today;
+        //        db.tb_Booking.Add(model);
+        //        db.SaveChanges();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Json(new { success = false, message = "Thêm mới không thành công, lỗi: " + ex.Message }, JsonRequestBehavior.AllowGet);
+        //    }
+        //    return Json(new { success = true, message = "Thêm mới thành công" }, JsonRequestBehavior.AllowGet);
 
-        }
-
+        //}
+            
         public ActionResult EditBooking(long ID)
         {
+            tb_Booking Booking = db.tb_Booking.FirstOrDefault(x => x.ID == ID);
 
             var listUser = db.tb_User.ToList();
             ViewBag.listUser = listUser.ToSelectList(r => r.FullName, r => r.UserID);
@@ -1853,12 +1879,11 @@ namespace WebApp.Controllers
             var listArena = db.tb_Arena.ToList();
             ViewBag.listArena = listArena.ToSelectList(r => r.ArenaName, r => r.ArenaID);
 
-            var listShift = db.tb_Shift.ToList();
+            var listShift = db.tb_Shift.Where(x => x.CateID == Booking.tb_Shift.CateID).ToList();
             ViewBag.listShift = listShift.ToSelectList(r => r.ShiftName, r => r.ShiftID);
 
-            ViewBag.listStatus = TrangThaiConstant.GetSelectListItems(-1);
+            ViewBag.listStatus = TrangThaiBookingConstant.GetSelectListItems(-1);
 
-            tb_Booking Booking = db.tb_Booking.FirstOrDefault(x => x.ID == ID);
             return PartialView("_EditBookingPartial", Booking);
         }
 
