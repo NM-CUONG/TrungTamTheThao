@@ -187,6 +187,10 @@
                     toastr.error("Đã có lỗi khi lấy loại phòng!", "Thông báo");
                 }
             })
+        } else 
+        if (cateID == "") {
+            $('#SizeID').empty();
+            $('#SizeID').append('<option value="">--Chọn loại phòng--</option>');
         }
 
     });

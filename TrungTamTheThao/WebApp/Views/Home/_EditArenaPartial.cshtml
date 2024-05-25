@@ -124,7 +124,6 @@
                         <span id="imageError" class="text-danger"></span>
                     </div>
 
-
                 </div>
             </div>
             <div class="modal-footer">
@@ -191,7 +190,11 @@
                     toastr.error("Đã có lỗi khi lấy loại phòng!", "Thông báo");
                 }
             })
-        }
+        } else
+            if (cateID == "") {
+                $('#SizeID').empty();
+                $('#SizeID').append('<option value="">--Chọn loại phòng--</option>');
+            }
 
     });
 
@@ -214,6 +217,10 @@
     })
 
     $(document).ready(function () {
-        $('.box-maxperson').hide();
+        if ($('#CateID').val() === 'gym' || $('#CateID').val() == 'swimming') {
+            $('.box-maxperson').show();
+        } else {
+            $('.box-maxperson').hide();
+        }
     })
 </script>

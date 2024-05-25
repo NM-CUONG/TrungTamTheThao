@@ -1616,13 +1616,14 @@ namespace WebApp.Controllers
 
         public ActionResult EditArena(long ID)
         {
+            tb_Arena Arena = db.tb_Arena.FirstOrDefault(x => x.ID == ID);
+
             var listCate = db.tb_Category.ToList();
             ViewBag.listCate = listCate.ToSelectList(r => r.CateName, r => r.CateID);
 
             var listSize = db.tb_Size.ToList();
-            ViewBag.listSize = listSize.ToSelectList(r => r.SizeName, r => r.SizeID);
+            ViewBag.listSize = listSize.Where(x => x.CateID == Arena.CateID).ToSelectList(r => r.SizeName, r => r.SizeID);
 
-            tb_Arena Arena = db.tb_Arena.FirstOrDefault(x => x.ID == ID);
             return PartialView("_EditArenaPartial", Arena);
         }
 
