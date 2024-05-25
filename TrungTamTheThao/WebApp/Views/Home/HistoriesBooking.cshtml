@@ -1,15 +1,32 @@
-﻿@using WebApp.Models;
-
+﻿
 @{
     ViewBag.Title = "HistoriesBooking";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@model PagedList.IPagedList<WebApp.Models.tb_Booking>
+
 <style>
 
     #body-content {
         padding: 30px;
+        padding-top: 50px;
     }
+
+    .btn-add {
+        margin-right: 30px;
+    }
+
+    .modal-header {
+        background-color: #2a86bb;
+        color: white;
+    }
+
+    .mauxam {
+        background-color: gainsboro;
+    }
+
+
     .confirmation-dialog {
         display: none;
         position: fixed;
@@ -43,63 +60,108 @@
         cursor: pointer;
     }
 
-    .input-search {
-        border-radius: 5px 0px 0px 5px !important;
-        height: 40px;
-    }
-
-    .btn-search {
-        border-radius: 0px 5px 5px 0px !important;
-        height: 40px;
-        width: 40px;
-    }
     .search-box {
         width: 40%;
         margin-top: 20px;
         margin-bottom: 20px;
     }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        padding: 10px 0;
+        list-style-type: none;
+        margin: 20px 0;
+    }
+
+        .pagination li {
+            margin: 0 5px;
+        }
+
+            .pagination li a, .pagination li span {
+                display: block;
+                padding: 5px 12px;
+                color: #007bff;
+                text-decoration: none;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                transition: background-color 0.3s, color 0.3s;
+            }
+
+                .pagination li a:hover, .pagination li span:hover {
+                    background-color: #007bff;
+                    color: #fff;
+                    cursor: pointer;
+                }
+
+            .pagination li.active span, .pagination li.active a {
+                background-color: #007bff;
+                color: #fff;
+                border: 1px solid #007bff;
+            }
+
+            .pagination li.disabled span, .pagination li.disabled a {
+                color: #999;
+                cursor: not-allowed;
+            }
 </style>
 
-<h3 class="text-uppercase">Lịch sử đặt phòng</h3>
 
-<div class="search-box">
-    <div class="input-group ">
-        <input type="text" class="form-control input-search " placeholder="Nhập mã đặt phòng hoặc tên phòng...">
-        <div class="input-group-append">
-            <button class="btn btn-primary btn-search" type="button">
-                <i class="bi bi-search"></i>
-            </button>
-        </div>
+<div>
+    <h3 class="text-uppercase">Xem lịch sử đặt phòng</h3>
+    <div class="search-box">
+        <form id="searchForm" method="get" action="@Url.Action("HistoriesBooking")">
+            @Html.Partial("_SearchPartial")
+        </form>
     </div>
-</div>
-
-<div class="table-history">
+   
+    <div id="container">
+        @Html.Partial("_TableHistoriesPartial", Model)
+    </div>
 
 </div>
 
 <div id="confirmationDialog" class="confirmation-dialog">
     <div class="confirmation-content">
         <h5 class="">Bạn có chắc chắn muốn hủy?</h5>
-        @using (Html.BeginForm("CanCelBooking", "Home"))
-        {
-            <div style="display: none;"><input type="text" id="BookingID" name="BookingID" value="" /></div>
+        <div>
+            <div style="display: none;"><input type="text" id="hiddenID" name="hiddenID" value="" /></div>
             <div class="buttons">
                 <button id="confirmBtn" type="submit" class="confirm-btn btn btn-primary"><i class="bi bi-check-circle-fill"></i> Có</button>
                 <button id="cancelBtn" type="button" class="cancel-btn btn btn-danger"><i class="bi bi-x-circle-fill"></i> Không</button>
             </div>
-        }
-
+        </div>
     </div>
 </div>
 
 <script>
+        var currentUrl = "";
 
+    // Hàm load lại table
+    function reloadTable() {
+        var url = '@Url.Action("Home", "HistoriesBooking")';
 
-    // Các hàm sử lý hủy đặt phòng
+        if (currentUrl != null || currentUrl != "") {
+            url = currentUrl;
+        }
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $('#container').html(data);
+                },
+                error: function () {
+                    toastr.error("Đã xảy ra lỗi khi lấy dữ liệu!", "Thông báo");
+                }
+            });
+        }
+
+    // Các hàm xử lý hủy đặt phòng
     function openConfirmationDialog(button) {
         document.getElementById('confirmationDialog').style.display = 'block';
         var dataId = button.getAttribute('data-id');
-        $('#BookingID').val(dataId);
+        $('#hiddenID').val(dataId);
     }
 
     function closeConfirmationDialog() {
@@ -112,40 +174,75 @@
 
     function handleConfirm() {
         closeConfirmationDialog();
+
+        const ID = $('#hiddenID').val();
+        if (ID == null) {
+            toastr.error("Đã có lỗi xảy ra khi hủy", "Thông báo");
+            return;
+        }
+
+        $.ajax({
+            url: '/Home/CancleBooking',
+            type: 'GET',
+            data: { ID: ID },
+            success: function (rs) {
+                if (!rs.success) {
+                    toastr.error(rs.message, "Thông báo");
+                    return;
+                }
+                toastr.success(rs.message, "Thông báo");
+                reloadTable();
+
+            },
+            error: function () {
+                toastr.error("Đã có lỗi xảy ra khi hủy", "Thông báo");
+            }
+        })
     }
 
     document.getElementById('cancelBtn').addEventListener('click', handleCancel);
     document.getElementById('confirmBtn').addEventListener('click', handleConfirm);
 
-    // Hàm lấy bảng
-    function getTableHistory() {
-        var searchString = $('.input-search').val();
-        if (searchString == undefined || searchString == null) searchString = "";
-        $.ajax({
-            url: '/Home/GetTableHistoryBooking',
-            type: 'GET',
-            data: { searchString: searchString },
-            success: function (rs) {
-                $('.table-history').html(rs);
-            },
-            error: function () {
-                toastr.error("Đã có lỗi xảy ra khi tổng hợp dữ liệu!", "Thông báo");
-            }
-        })
-    }
-
-    $('.input-search').keypress(function (event) {
-        if (event.which == 13) {
-            getTableHistory();
-        }
-    })
-
-    $('.btn-search').on('click', function () {
-        getTableHistory();
-    })
-
     $(document).ready(function () {
-        getTableHistory();
+
+        //Lấy bảng dữ liệu khi tìm kiếm
+        $('#searchForm').submit(function (event) {
+            event.preventDefault();
+            var url = $(this).attr('action');
+            var query = $(this).serialize();
+
+            currentUrl = url + '?' + query;
+
+            $.ajax({
+                url: url + '?' + query,
+                type: 'GET',
+                success: function (data) {
+                    $('#container').html(data);
+                },
+                error: function () {
+                    toastr.error("Đã xảy ra lỗi khi lấy dữ liệu!", "Thông báo");
+                }
+            });
+        });
+
+        //Lấy bảng dữ liệu khi kích nút chuyển trang
+        $(document).on('click', '.pagination a', function (event) {
+            event.preventDefault();
+            var url = $(this).attr('href');
+
+            currentUrl = url;
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $('#container').html(data);
+                },
+                error: function () {
+                    toastr.error("Đã xảy ra lỗi khi lấy dữ liệu!", "Thông báo");
+                }
+            });
+        });
     })
 
 </script>

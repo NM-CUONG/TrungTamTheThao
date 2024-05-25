@@ -2365,7 +2365,7 @@
     <Content Include="Views\Home\_TableBookingPartial.cshtml" />
     <Content Include="Views\Home\_CreateBookingPartial.cshtml" />
     <Content Include="Views\Home\_EditBookingPartial.cshtml" />
-    <Content Include="Views\Home\_GetTableHistoryBooking.cshtml" />
+    <Content Include="Views\Home\_TableHistoriesPartial.cshtml" />
     <Content Include="Views\Home\_Footer.cshtml" />
     <Content Include="Views\Home\_ProductListPartial.cshtml" />
   </ItemGroup>

@@ -13,6 +13,28 @@
     <link href="~/Content/toastr.css" rel="stylesheet" />
     <script src="~/Scripts/toastr.js"></script>
     <script src="~/Scripts/chart.js"></script>
+
+    <style>
+        #loader {
+            position: fixed;
+            left: 50%;
+            top: 30%;
+            z-index: 1000;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid blue;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        @@keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+    </style>
+
     <style>
         /* CSS để tùy chỉnh giao diện */
 
@@ -59,7 +81,6 @@
         #body-content {
             min-height: 100vh;
         }
-
     </style>
 
     <style>
@@ -188,6 +209,9 @@
         </div>
     </div>
 
+    <!--Loader-->
+    <div id="loader" style="display:none;"></div>
+
     @RenderSection("scripts", required: false)
 
     <script>
@@ -234,7 +258,6 @@
             }
 
         }
-
     </script>
 
     <script>
@@ -260,6 +283,26 @@
                 });
             });
         });
+    </script>
+
+
+
+    <script>
+        // Loader
+        function showLoader() {
+            $('#loader').show();
+        }
+
+        function hideLoader() {
+            $('#loader').hide();
+        }
+
+        $(document).ajaxStart(function () {
+            showLoader();
+        }).ajaxStop(function () {
+            hideLoader();
+        });
+
     </script>
 
 </body>

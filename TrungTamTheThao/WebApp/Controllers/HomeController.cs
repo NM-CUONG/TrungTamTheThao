@@ -30,6 +30,7 @@ using Microsoft.Ajax.Utilities;
 using System.Drawing;
 using PagedList;
 using System.Web.UI;
+using System.Web.Management;
 
 namespace WebApp.Controllers
 {
@@ -269,7 +270,7 @@ namespace WebApp.Controllers
                 return Json(new { success = false, message = "Đã xảy ra lỗi khi truy vấn CSDL!" });
             }
 
-            var listBooked = db.tb_Booking.Where(x => x.ArenaID == arenaId).ToList();
+            var listBooked = db.tb_Booking.Where(x => x.ArenaID == arenaId && (x.Status == 1 || x.Status == 2)).ToList();
             var persons = 0;
 
             foreach (var item in listBooked)
@@ -277,7 +278,6 @@ namespace WebApp.Controllers
                 if (!(ngayKetThuc < item.StartTime || ngayBatDau > item.EndTime))
                 {
                     persons++;
-
                 }
                 else
                 {
@@ -603,86 +603,114 @@ namespace WebApp.Controllers
 
 
         // Hàm xem lịch sử booking
-        public ActionResult HistoriesBooking()
+        public ActionResult HistoriesBooking(string searchString, int? page)
         {
-            return View();
-        }
 
-        public ActionResult GetTableHistoryBooking(string searchString)
-        {
             tb_User Account = Session["UserInfor"] as tb_User;
 
-            if (Account == null)
-            {
-                ViewBag.Error = "Bạn chưa đăng nhập!";
-                return PartialView("_GetTableHistoryBooking");
-            }
-
-            List<tb_Booking> listBookingFill = db.tb_Booking.Where(x => x.UserID == Account.UserID).ToList();
-
-            if (listBookingFill == null)
-            {
-                ViewBag.historiesBooking = listBookingFill;
-                return PartialView("_GetTableHistoryBooking");
-            }
-
+            int pageSize = 8;
+            int pageNumber = (page ?? 1);
+            List<tb_Booking> bookings = db.tb_Booking.Where(x => x.UserID == Account.UserID).ToList();
             List<tb_Booking> listBooking = new List<tb_Booking>();
 
-            if (!string.IsNullOrEmpty(searchString))
+            if (bookings == null)
             {
-                searchString = searchString.Unidecode().ToLower();
-                foreach (var item in listBookingFill)
-                {
-                    var ArenaName = item.tb_Arena.ArenaName.Unidecode().ToLower();
-                    var BookingID = item.BookingID.Unidecode().ToLower();
-
-                    if (ArenaName.Contains(searchString) || BookingID.Contains(searchString))
-                    {
-                        listBooking.Add(item);
-                    }
-                }
-            }
-            else
-            {
-                ViewBag.historiesBooking = listBookingFill;
-                return PartialView("_GetTableHistoryBooking");
-            }
-            ViewBag.historiesBooking = listBooking;
-            return PartialView("_GetTableHistoryBooking");
-        }
-
-        public ActionResult CanCelBooking(string BookingID)
-        {
-
-            if (BookingID == null)
-            {
-                ViewBag.Error = "Không tìm thấy thông tin đặt phòng cần xóa!";
-                return View("HistoriesBooking");
-            }
-
-            db.tb_Booking.Where(x => x.ID.ToString() == BookingID).FirstOrDefault().Status = 4;
-            db.SaveChanges();
-
-            tb_User Account = Session["UserInfor"] as tb_User;
-
-            if (Account == null)
-            {
-                ViewBag.Error = "Không tin thấy thông tin tài khoản!";
+                ViewBag.Error = "Bạn chưa đặt phòng!";
                 return View();
             }
 
             try
             {
-                List<tb_Booking> historiesBooking = db.tb_Booking.Where(x => x.UserID == Account.UserID).ToList();
-                ViewBag.historiesBooking = historiesBooking;
+
+                DateTime nowday = DateTime.Now;
+
+                foreach (var item in bookings)
+                {
+                    if (item.StartTime <= nowday && item.EndTime >= nowday && item.Status != 4 && item.Status != 1 && item.Status != 0)
+                    {
+                        item.Status = 2;
+                    }
+                    if (item.EndTime < nowday && item.Status != 4 && item.Status != 0)
+                    {
+                        item.Status = 3;
+                    }
+                }
+
+                db.SaveChanges();
+
+                if (!String.IsNullOrEmpty(searchString))
+                {
+                    searchString = searchString.Trim().Unidecode().ToLower();
+                    foreach (var item in bookings)
+                    {
+                        var BookingID = item.BookingID.Unidecode().ToLower();
+                        var ArenaName = item.tb_Arena.ArenaName.Unidecode().ToLower();
+                        var StartTime = item.StartTime.ToString("dd/mm/yyyy");
+                        var EndTime = item.EndTime.ToString("dd/mm/yyyy");
+                        var ShiftName = item.ShiftName.Unidecode().ToString();
+                        var Money = item.Money.ToString();
+                        var StatusName = item.StatusName.Unidecode().ToLower();
+
+                        if (BookingID.Contains(searchString)
+                            || ArenaName.Contains(searchString)
+                            || StartTime.Contains(searchString)
+                            || EndTime.Contains(searchString)
+                            || ShiftName.Contains(searchString)
+                            || Money.Contains(searchString)
+                            || StatusName.Contains(searchString))
+                        {
+                            listBooking.Add(item);
+                        }
+                    }
+                    bookings = listBooking;
+                }
+
+                bookings = bookings.OrderBy(x => x.BookingID).ToList();
+
+
+                foreach (var item in bookings)
+                {
+                    if (item.ArenaID == null) continue;
+                    item.ArenaName = db.tb_Arena.Where(x => x.ArenaID == item.ArenaID).FirstOrDefault().ArenaName;
+                }
+
+                foreach (var item in bookings)
+                {
+                    if (item.ShiftID == null) continue;
+                    item.ShiftName = db.tb_Shift.Where(x => x.ShiftID == item.ShiftID).FirstOrDefault().ShiftName;
+                }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                ViewBag.Error = "Xảy ra lỗi trong quá trình truy vấn!" + ex.Message;
-                return View();
+                return Json(new { success = false, message = "Đã xảy ra lỗi trong quá trình lấy dữ liệu!" }, JsonRequestBehavior.AllowGet);
             }
 
-            return View("HistoriesBooking");
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_TableHistoriesPartial", bookings.ToPagedList(pageNumber, pageSize));
+            }
+
+            return View(bookings.ToPagedList(pageNumber, pageSize));
+        }
+
+        public ActionResult CancleBooking(string ID)
+        {
+            if (ID == null)
+            {
+                return Json(new { success = false, message = "Không tìm thấy thông tin lịch đặt phòng!" }, JsonRequestBehavior.AllowGet);
+            }
+
+            try
+            {
+                db.tb_Booking.Where(x => x.ID.ToString() == ID).FirstOrDefault().Status = 4;
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Hủy không thành công!" }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { success = true, message = "Hủy thành công" }, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult Account()

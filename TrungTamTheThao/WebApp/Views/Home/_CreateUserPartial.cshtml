@@ -36,13 +36,7 @@
                             <span id="userNameError" class="text-danger"></span>
                         </div>
                     </div>
-                    <div class="col-sm-6">
-                        <label class="form-label" for="UserName">Mật khẩu<span class="text-danger"> *</span></label>
-                        <div class="col-sm-12 col-lg-12">
-                            @Html.TextBoxFor(m => m.Password, new { @class = "form-control", type= "password" })
-                            <span id="passwordError" class="text-danger"></span>
-                        </div>
-                    </div>
+                   
                     <div class="col-sm-6">
                         <label class="form-label" for="UserName">Họ và tên</label>
                         <div class="col-sm-12 col-lg-12">
@@ -104,7 +98,6 @@
 
     $('.btn-submit').on('click', function (event) {
         if (!validateUserName() || 
-            !validatePassword() ||
             !validateEmail() ||
             !validatePhone()
         ) {

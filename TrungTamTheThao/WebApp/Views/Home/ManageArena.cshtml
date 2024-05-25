@@ -233,6 +233,7 @@
 
     // Các hàm xử lý xóa vai trò
     function openConfirmationDialog(button) {
+        debugger
         document.getElementById('confirmationDialog').style.display = 'block';
         var dataId = button.getAttribute('data-id');
         $('#hiddenID').val(dataId);

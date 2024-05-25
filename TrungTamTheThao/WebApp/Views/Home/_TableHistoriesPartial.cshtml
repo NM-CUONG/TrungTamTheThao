@@ -1,0 +1,69 @@
+﻿
+@model PagedList.IPagedList<WebApp.Models.tb_Booking>
+@using PagedList.Mvc;
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-info" style="width: 40%;">@ViewBag.Error</div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr class="table-info">
+                <th>STT</th>
+                <th>Mã đặt phòng</th>
+                <th>Tên phòng</th>
+                <th>Ngày bắt đầu</th>
+                <th>Ngày kết thúc</th>
+                <th>Ca sử dụng</th>
+                <th>Thanh toán(VNĐ)</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody class="table-content">
+            @{
+                var STT = 1;
+                foreach (var item in Model)
+                {
+
+                    if (item.Status == 1)
+                    {
+                        <tr class="table-success">
+                            <td>@STT</td>
+                            <td>@item.BookingID</td>
+                            <td>@item.tb_Arena.ArenaName</td>
+                            <td>@item.StartTime.ToString("dd/MM/yyyy")</td>
+                            <td>@item.EndTime.ToString("dd/MM/yyyy")</td>
+                            <td>@item.tb_Shift.ShiftName</td>
+                            <td>@item.Money</td>
+                            <td>@item.StatusName</td>
+                            <td><div class="btn btn-outline-danger" data-id="@item.ID" onclick="openConfirmationDialog(this)"><i class="bi bi-x-square-fill"> </i>Hủy</div></td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr class="table-danger">
+                            <td>@STT</td>
+                            <td>@item.BookingID</td>
+                            <td>@item.tb_Arena.ArenaName</td>
+                            <td>@item.StartTime.ToString("dd/MM/yyyy")</td>
+                            <td>@item.EndTime.ToString("dd/MM/yyyy")</td>
+                            <td>@item.tb_Shift.ShiftName</td>
+                            <td>@item.Money</td>
+                            <td>@item.StatusName</td>
+                            <td></td>
+                        </tr>
+                    }
+
+                    STT++;
+                }
+            }
+        </tbody>
+    </table>
+}
+
+<div class="pagination-container">
+    @Html.PagedListPager(Model, page => Url.Action("HistoriesBooking", new { page = page, searchString = Request.QueryString["searchString"] }))
+</div>
