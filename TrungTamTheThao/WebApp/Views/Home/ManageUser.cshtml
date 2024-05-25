@@ -334,7 +334,7 @@
         var phoneError = document.getElementById('phoneError');
         var phonePattern = /^0\d{9}$/;
 
-        if (!phonePattern.test(phoneInput.value)) {
+        if (!phonePattern.test(phoneInput.value) && phoneInput.value != null && phoneInput.value != "") {
             phoneError.textContent = "Số điện thoại không hợp lệ";
             return false;
         } else {

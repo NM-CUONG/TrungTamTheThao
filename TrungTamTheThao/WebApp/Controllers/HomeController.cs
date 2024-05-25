@@ -1161,6 +1161,8 @@ namespace WebApp.Controllers
         {
             try
             {
+                var check = db.tb_User.Any(x => x.UserName == model.UserName);
+                if (check) return Json(new { success = false, message = "Tên tài khoản đã tồn tại!" }, JsonRequestBehavior.AllowGet);
                 model.Password = PasswordManager.HashPassword(model.Password);
                 db.tb_User.Add(model);
                 db.SaveChanges();
@@ -1191,7 +1193,7 @@ namespace WebApp.Controllers
                 var User = db.tb_User.FirstOrDefault(x => x.ID == model.ID);
                 User.UserID = model.UserID;
 
-                if (db.tb_User.Where(x => x.ID == model.ID && model.UserName != User.UserName).Any())
+                if (db.tb_User.Any(x => x.ID != model.ID && model.UserName == x.UserName))
                 {
                     return Json(new { success = false, message = "Tên tài khoản đã tồn tại!" }, JsonRequestBehavior.AllowGet);
                 }
