@@ -295,6 +295,18 @@
         }
     }
 
+    // Hàm validate loại khu vực
+    function validateCategory() {
+        const Category = document.getElementById('CateID');
+        const errorSpan = document.getElementById('cateError');
+        if (Category.value === "") {
+            errorSpan.textContent = "Vui lòng chọn một vai trò.";
+            return false;
+        } else {
+            errorSpan.textContent = "";
+            return true;
+        }
+    }
 
     $(document).ready(function () {
         //Lấy bảng dữ liệu khi tìm kiếm

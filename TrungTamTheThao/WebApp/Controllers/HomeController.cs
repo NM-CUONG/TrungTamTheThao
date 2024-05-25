@@ -31,6 +31,7 @@ using System.Drawing;
 using PagedList;
 using System.Web.UI;
 using System.Web.Management;
+using System.EnterpriseServices;
 
 namespace WebApp.Controllers
 {
@@ -1251,14 +1252,23 @@ namespace WebApp.Controllers
 
                 if (!String.IsNullOrEmpty(searchString))
                 {
+
+                    foreach (var item in Sizes)
+                    {
+                        if (item.CateID == null) continue;
+                        item.CateName = db.tb_Category.Where(x => x.CateID == item.CateID).FirstOrDefault().CateName;
+                    }
+
                     searchString = searchString.Trim().Unidecode().ToLower();
                     foreach (var item in Sizes)
                     {
                         var SizeName = item.SizeName.Unidecode().ToLower();
                         var SizeID = item.SizeID.Unidecode().ToLower();
+                        var CateName = item.CateName.Unidecode().ToLower();
 
                         if (SizeName.Contains(searchString)
                             || SizeID.Contains(searchString)
+                            || CateName.Contains(searchString)
                             || SizeName.Contains(searchString))
                         {
                             listSize.Add(item);
@@ -1266,6 +1276,8 @@ namespace WebApp.Controllers
                     }
                     Sizes = listSize;
                 }
+
+                
 
                 Sizes = Sizes.OrderBy(x => x.SizeID).ToList();
             }
