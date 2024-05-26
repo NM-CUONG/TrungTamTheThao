@@ -858,12 +858,12 @@ namespace WebApp.Controllers
         [HttpPost]
         public ActionResult ForgotPassword(FormCollection form)
         {
-            string shiftID = form["UserID"];
+            string userID = form["UserID"];
             string passWord = form["Password"];
             string ct = form["captra"];
 
 
-            if (string.IsNullOrEmpty(shiftID) ||
+            if (string.IsNullOrEmpty(userID) ||
                 string.IsNullOrEmpty(passWord) ||
                 Session["captra"] == null ||
                 string.IsNullOrEmpty(ct))
@@ -878,7 +878,7 @@ namespace WebApp.Controllers
             }
             try
             {
-                tb_User tk = db.tb_User.Where(x => x.UserID == shiftID).FirstOrDefault();
+                tb_User tk = db.tb_User.Where(x => x.UserID == userID).FirstOrDefault();
                 tk.Password = PasswordManager.HashPassword(passWord);
                 db.SaveChanges();
             }
