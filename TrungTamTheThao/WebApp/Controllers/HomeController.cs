@@ -622,15 +622,15 @@ namespace WebApp.Controllers
             try
             {
 
-                DateTime nowday = DateTime.Now;
+                DateTime nowday = DateTime.Now.Date;
 
                 foreach (var item in bookings)
                 {
-                    if (item.StartTime <= nowday && item.EndTime >= nowday && item.Status != 4 && item.Status != 1 && item.Status != 0)
+                    if (item.StartTime.Date <= nowday && item.EndTime.Date >= nowday && item.Status != 4 && item.Status != 1 && item.Status != 0)
                     {
                         item.Status = 2;
-                    }
-                    if (item.EndTime < nowday && item.Status != 4 && item.Status != 0)
+                    } 
+                    if (item.EndTime.Date < nowday && item.Status != 4 && item.Status != 0)
                     {
                         item.Status = 3;
                     }
